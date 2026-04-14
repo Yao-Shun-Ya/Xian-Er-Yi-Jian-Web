@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { handleDownload } from '../lib/download'; 
 import { WavyBackground } from '@/components/ui/wavy-background'; 
@@ -81,15 +82,17 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <button 
-              onClick={() => handleDownload('mgd_unet_v1.pth')}
+              onClick={() => handleDownload('MGD_UNet_v1.0.0.pth')}
               className="group relative px-10 py-4 w-full sm:w-auto bg-blue-600 text-white rounded-full font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(37,99,235,0.4)] overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
               免费试用模型 (v1.0)
             </button>
+            <Link href="/docs" className="w-full sm:w-auto">
             <button className="px-10 py-4 w-full sm:w-auto bg-white/5 backdrop-blur-lg border border-white/20 hover:border-white/40 text-white rounded-full font-bold transition-all hover:bg-white/10">
-              下载技术白皮书
+              技术白皮书
             </button>
+          </Link>
           </div>
         </div>
       </WavyBackground>
@@ -152,19 +155,34 @@ export default function Home() {
             <p className="text-slate-500 font-mono">开源 · 协同 · 普惠</p>
           </div>
           <div className="grid gap-6 relative z-10">
+            {/* 1. 模型权重下载 */}
             <div className="group flex flex-col md:flex-row items-center justify-between p-8 bg-black/40 border border-white/5 rounded-3xl hover:border-blue-500/30 transition-all">
               <div className="text-center md:text-left mb-4 md:mb-0">
                 <span className="text-xl font-bold text-white">模型权重 (Weights)</span>
-                <p className="text-sm text-slate-500 font-mono mt-1">MGD_UNet_v1.0.2.pth · 142MB</p>
+                <p className="text-sm text-slate-500 font-mono mt-1">MGD_UNet_v1.0.0.pth · 6.22MB</p>
               </div>
-              <button onClick={() => handleDownload('mgd_unet_v1.pth')} className="px-8 py-3 bg-white text-black rounded-full font-bold hover:bg-blue-500 hover:text-white transition-all">获取模型</button>
+              {/* 👇 关键点：匹配实际路径中的文件名 MGD_UNet_v1.0.0.pth */}
+              <button 
+                onClick={() => handleDownload('MGD_UNet_v1.0.0.pth')} 
+                className="px-8 py-3 bg-white text-black rounded-full font-bold hover:bg-blue-500 hover:text-white transition-all"
+              >
+                获取模型
+              </button>
             </div>
+
+            {/* 2. WebUI 软件下载 */}
             <div className="group flex flex-col md:flex-row items-center justify-between p-8 bg-black/40 border border-white/5 rounded-3xl hover:border-cyan-500/30 transition-all">
               <div className="text-center md:text-left mb-4 md:mb-0">
-                <span className="text-xl font-bold text-white">演示软件 (Demo GUI)</span>
-                <p className="text-sm text-slate-500 font-mono mt-1">Win 10+ 便携版分析软件</p>
+                <span className="text-xl font-bold text-white">演示软件 (Demo WebUI)</span>
+                <p className="text-sm text-slate-500 font-mono mt-1">Win 便携版分析软件</p>
               </div>
-              <button onClick={() => handleDownload('XianErYiJian_Setup.exe')} className="px-8 py-3 bg-slate-800 text-slate-300 rounded-full font-bold hover:bg-slate-700 transition-all">下载软件</button>
+              {/* 👇 关键点：匹配实际路径中的文件名 腺而易见WebUI.7z */}
+              <button 
+                onClick={() => handleDownload('腺而易见WebUI.7z')} 
+                className="px-8 py-3 bg-slate-800 text-slate-300 rounded-full font-bold hover:bg-slate-700 transition-all"
+              >
+                下载软件
+              </button>
             </div>
           </div>
         </div>
@@ -266,13 +284,15 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-8 mt-12 md:mt-20">
             <div className="text-center md:text-left">
               <p className="text-xl font-bold text-white tracking-widest">腺而易见</p>
-              <p className="text-slate-500 text-[10px] font-mono uppercase tracking-[0.2em] mt-1">Imaging Class One · Team Project</p>
+              <p className="text-slate-500 text-[10px] font-mono uppercase tracking-[0.2em] mt-1">NSMC · Team Project</p>
             </div>
             
             <div className="flex flex-col items-center md:items-end gap-3 text-[10px] font-mono uppercase tracking-widest text-slate-500">
               {/* 这里由于 z-20 的存在，链接可以被正常点击 */}
               <div className="flex gap-6 relative z-30">
-                <a href="#" className="hover:text-blue-500 transition-colors pointer-events-auto">技术文档</a>
+                <Link href="/docs" className="hover:text-blue-500 transition-colors pointer-events-auto">
+                  技术文档
+                </Link>
                 <a href="#" className="hover:text-blue-500 transition-colors pointer-events-auto">学术合作</a>
               </div>
               <p>© {new Date().getFullYear()} HUANG YUPU. ALL RIGHTS RESERVED.</p>

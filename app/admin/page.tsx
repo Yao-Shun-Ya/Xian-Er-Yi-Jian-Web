@@ -185,7 +185,7 @@ export default function AdminDashboard() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-center md:text-left">
               <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em]">
-                © {new Date().getFullYear()} Imaging Class One · Terminal v1.0.4
+                © {new Date().getFullYear()} NSMC · Terminal v1.0.4
               </p>
             </div>
             
