@@ -141,8 +141,8 @@ XianErYiJian/
 
 ### 研发团队
 - **Lead Developer & Researcher**: 黄宇普 (Huang Yupu)
-- **Organization**: Imaging Class 1 (影像一班) 
-- **Contact**: [请在此处填写你的联系方式/邮箱]
+- **Organization**: NSMC XIANERYIJIAN TEAM
+- **Contact**: 2720356281@QQ.COM
 
 ### 开源协议
 本项目代码基于 **Apache 2.0 License** 开放源代码。
