@@ -106,8 +106,8 @@ npm install && npm run build && npm run dev
 
 ## 👥 团队与贡献
 
-- **项目负责人**: 黄宇普 (Huang Yupu)
-- **所属团队**: 影像一班 · Team Project
+- **Design**: 黄宇普 (Huang Yupu)
+- **所属团队**: NSMC · XianErYiJian Team Project
 
 如果你有任何关于医学影像分割或 Next.js 开发的建议，欢迎提交 PR。
 
