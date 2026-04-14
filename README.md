@@ -8,7 +8,7 @@
 
 > **"Bridging Clinical Insight with AI Precision."**
 > 
-> 本项目由 **影像一班 (Imaging Class One)** 团队开发，是一个集成深度学习多模态图像分析的睑板腺功能障碍 (MGD) 诊疗辅助平台。
+> 本项目由 **腺而易见** 团队开发，是一个集成深度学习多模态图像分析的睑板腺功能障碍 (MGD) 诊疗辅助平台。
 
 ---
 
