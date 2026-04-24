@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local"; // 💡 切换为本地字体模块
 import "./globals.css";
 
-const geistSans = Geist({
+// 1. 定义本地字体，路径必须指向你刚才下载好的文件
+const geistSans = localFont({
+  src: "./fonts/Geist-Regular.woff2",
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  weight: "100 900",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: "./fonts/GeistMono-Regular.woff2",
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: "100 900",
 });
 
 export const metadata: Metadata = {
-  title: "XianErYiJian Terminal", // Feel free to change your title here!
-  description: "MGD Precision Diagnosis Assistant",
+  title: "腺而易见 (XianErYiJian)",
+  description: "基于亚像素级 U-Net 的睑板腺 (MGD) 影像全自动定量分析平台",
 };
 
 export default function RootLayout({
@@ -23,12 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      // 👇 Just added "dark" right at the beginning of this string
-      className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`} 
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="zh" className="dark">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#020617] text-slate-300`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

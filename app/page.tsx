@@ -159,7 +159,7 @@ export default function Home() {
             <div className="group flex flex-col md:flex-row items-center justify-between p-8 bg-black/40 border border-white/5 rounded-3xl hover:border-blue-500/30 transition-all">
               <div className="text-center md:text-left mb-4 md:mb-0">
                 <span className="text-xl font-bold text-white">模型权重 (Weights)</span>
-                <p className="text-sm text-slate-500 font-mono mt-1">MGD_UNet_v1.0.0.pth · 6.22MB</p>
+                <p className="text-sm text-slate-500 font-mono mt-1">MGD_UNet_v1.0.0.pth · 99.09MB</p>
               </div>
               {/* 👇 关键点：匹配实际路径中的文件名 MGD_UNet_v1.0.0.pth */}
               <button 
