@@ -181,7 +181,7 @@ XianErYiJian_Project/
   year = {2026},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{[https://github.com/your-username/XianErYiJian](https://github.com/your-username/XianErYiJian)}}
+  howpublished = {\url{[https://github.com/Yao-Shun-Ya/Xian-Er-Yi-Jian-Web](https://github.com/Yao-Shun-Ya/Xian-Er-Yi-Jian-Web)}}
 }
 ```
 
