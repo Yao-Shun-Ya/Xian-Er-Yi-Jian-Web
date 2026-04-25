@@ -9,6 +9,9 @@ import { submitFeedback } from '@/app/actions/feedback';
 
 // 👇 新增：引入 Vortex 背景和 Shadcn 官方表单组件
 import { Vortex } from '@/components/ui/vortex';
+import { SparklesCore } from '@/components/ui/sparkles';
+import { CanvasRevealEffect } from '@/components/ui/canvas-reveal-effect';
+import { motion, AnimatePresence } from 'motion/react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -142,48 +145,63 @@ export default function Home() {
             </div>
           </div>
         </div>
+        
+        {/* 渐变遮罩，确保与下载中心板块过渡平滑 */}
+        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#020617] to-transparent z-10 pointer-events-none" />
       </section>
 
       {/* ==========================================
           3. 下载中心 & 行业数据
           ========================================== */}
-      <section className="py-24 px-6 relative z-20">
-        <div className="max-w-5xl mx-auto bg-white/5 border border-white/10 rounded-[40px] p-12 backdrop-blur-2xl relative overflow-hidden">
+      <section className="py-24 px-6 relative z-20 overflow-hidden">
+        {/* Sparkles 背景 */}
+        <div className="absolute inset-0 z-0">
+          <SparklesCore
+            id="tsparticlesdownload"
+            background="transparent"
+            minSize={0.6}
+            maxSize={1.4}
+            particleDensity={100}
+            particleColor="#3b82f6"
+            className="w-full h-full"
+          />
+        </div>
+        
+        {/* 渐变遮罩，确保与上下页面过渡平滑 */}
+        <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-[#020617] to-transparent z-10 pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#020617] to-transparent z-10 pointer-events-none" />
+        
+        <div className="max-w-5xl mx-auto bg-white/5 border border-white/10 rounded-[40px] p-12 backdrop-blur-2xl relative z-20">
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-600/20 blur-[100px] rounded-full"></div>
-          <div className="relative z-10 text-center mb-16">
+          <div className="relative z-30 text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4 italic">Open Research Initiative</h2>
             <p className="text-slate-500 font-mono">开源 · 协同 · 普惠</p>
           </div>
-          <div className="grid gap-6 relative z-10">
+          <div className="grid gap-6 relative z-30">
             {/* 1. 模型权重下载 */}
-            <div className="group flex flex-col md:flex-row items-center justify-between p-8 bg-black/40 border border-white/5 rounded-3xl hover:border-blue-500/30 transition-all">
-              <div className="text-center md:text-left mb-4 md:mb-0">
-                <span className="text-xl font-bold text-white">模型权重 (Weights)</span>
-                <p className="text-sm text-slate-500 font-mono mt-1">MGD_UNet_v1.0.0.pth · 99.09MB</p>
-              </div>
-              {/* 👇 关键点：匹配实际路径中的文件名 MGD_UNet_v1.0.0.pth */}
-              <button 
-                onClick={() => handleDownload('MGD_UNet_v1.0.0.pth')} 
-                className="px-8 py-3 bg-white text-black rounded-full font-bold hover:bg-blue-500 hover:text-white transition-all"
-              >
-                获取模型
-              </button>
-            </div>
+            <DownloadCard 
+              title="模型权重 (Weights)"
+              description="MGD_UNet_v1.0.0.pth · 99.09MB"
+              buttonText="获取模型"
+              onClick={() => handleDownload('MGD_UNet_v1.0.0.pth')}
+              animationSpeed={3}
+              containerClassName="bg-blue-900"
+              colors={[[59, 130, 246], [34, 197, 94]]}
+            />
 
             {/* 2. WebUI 软件下载 */}
-            <div className="group flex flex-col md:flex-row items-center justify-between p-8 bg-black/40 border border-white/5 rounded-3xl hover:border-cyan-500/30 transition-all">
-              <div className="text-center md:text-left mb-4 md:mb-0">
-                <span className="text-xl font-bold text-white">演示软件 (Demo WebUI)</span>
-                <p className="text-sm text-slate-500 font-mono mt-1">Win 便携版分析软件</p>
-              </div>
-              {/* 👇 关键点：匹配实际路径中的文件名 腺而易见WebUI.7z */}
-              <button 
-                onClick={() => handleDownload('腺而易见WebUI.7z')} 
-                className="px-8 py-3 bg-slate-800 text-slate-300 rounded-full font-bold hover:bg-slate-700 transition-all"
-              >
-                下载软件
-              </button>
-            </div>
+            <DownloadCard 
+              title="演示软件 (Demo WebUI)"
+              description="Win 便携版 & Mac 版分析软件"
+              buttonText="下载软件"
+              onClick={() => {}}
+              animationSpeed={5.1}
+              containerClassName="bg-emerald-900"
+              colors={[[34, 197, 94], [6, 182, 212]]}
+              isSoftwareCard={true}
+              onWinClick={() => handleDownload('Windows.腺而易见WebUI.7z')}
+              onMacClick={() => handleDownload('MacOS.腺而易见WebUI.7z')}
+            />
           </div>
         </div>
       </section>
@@ -325,13 +343,92 @@ const BottomGradient = () => {
   );
 };
 
-const LabelInputContainer = ({
-  children,
-  className,
+const DownloadCard = ({
+  title,
+  description,
+  buttonText,
+  onClick,
+  animationSpeed,
+  containerClassName,
+  colors,
+  isSoftwareCard = false,
+  onWinClick,
+  onMacClick
 }: {
-  children: React.ReactNode;
-  className?: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  onClick: () => void;
+  animationSpeed: number;
+  containerClassName: string;
+  colors: number[][];
+  isSoftwareCard?: boolean;
+  onWinClick?: () => void;
+  onMacClick?: () => void;
 }) => {
+  const [hovered, setHovered] = React.useState(false);
+  
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="group flex flex-col md:flex-row items-center justify-between p-8 bg-black/40 border border-white/5 rounded-3xl hover:border-blue-500/30 transition-all relative overflow-hidden"
+    >
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10"
+          >
+            <CanvasRevealEffect
+              animationSpeed={animationSpeed}
+              containerClassName={containerClassName}
+              colors={colors}
+              dotSize={2}
+            />
+            {/* Radial gradient for the fade effect */}
+            <div className="absolute inset-0 [mask-image:radial-gradient(400px_at_center,white,transparent)] bg-black/50" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <div className="text-center md:text-left mb-4 md:mb-0 relative z-20">
+        <span className="text-xl font-bold text-white">{title}</span>
+        <p className="text-sm text-slate-500 font-mono mt-1">{description}</p>
+      </div>
+      
+      <div className="relative z-20">
+        {isSoftwareCard ? (
+          <div className="flex gap-4">
+            <button 
+              onClick={onWinClick}
+              className="px-6 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-500 transition-all"
+            >
+              Win 版
+            </button>
+            <button 
+              onClick={onMacClick}
+              className="px-6 py-3 bg-emerald-600 text-white rounded-full font-bold hover:bg-emerald-500 transition-all"
+            >
+              Mac 版
+            </button>
+          </div>
+        ) : (
+          <button 
+            onClick={onClick}
+            className="px-8 py-3 bg-white text-black rounded-full font-bold hover:bg-blue-500 hover:text-white transition-all"
+          >
+            {buttonText}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const LabelInputContainer = ({ children, className }: { children: React.ReactNode; className?: string; }) => {
   return (
     <div className={cn("flex w-full flex-col space-y-2", className)}>
       {children}

@@ -19,6 +19,7 @@ const sections = [
   { id: "presets", title: "6. 临床分级诊疗预设系统", icon: <Stethoscope size={18} /> },
   { id: "explainability", title: "7. 模型可解释性与置信度分析", icon: <BarChart3 size={18} /> },
   { id: "references", title: "参考文献 (References)", icon: <BookMarked size={18} /> },
+  { id: "download", title: "演示软件 (Demo WebUI)", icon: <Zap size={18} /> },
 ];
 
 export default function DetailedWhitePaper() {
@@ -354,12 +355,94 @@ export default function DetailedWhitePaper() {
           <section id="references" className="scroll-mt-32 pb-20">
             <h2 className="text-xl font-bold mb-8 italic border-b border-white/10 pb-4">References / 参考文献</h2>
             <ol className="list-decimal list-inside space-y-4 text-sm font-mono text-slate-500 leading-7 italic">
-              <li>Lemp MA, Crewes LA, Bron AJ, et al. The definition and classification of dry eye disease: report of the Definition and Classification Subcommittee of the International Dry Eye WorkSpace. <span className="text-slate-300">Ocul Surf. 2007;5(2):75-92.</span></li>
-              <li>Arita R, Itoh K, Inoue K, Amano S. Noncontact infrared meibography to document age-related changes of the meibomian glands in a normal population. <span className="text-slate-300">Ophthalmology. 2008;115(5):911-915.</span></li>
-              <li>Ronneberger O, Fischer P, Brox T. U-Net: Convolutional Networks for Biomedical Image Segmentation. <span className="text-slate-300">MICCAI 2015.</span></li>
-              <li>Salehi SSM, Erdogmus D, Gholipour A. Tversky loss function for image segmentation using 3D fully convolutional deep networks. <span className="text-slate-300">arXiv preprint arXiv:1706.05721. 2017.</span></li>
-              <li>Huang Yupu, et al. XianErYiJian Technical Specification & Academic Protocol v2.0. <span className="text-slate-300">Imaging Lab Class 1. 2026.</span></li>
+              <li>
+                Craig JP, Nichols KK, Akpek EK, et al. TFOS DEWS II Definition and Classification Report.{" "}
+                <span className="text-slate-300">The Ocular Surface, 2017, 15(3): 276-283.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[国际干眼工作组权威定义报告]</span>
+              </li>
+              <li>
+                Nelson JD, Shimazaki J, Benitez-del-Castillo JM, et al. The International Workshop on Meibomian Gland Dysfunction: Report of the Definition and Classification Subcommittee.{" "}
+                <span className="text-slate-300">Investigative Ophthalmology & Visual Science, 2011, 52(4): 1930-1937.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[MGD 全球临床诊断金标准]</span>
+              </li>
+              <li>
+                Arita R, Itoh K, Inoue K, et al. Noncontact Infrared Meibography to Document Age-Related Changes of the Meibomian Glands in a Normal Population.{" "}
+                <span className="text-slate-300">Ophthalmology, 2008, 115(5): 911-915.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[红外睑板腺成像技术奠基之作]</span>
+              </li>
+              <li>
+                Wang J, Yeh TN, Ruyu C, et al. Deep Learning–Based Automated Segmentation of Meibomian Glands in Infrared Meibography.{" "}
+                <span className="text-slate-300">Translational Vision Science & Technology, 2019, 8(6): 37.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[AI 分割同领域高被引对标文献]</span>
+              </li>
+              <li>
+                Lin H, et al. Automated Diagnosis of Meibomian Gland Dysfunction Based on Deep Learning.{" "}
+                <span className="text-slate-300">Graefe's Archive for Clinical and Experimental Ophthalmology, 2021, 259: 3341-3352.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[现代眼科人工智能诊断系统对标文献]</span>
+              </li>
+              <li>
+                Ronneberger O, Fischer P, Brox T. U-Net: Convolutional Networks for Biomedical Image Segmentation.{" "}
+                <span className="text-slate-300">MICCAI 2015: 234-241.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[全尺度 U-Net 基础架构理论]</span>
+              </li>
+              <li>
+                Isensee F, Jaeger PF, Kohl SAA, et al. nnU-Net: a Self-configuring Method for Deep Learning-based Biomedical Image Segmentation.{" "}
+                <span className="text-slate-300">Nature Methods, 2021, 18(2): 203-211.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[滑窗切块推理与高斯融合核心理论支撑]</span>
+              </li>
+              <li>
+                Salehi SSM, Erdogmus D, Gholipour A. Tversky Loss Function for Image Segmentation Using 3D Fully Convolutional Deep Networks.{" "}
+                <span className="text-slate-300">International Workshop on Machine Learning in Medical Imaging, 2017: 379-387.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[非对称类不平衡优化理论]</span>
+              </li>
+              <li>
+                Selvaraju RR, Cogswell M, Das A, et al. Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization.{" "}
+                <span className="text-slate-300">ICCV 2017: 618-626.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[临床可解释性热力图理论支撑]</span>
+              </li>
+              <li>
+                Zuiderveld K. Contrast Limited Adaptive Histogram Equalization.{" "}
+                <span className="text-slate-300">Graphics Gems IV. Academic Press, 1994: 474-485.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[CLAHE 谱学特征增强算法溯源]</span>
+              </li>
+              <li>
+                Deng Y, et al. Morphology and Function of the Meibomian Glands in Patients with Meibomian Gland Dysfunction.{" "}
+                <span className="text-slate-300">Cornea, 2020, 39(8): 960-966.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[多维形态学量化指标临床有效性支撑]</span>
+              </li>
+              <li>
+                Huang Yupu, et al. XianErYiJian: Sub-pixel Deep Learning Platform for MGD Quantification (Technical Specification Protocol v2.0).{" "}
+                <span className="text-slate-300">NSMC Imaging Lab Class 1. 2026.</span>
+                <span className="text-slate-600 ml-2 not-italic text-xs">[本平台技术白皮书及协议声明]</span>
+              </li>
             </ol>
+          </section>
+
+          {/* Download Section */}
+          <section id="download" className="scroll-mt-32 py-12">
+            <h2 className="text-xl font-bold mb-8 italic border-b border-white/10 pb-4">演示软件 (Demo WebUI)</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <a href="/file/Windows.腺而易见WebUI.7z" className="p-8 rounded-2xl bg-gradient-to-br from-blue-900/30 to-blue-900/10 border border-blue-500/20 hover:border-blue-500/40 transition-all flex flex-col items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
+                  <Cpu size={32} className="text-blue-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Win 版分析软件</h3>
+                <p className="text-sm text-slate-400 mb-4 text-center">解压开箱即用</p>
+                <button className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors">
+                  下载 Windows 版
+                </button>
+              </a>
+              <a href="/file/MacOS.腺而易见WebUI.7z" className="p-8 rounded-2xl bg-gradient-to-br from-emerald-900/30 to-emerald-900/10 border border-emerald-500/20 hover:border-emerald-500/40 transition-all flex flex-col items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mb-4">
+                  <Cpu size={32} className="text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">Mac 版分析软件</h3>
+                <p className="text-sm text-slate-400 mb-4 text-center">支持 macOS 10.15 及以上版本</p>
+                <button className="px-6 py-2 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-500 transition-colors">
+                  下载 macOS 版
+                </button>
+              </a>
+            </div>
           </section>
 
           {/* Page Footer */}
