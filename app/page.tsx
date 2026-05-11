@@ -202,6 +202,9 @@ export default function Home() {
               onWinClick={() => handleDownload('Windows.腺而易见WebUI.7z')}
               onMacClick={() => handleDownload('MacOS.腺而易见WebUI.7z')}
             />
+
+            {/* 3. Linux 版本下载 */}
+            <LinuxDownloadCard />
           </div>
         </div>
       </section>
@@ -423,6 +426,53 @@ const DownloadCard = ({
             {buttonText}
           </button>
         )}
+      </div>
+    </div>
+  );
+};
+
+const LinuxDownloadCard = () => {
+  const [hovered, setHovered] = React.useState(false);
+  
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="group flex flex-col md:flex-row items-center justify-between p-8 bg-orange-900/20 border border-orange-500/30 rounded-3xl hover:border-orange-500/60 transition-all relative overflow-hidden"
+    >
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-10"
+          >
+            <CanvasRevealEffect
+              animationSpeed={4.5}
+              containerClassName="bg-orange-900"
+              colors={[[249, 115, 22], [251, 191, 36]]}
+              dotSize={2}
+            />
+            <div className="absolute inset-0 [mask-image:radial-gradient(400px_at_center,white,transparent)] bg-black/50" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <div className="text-center md:text-left mb-4 md:mb-0 relative z-20">
+        <span className="text-xl font-bold text-orange-400">Linux 版 (命令行)</span>
+        <p className="text-sm text-slate-400 font-mono mt-1">
+          无 WebUI，命令行版本 · 适用于服务器和研发环境
+        </p>
+      </div>
+      
+      <div className="relative z-20">
+        <button 
+          onClick={() => handleDownload('Linux.腺而易见.7z')}
+          className="px-8 py-3 bg-orange-600 text-white rounded-full font-bold hover:bg-orange-500 transition-all"
+        >
+          下载 Linux 版
+        </button>
       </div>
     </div>
   );
