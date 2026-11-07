@@ -16,6 +16,11 @@ interface VortexProps {
   baseRadius?: number;
   rangeRadius?: number;
   backgroundColor?: string;
+  saturation?: number;
+  lightness?: number;
+  alphaScale?: number;
+  rangeHue?: number;
+  glow?: boolean;
 }
  
 export const Vortex = (props: VortexProps) => {
@@ -33,7 +38,10 @@ export const Vortex = (props: VortexProps) => {
   const baseRadius = props.baseRadius || 1;
   const rangeRadius = props.rangeRadius || 2;
   const baseHue = props.baseHue || 220;
-  const rangeHue = 100;
+  const rangeHue = props.rangeHue ?? 100;
+  const saturation = props.saturation ?? 100;
+  const lightness = props.lightness ?? 60;
+  const alphaScale = props.alphaScale ?? 1;
   const noiseSteps = 3;
   const xOff = 0.00125;
   const yOff = 0.00125;
@@ -104,7 +112,7 @@ export const Vortex = (props: VortexProps) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
  
     drawParticles(ctx);
-    renderGlow(canvas, ctx);
+    if (props.glow !== false) renderGlow(canvas, ctx);
     renderToScreen(canvas, ctx);
  
     animationFrameId.current = window.requestAnimationFrame(() =>
@@ -172,7 +180,9 @@ export const Vortex = (props: VortexProps) => {
     ctx.save();
     ctx.lineCap = "round";
     ctx.lineWidth = radius;
-    ctx.strokeStyle = `hsla(${hue},100%,60%,${fadeInOut(life, ttl)})`;
+    ctx.strokeStyle = `hsla(${hue},${saturation}%,${lightness}%,${
+      fadeInOut(life, ttl) * alphaScale
+    })`;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x2, y2);

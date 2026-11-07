@@ -1,6 +1,5 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion"; 
 
 export const TextHoverEffect = ({
   text,
@@ -57,21 +56,24 @@ export const TextHoverEffect = ({
         <linearGradient id="textGradient" gradientUnits="userSpaceOnUse" cx="50%" cy="50%" r="25%">
           {hovered && (
             <>
-              <stop offset="0%" stopColor="#eab308" />
-              <stop offset="25%" stopColor="#ef4444" />
-              <stop offset="50%" stopColor="#3b82f6" />
-              <stop offset="75%" stopColor="#06b6d4" />
-              <stop offset="100%" stopColor="#8b5cf6" />
+              <stop offset="0%" stopColor="var(--glow-1)" />
+              <stop offset="25%" stopColor="var(--glow-2)" />
+              <stop offset="50%" stopColor="var(--glow-3)" />
+              <stop offset="75%" stopColor="var(--glow-4)" />
+              <stop offset="100%" stopColor="var(--glow-5)" />
             </>
           )}
         </linearGradient>
-        <motion.radialGradient
-          id="revealMask" gradientUnits="userSpaceOnUse" r="20%"
-          animate={maskPosition} transition={{ duration: 0.1, ease: "easeOut" }}
+        <radialGradient
+          id="revealMask"
+          gradientUnits="userSpaceOnUse"
+          cx={maskPosition.cx}
+          cy={maskPosition.cy}
+          r="20%"
         >
           <stop offset="0%" stopColor="white" />
           <stop offset="100%" stopColor="black" />
-        </motion.radialGradient>
+        </radialGradient>
         <mask id="textMask">
           <rect x="0" y="0" width="100%" height="100%" fill="url(#revealMask)" />
         </mask>
@@ -87,9 +89,9 @@ export const TextHoverEffect = ({
                 {(variant === "all" || variant === "outline") && (
                   <text
                     x="50%" y={yPos} textAnchor="middle" dominantBaseline="middle"
-                    strokeWidth="0.5" fontSize="80" // 使用原生 fontSize
-                    className="fill-transparent stroke-neutral-200 font-sans font-black dark:stroke-neutral-800"
-                    style={{ opacity: hovered ? 0.7 : 0.2 }}
+                    stroke="var(--footer-wordmark)" strokeWidth="0.5" fontSize="80"
+                    className="fill-transparent font-sans font-black"
+                    style={{ opacity: hovered ? 0.78 : 0.24 }}
                   >{word}</text>
                 )}
                 {(variant === "all" || variant === "glow") && (
@@ -109,9 +111,9 @@ export const TextHoverEffect = ({
             {(variant === "all" || variant === "outline") && (
               <text
                 x="50%" y="50%" textAnchor="middle" dominantBaseline="middle"
-                strokeWidth="0.4" fontSize="70" // 宽屏字号稍小一点以防溢出
-                className="fill-transparent stroke-neutral-200 font-sans font-black dark:stroke-neutral-800"
-                style={{ opacity: hovered ? 0.7 : 0.2 }}
+                stroke="var(--footer-wordmark)" strokeWidth="0.4" fontSize="70"
+                className="fill-transparent font-sans font-black"
+                style={{ opacity: hovered ? 0.78 : 0.24 }}
               >{text}</text>
             )}
             {(variant === "all" || variant === "glow") && (

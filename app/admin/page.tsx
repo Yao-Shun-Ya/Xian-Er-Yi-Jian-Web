@@ -4,8 +4,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { deleteFeedback, getFeedbacks, markAsRead } from '@/app/actions/admin/feedback';
 import { logout } from '@/app/actions/auth';
 import type { FeedbackDTO } from '@/lib/shared/types';
+import { SiteFooter } from '@/components/layout/SiteFooter';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { LanguageToggle } from '@/components/i18n/LanguageToggle';
+import { useI18n } from '@/lib/i18n/provider';
 
 export default function AdminDashboard() {
+  const { t } = useI18n();
   const [feedbacks, setFeedbacks] = useState<FeedbackDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -67,7 +72,7 @@ export default function AdminDashboard() {
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-white tracking-tight">管理控制台</h1>
+              <h1 className="text-3xl font-bold text-white tracking-tight">{t("admin.title")}</h1>
               <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20 rounded uppercase">
                 Secure Terminal
               </span>
@@ -78,20 +83,22 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex gap-4 items-start">
+            <LanguageToggle />
+            <ThemeToggle />
             <form action={logout}>
               <button
                 type="submit"
                 className="px-5 py-3 bg-[#0A101F] border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:border-white/20 transition-colors"
               >
-                退出登录
+                {t("admin.logout")}
               </button>
             </form>
             <div className="px-6 py-3 bg-[#0A101F] border border-white/5 rounded-2xl flex flex-col items-center">
-              <span className="text-xs text-slate-500 uppercase font-bold">总计反馈</span>
+              <span className="text-xs text-slate-500 uppercase font-bold">{t("admin.total")}</span>
               <span className="text-2xl font-black text-white">{feedbacks.length}</span>
             </div>
             <div className="px-6 py-3 bg-[#0A101F] border border-white/5 rounded-2xl flex flex-col items-center">
-              <span className="text-xs text-slate-500 uppercase font-bold">待处理</span>
+              <span className="text-xs text-slate-500 uppercase font-bold">{t("admin.unread")}</span>
               <span className="text-2xl font-black text-blue-500">
                 {feedbacks.filter(f => !f.isRead).length}
               </span>
@@ -181,33 +188,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ==========================================
-          3. 底部版权与状态 (同步主页风格)
-          ========================================== */}
-      <footer className="relative py-12 bg-[#0A101F] border-t border-white/5 overflow-hidden mt-auto">
-        {/* 页脚内的自适应巨型水印 */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.02] select-none pointer-events-none px-4">
-          <h2 className="text-[8vw] md:text-[5.5vw] font-black tracking-[0.05em] whitespace-nowrap text-white leading-none">
-            XIANERYIJIAN PROJECT
-          </h2>
-        </div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-              <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em]">
-                © {new Date().getFullYear()} NSMC · Terminal v1.0.4
-              </p>
-            </div>
-            
-            <div className="text-center md:text-right">
-              <p className="text-[10px] font-mono text-slate-700 uppercase tracking-[0.2em]">
-                Database: SQLite (better-sqlite3) · Local Persistence
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
