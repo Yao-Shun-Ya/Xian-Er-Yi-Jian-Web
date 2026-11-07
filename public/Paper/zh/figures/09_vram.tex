@@ -1,0 +1,37 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  meas/.style={draw=teal, fill=teal!25},
+  est/.style={draw=slate!45, fill=mist, pattern=north east lines, pattern color=slate!35},
+  lab/.style={anchor=west, font=\scriptsize},
+  val/.style={anchor=west, font=\scriptsize, color=slate}
+]
+% axes
+\draw[->, draw=slate] (0,0) -- (10.6,0) node[right, font=\scriptsize]{峰值显存（GB，示意比例）};
+\foreach \y/\name/\peak/\sps/\stat in {
+  0/6 GB/0.89/3.54/实测,
+  1/8 GB/1.227/3.10/实测,
+  2/12 GB/1.8/2.9/估算,
+  3/16 GB/2.5/2.6/估算,
+  4/24 GB/3.6/2.1/估算,
+  5/40 GB+/5.0/1.8/估算} {
+  \pgfmathsetmacro{\w}{(\peak)*3.2}
+  \ifnum\y<2
+    \draw[meas] (0,{0.55*\y+0.55}) rectangle (\w,{0.55*\y+1.05});
+  \else
+    \draw[est] (0,{0.55*\y+0.55}) rectangle (\w,{0.55*\y+1.05});
+  \fi
+  \node[anchor=east, font=\scriptsize] at (-0.1,{0.55*\y+0.8}) {\name};
+  \ifnum\y<2
+    \node[val] at (\w+0.1,{0.55*\y+0.8}) {\peak\,GB，\sps\,样本/秒（\stat）};
+  \else
+    \node[val] at (\w+0.1,{0.55*\y+0.8}) {\stat（不外推数值）};
+  \fi
+}
+\node[anchor=west, font=\scriptsize, color=slate] at (0,-0.55) {实心：实测；斜线：估算。8 GB 实测 225.6\,s/epoch（去重前 700 训练样本，随机初始化）。};
+\end{tikzpicture}}
+\caption{六档显存配方。6 GB 与 8 GB 为 RTX 4060 Laptop 8 GB 上、去重前 700 训练样本口径的实测（峰值与吞吐），12 GB 及以上仅为档位规划，不外推具体数值。估算档不得在正文中冒充实测。}
+\label{fig:vram}
+\end{figure}

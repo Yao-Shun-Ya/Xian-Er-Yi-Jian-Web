@@ -1,0 +1,37 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  b/.style={draw=slate, fill=mist, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=8mm, inner sep=2pt},
+  hi/.style={draw=teal, fill=teal!12, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=8mm, inner sep=2pt},
+  arr/.style={-{Stealth[length=1.8mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize, color=slate}
+]
+\node[lab] at (0,2.2) {\textbf{Image path (shared by training \& inference)}};
+\node[b] (i1) at (0,1.4) {raw image};
+\node[b, right=4mm of i1] (i2) {EXIF orientation};
+\node[b, right=4mm of i2] (i3) {grayscale\\BT.601};
+\node[b, right=4mm of i3] (i4) {bilinear\\$\to 640\times1280$};
+\node[b, right=4mm of i4] (i5) {divide by 255};
+\node[b, right=4mm of i5] (i6) {CLAHE\\clip 0.02};
+\draw[arr] (i1)--(i2);\draw[arr] (i2)--(i3);\draw[arr] (i3)--(i4);\draw[arr] (i4)--(i5);\draw[arr] (i5)--(i6);
+
+\node[lab] at (0,-0.5) {\textbf{Label path}};
+\node[b] (m1) at (0,-1.3) {raw mask};
+\node[b, right=4mm of m1] (m2) {EXIF orientation};
+\node[b, right=4mm of m2] (m3) {nearest resize};
+\node[b, right=4mm of m3] (m4) {$>0$ binarise};
+\draw[arr] (m1)--(m2);\draw[arr] (m2)--(m3);\draw[arr] (m3)--(m4);
+
+\node[hi] (aug) at (11.6,1.4) {training augmentation\\flip/rotation/intensity};
+\draw[arr] (i6) -- (aug);
+\node[hi] (tile) at (11.6,-1.3) {inference tiling\\$384\times768$, overlap 0.25};
+\draw[arr] (i6) |- (tile);
+
+\node[draw=alert!70, fill=alert!6, rounded corners=2pt, minimum width=0.95\linewidth, minimum height=10mm, align=center, font=\scriptsize] at (5.2,-2.5)
+{Consistency contract: one function, one parameter set; train/inference pixel test with tolerance $10^{-6}$. Any change on either side fails the contract test.};
+\node[lab] at (5.2,-3.15) {tiling parameters (size, overlap, threshold) come from one schema; evaluation scripts may not rewrite them};
+\end{tikzpicture}}
+\caption{Preprocessing consistency contract. The upper lane is the image path; the lower lane is the label path (nearest-neighbour + binarisation). The right side shows training augmentation and inference tiling. Training and inference call one implementation, locked by a pixel-wise test; tiling and threshold come from one schema.}
+\label{fig:preprocess}
+\end{figure}

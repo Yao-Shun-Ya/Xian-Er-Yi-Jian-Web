@@ -1,0 +1,45 @@
+\section{相关工作}\label{sec:related}
+
+\subsection{睑板腺功能障碍的临床诊断与红外成像}
+
+MGD 的诊断体系建立在腺体形态与分泌物性状的联合评估上\cite{foulks2003,villani2020latest}。红外/近红外睑板摄影通过腺体的散射差异成像，可观察腺体缺失、扭曲、缩短与囊性扩张\cite{wise2012meibography}。Meiboscore 按腺体丢失面积分级，是最常用的半定量工具；但不同红外系统之间的重复性存在差异，观察者间一致性也并非天然可靠\cite{ngo2014repeat}。这一临床背景决定了两件事：第一，分割的目标不是“好看”，而是能支撑面积、长度与分级的一致性；第二，睑缘必须同时分割，否则 R\_loss 与 Meiboscore 的分母不稳定。
+
+\subsection{睑板腺影像的自动分割}
+
+早期工作以传统图像处理为主，依赖阈值、形态学与条带滤波，对低对比度与跨设备差异敏感。深度学习方法随后被引入：Prabhu 等用卷积网络分割腺体并量化形态\cite{prabhu2020segmentation}；Wang 等用人工智能量化腺体形态并与临床分级关联\cite{wang2021morphology}；Liu 等用涂鸦监督降低像素级标注成本\cite{liu2022scribble}；Setu 等与 Wang 等分别探索更深或更轻的编码—解码变体\cite{setu2021deep,wang2019deep}；Yu 等、Zhang 等与 Lin 等把密度估计、注意力与多尺度特征引入腺体分析\cite{yu2022automatic,zhang2022density,lin2021automatic}；Liang 等进一步讨论了跨设备与跨数据集的泛化问题\cite{liang2024exploring}。
+
+这些工作建立了“腺体可被自动分割”的可行性，但报告口径差异很大：有的在整图上推理，有的用滑窗；有的只报 Dice，有的报形态学指标；训练/验证/测试是否互斥常常不清楚。本文不否定这些结论，而是把它们放进同一协议下重新比较，并显式报告分块、阈值与划分签名。
+
+\subsection{公开基准、患者级泄漏与推理混杂}
+
+MGD-1K 是目前最具代表性的公开睑板腺数据集：1000 幅红外影像、腺体与睑缘掩膜、320 名受试者，以及每幅影像 6 轮专家 Meiboscore\cite{saha2022automated}。2025 年的多中心工作进一步证明，腺体分割可以在独立中心达到很高的分级一致性，但同时明确指出其模型只覆盖上睑、只验证单一设备\cite{li2025multicenter}；MGD-1K 上的基线则报告 U-Net 的 IoU 约 0.72、F1 约 0.82，且未系统处理患者级划分\cite{yu2025quantitative}。这些结果说明公开数据已经可用，但“公开”不等于“可比”。
+
+患者级泄漏是其中最容易被执行层面掩盖的问题。MGD-1K 的同一名受试者常有多幅影像（上/下睑、左/右眼），图像级随机划分会把同一受试者的不同影像分到训练与测试。即使采用患者级划分，若直接使用官方 200 例 Meiboscore 测试清单，仍有大量测试患者的其他影像留在训练集中。现有工作很少同时报告“文件清单签名”和“实际派分签名”，因此读者无法判断两次实验是否真的用了同一个划分。
+
+推理端的分块同样是隐性变量。Buglakova 等指出，滑窗推理的拼接伪影与归一化层有关，并比较了 artifact-free 与高质量预测之间的权衡\cite{buglakova2025tiling}。在腺体这类 3--8 像素宽的结构上，分块高度还会改变有效感受野与上下文比例，其影响可能大于架构差异。我们把分块作为一等变量，并在此基础上提出多分块集成。
+
+不确定性方面，Maganti 与 Gowda 的决策感知评估协议表明，TTA 在固定复核预算下通常比 MC Dropout 给出更强的错误检测信号，但估计器排名并非普适\cite{maganti2026uncertainty}；Geißler 等则指出结构尺寸本身会混杂不确定性指标与分割质量的关系\cite{geissler2024structure}。这提示我们：在细结构任务上，需要把“不确定性来源”与“结构尺寸”一起报告，而不是只报一个 AUROC。
+
+\subsection{医学图像分割的架构路线}
+
+编码—解码与 skip 连接仍是医学分割的强基线\cite{ronneberger2015unet}；Attention U-Net 用门控抑制无关 skip 响应\cite{oktay2018attention}；UNet++ 与 MultiResUNet 从嵌套连接与多分辨率角度改进\cite{zhou2018unetplusplus,ibtehaz2020multiresunet}；nnU-Net 则把“配方”而非“模块”作为贡献，强调自配置的 patch、深监督与强增强\cite{isensee2021nnunet}。Transformer 路线中，TransUNet 把 Transformer 作为编码器\cite{transunet}，Swin-UNet 用窗口注意力构造 U 形结构\cite{swinunet}，SegFormer 用分层 MiT 编码器与轻量解码头实现多尺度语义分割\cite{segformer}；UNETR 与 UNETR++ 把 Transformer 引入 3D 医学分割\cite{unetr,unetrpp}，MedNeXt 则用 Transformer 驱动的卷积缩放\cite{mednext}。状态空间模型以线性复杂度建模长程依赖，VM-UNet 与 U-Mamba 是代表\cite{vmunet,umamba}。
+
+对本任务而言，长程依赖不是主要瓶颈，细节保留才是。SegFormer 的最高分辨率阶段为 stride=4，且提供 ADE20K/ImageNet 预训练权重；这两点直接对应“3--8 像素腺体”和“999 例小数据”。Swin-UNet 的窗口化注意力与 4 级下采样对细线连续性不友好；Mamba 系在 2D 扫描顺序上可能割裂细长连通性，且依赖需编译的 CUDA 内核，跨平台复现成本高。因此本文选择 SegFormer-B2 作为编码器，并改造解码器以保留 1/4 特征；其余路线作为文献对照，不作为默认。
+
+\subsection{细长/管状结构的损失与评价}
+
+区域损失（Dice、交叉熵）对像素重叠敏感，但对连通性不敏感：一条腺体断成两段时，Dice 可能只下降几个百分点，HD95 却会急剧上升。clDice 通过软骨架的中心线覆盖率约束拓扑\cite{cldice}；骨架召回损失进一步把骨架召回显式化\cite{skeletonrecall}；边界损失与 Boundary IoU 则把评价与优化聚焦到边界带\cite{boundaryloss,boundaryiou}。这些工作共同说明：细长结构需要多指标评价，单一 Dice 会掩盖拓扑失败。
+
+本文采用 clDice 作为唯一的骨架连续性项，不叠加显式 skeleton loss，理由见第~\ref{sec:loss}~节：两项在同一梯度方向上重复加权，会放大骨架噪声。边界损失保留为可选开关，默认关闭。
+
+\subsection{低对比度增强、域偏移与推理策略}
+
+CLAHE 是红外与医学影像最常用的局部对比度增强手段，其 clip limit 与窗口大小直接影响噪声放大与伪影\cite{infraredclahe}。低照度增强的深度学习方法（如 Zero-DCE）提供了数据驱动的替代路线\cite{zerodce,lowlightsurvey}，但它们通常以视觉质量为目标，未必优化分割指标。域偏移方面，测试时适应与连续测试时适应可在无标签条件下调整统计量\cite{tent,cotta}；TTA 则通过几何/尺度变换的平均降低方差\cite{wang2019aleatoric}。
+
+本文不使用测试时训练，以避免在测试集上引入额外自适应；TTA 固定为水平翻转与两个尺度，且只在论文评估与最终交付启用。跨设备差异主要靠强度扰动增强与归一化口径统一，而不是靠测试时修改模型。
+
+\subsection{可解释性、不确定性与报告规范}
+
+Grad-CAM 及其变体把梯度加权映射回输入空间\cite{gradcam,gradcampp,scorecam}；不确定性估计可分为 aleatoric 与 epistemic，TTA 熵与 MC dropout 是常用近似\cite{wang2019aleatoric,uncertaintyreview,phiseg}。报告规范方面，CLAIM、TRIPOD+AI、PROBAST 与 REFORMS 分别从影像 AI、预测模型、偏倚评估与可复现研究角度提出清单\cite{claim2024update,tripodai,probast,reforms}；指标选择本身也有系统建议与常见陷阱\cite{metricsreloaded,metricpitfalls}。
+
+本文借用这些清单的结构，但把其中与本任务最相关的三项落到可执行层面：划分签名、分块参数报告、权重状态标注。临床可解释性方面，系统已实现真 Grad-CAM 与 TTA 熵图，但本文不把它作为性能证据，只作为复核辅助。

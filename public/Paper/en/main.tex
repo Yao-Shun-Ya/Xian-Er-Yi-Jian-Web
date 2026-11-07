@@ -1,0 +1,87 @@
+% !TeX program = pdflatex
+% Build: pdflatex main -> bibtex main -> pdflatex main -> pdflatex main
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[left=2.6cm,right=2.6cm,top=2.8cm,bottom=2.8cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit,backgrounds,patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,labelsep=quad}
+\captionsetup[table]{skip=3pt}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=1.8em}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\floatname{algorithm}{Algorithm}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!55!black]{hyperref}
+\usepackage{url}
+
+\linespread{1.16}
+\setlength{\emergencystretch}{2em}
+
+\definecolor{ink}{HTML}{22303C}
+\definecolor{slate}{HTML}{4A6572}
+\definecolor{mist}{HTML}{E9EEF1}
+\definecolor{teal}{HTML}{6E8F8C}
+\definecolor{sand}{HTML}{C9B79C}
+\definecolor{alert}{HTML}{B23A48}
+
+% Placeholder markers: replace before submission
+\newcommand{\needdata}[1]{\textcolor{alert}{[data needed: #1]}}
+\newcommand{\needcheck}[1]{\textcolor{alert}{[verify: #1]}}
+\newcommand{\ph}{\,--\,}
+
+% Single source of numerical results
+\input{data/results}
+
+\title{\bfseries Meibomian Gland Segmentation on a Public Benchmark:\\[2pt]
+Patient-Level Leakage, Tile-Size Confounders,\\[2pt]
+and Uncertainty-Guided Review}
+\author{First Author$^{1}$\thanks{Corresponding author: to be completed (name, e-mail, address).}\quad
+Second Author$^{1}$\quad Third Author$^{2}$\\[4pt]
+{\small $^{1}$Affiliation one, City, Postcode\quad $^{2}$Affiliation two, City, Postcode}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\footnotesize\color{gray}
+Draft status: benchmark draft v0.4 (MGD-1K patient-level split; engineering freeze v2.3.0)\quad|\quad numerical results from unified training and patient-level test\quad|\quad
+authors, affiliations, funding, and ethics approval are placeholders
+\end{center}
+
+\vspace{-0.6em}
+
+\tableofcontents
+\newpage
+
+\input{sections/00_abstract}
+\input{sections/01_intro}
+\input{sections/02_related}
+\input{sections/03_method}
+\input{sections/04_system}
+\input{sections/05_experiments}
+\input{sections/06_results}
+\input{sections/07_limitations}
+\input{sections/08_conclusion}
+\input{sections/09_declarations}
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\appendix
+\input{sections/90_appendix}
+
+\end{document}

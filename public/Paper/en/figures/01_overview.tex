@@ -1,0 +1,44 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=5mm and 7mm,
+  box/.style={draw=slate, fill=mist, rounded corners=1.5pt, align=center, font=\footnotesize, minimum height=8mm, inner sep=3pt},
+  core/.style={draw=teal, fill=teal!12, rounded corners=1.5pt, align=center, font=\footnotesize, minimum height=8mm, inner sep=3pt},
+  base/.style={draw=slate!55, fill=white, rounded corners=1.5pt, align=center, font=\scriptsize, minimum height=7mm, inner sep=2pt},
+  arr/.style={-{Stealth[length=2mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize\itshape, color=slate}
+]
+\node[box] (in) {Infrared/NIR image\\$640\times1280$, single channel};
+\node[box, right=of in] (pre) {Preprocessing\\grayscale $\to$ resize $\to$ normalise $\to$ CLAHE};
+\node[core, right=of pre] (enc) {MiT-B2 encoder\\1/4, 1/8, 1/16, 1/32};
+\node[core, right=of enc] (dec) {High-resolution fusion decoder\\1/4 $\oplus$ 1/8, output stride 4};
+\node[core, right=of dec] (head) {Dual-channel head\\gland $+$ eyelid};
+\node[box, right=of head] (post) {Postprocessing\\threshold 0.7 / ROI / area};
+
+\draw[arr] (in) -- (pre);
+\draw[arr] (pre) -- (enc);
+\draw[arr] (enc) -- (dec);
+\draw[arr] (dec) -- (head);
+\draw[arr] (head) -- (post);
+
+\node[base, below=8mm of dec] (aux) {Deep supervision: 1/4, 1/8, 1/16\\weights 1.0 / 0.5 / 0.25};
+\draw[-{Stealth[length=1.6mm]}, dashed, draw=teal] (dec) -- (aux);
+
+\node[lab, below=14mm of in] (blab) {Baseline controls (same protocol)};
+\node[base, right=8mm of blab] (b1) {UNet};
+\node[base, right=of b1] (b2) {Attention U-Net};
+\node[base, right=of b2] (b3) {WRCANet};
+\node[base, right=of b3] (b4) {MGD-PriorNet};
+\draw[-{Stealth[length=1.6mm]}, dotted, draw=slate!70] (pre |- b1) -- (b1);
+\draw[-{Stealth[length=1.6mm]}, dotted, draw=slate!70] (post |- b4) -- (b4);
+
+\node[draw=alert!70, fill=alert!6, rounded corners=2pt, minimum width=0.96\linewidth, minimum height=7mm, anchor=north] at ($(post.south)+(0,-16mm)$) (band)
+{\scriptsize Train--inference consistency contract: shared preprocessing, pixel tolerance $10^{-6}$, unified tiling, hard three-way pairing};
+
+\node[lab, above=4mm of enc] {Pretraining: ADE20K (offline fallback)};
+\node[lab, above=4mm of dec] {Thin glands: 3--8 px};
+\end{tikzpicture}}
+\caption{Method overview. The upper row is the default chain: shared preprocessing, a MiT-B2 encoder, a high-resolution fusion decoder retaining 1/4 and 1/8 features (stride 4), a dual-channel head, and postprocessing. The lower row lists four baselines compared under the same protocol. The bottom band denotes one preprocessing implementation shared by training and inference.}
+\label{fig:overview}
+\end{figure}

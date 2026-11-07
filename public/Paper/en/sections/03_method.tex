@@ -1,0 +1,154 @@
+\section{Method}\label{sec:method}
+
+\subsection{Task Definition and Notation}
+
+Given an infrared meibography image $I\in\mathbb{R}^{H\times W}$ with $H=640$ and $W=1280$, single-channel grayscale, we define two pixel-wise binary targets:
+\begin{equation}
+G\in\{0,1\}^{H\times W},\qquad E\in\{0,1\}^{H\times W},
+\end{equation}
+where $G$ is the gland mask and $E$ the eyelid-margin mask. The network $f(\cdot;\theta)$ outputs two-channel logits:
+\begin{equation}
+\mathbf{z}=f(I;\theta)\in\mathbb{R}^{2\times H\times W},\quad
+\hat{G}=\mathbf{1}[\sigma(z_G)\ge \tau],\quad
+\hat{E}=\mathbf{1}[\sigma(z_E)\ge \tau],
+\end{equation}
+with $\sigma$ the sigmoid and $\tau$ the threshold. Glands are the primary task; the eyelid is auxiliary, providing anatomical ROI, the denominator of R\_loss, and the normalisation basis of Meiboscore. The two channels share the encoder but have independent output heads: they arise from the same imaging process with correlated low-level texture and illumination, yet their geometry differs enough that fully shared discriminative features would be harmful.
+
+Figure~\ref{fig:overview} gives the overview. In addition to the linear acquisition--preprocessing--network--output--postprocessing chain, it shows a baseline branch: UNet, Attention U-Net, WRCANet, and MGD-PriorNet are not superseded implementations but controls evaluated under the same protocol. The bottom band denotes the contract by which training and inference share one preprocessing implementation, locked by a pixel-wise test.
+
+\input{figures/01_overview}
+
+\subsection{Preprocessing}
+
+The goal is to map images from different devices and exposures into one numerical space while keeping training and inference identical. The pipeline has five fixed steps, whose order cannot be exchanged:
+
+\begin{enumerate}[label=\textbf{P\arabic*.}]
+\item \textbf{Orientation.} Read with PIL and apply the EXIF orientation, avoiding 90$^\circ$ or 180$^\circ$ mismatches between training and inference.
+\item \textbf{Grayscale.} Convert RGB/RGBA with BT.601 weights; floating input is multiplied by 255 if its maximum is $\le 1$, then clipped to $[0,255]$ and cast to \texttt{uint8}.
+\item \textbf{Resize.} Bilinear interpolation to $640\times1280$; skip resampling if already at the target size.
+\item \textbf{Intensity normalisation.} Divide \texttt{uint8} by 255 to obtain $[0,1]$ floats.
+\item \textbf{Local contrast enhancement.} CLAHE with clip limit 0.02, producing $[0,1]$ \texttt{float32}.
+\end{enumerate}
+
+Labels follow a separate path: same orientation and resize, but nearest-neighbour interpolation, then binarisation at $>0$. Nearest-neighbour prevents thin glands from becoming grey edges; binarisation ensures the network only sees 0/1 supervision. The path applies to both gland and eyelid labels. Figure~\ref{fig:preprocess} contrasts the two paths and marks the consistency contract.
+
+\input{figures/03_preprocess}
+
+CLAHE uses scikit-image's \texttt{equalize\_adapthist}, with a local window of about 1/8 of the image and 256 histogram bins. Because libraries define the clip limit differently (normalised frequency versus pixel count), the weight manifest records the library name, parameter value, and the normalisation tag \texttt{scale01+clahe}, rather than a bare number.
+
+\subsection{MGD-Former: Encoder and High-Resolution Fusion Decoder}\label{sec:mgdformer}
+
+The bottleneck here is not long-range dependency but \textbf{detail preservation} and \textbf{cold start on small data}. At $640\times1280$, glands are 3--8 pixels wide. If the finest scale were stride 16, the feature map would be only $40\times80$, and a 4-pixel gland would occupy less than 0.25 pixels---it would disappear during downsampling. HD95 is highly sensitive to breaks, and such structural loss cannot be recovered by postprocessing. We therefore adopt an architecture with \textbf{output stride 4} that feeds the 1/4 feature directly into the decoder.
+
+MGD-Former has two parts. The \textbf{encoder} is MiT-B2\cite{segformer}: four stages with strides 4/8/16/32, dimensions 64/128/320/512, depths 3/4/6/3, attention heads 1/2/5/8, and spatial-reduction ratios 8/4/2/1. Stage 1 uses overlapping $7\times7$ convolutions with stride 4; stages 2--4 use overlapping $3\times3$ convolutions with stride 2. Each block combines efficient self-attention with a Mix-FFN that inserts a $3\times3$ depthwise convolution between two linear layers, injecting positional information without fixed positional encodings that break under resolution change. DropPath increases linearly from 0 to 0.1.
+
+The \textbf{decoder} does not use SegFormer's lightweight MLP head. It builds a top-down fusion structure: all four stages are projected to 128 channels by $1\times1$ convolutions; starting from 1/32, each level is upsampled, added to the next finer feature, and passed through a fusion block ($3\times3$ convolution + BatchNorm + GELU), yielding fused features at 1/16, 1/8, and 1/4. A final $3\times3$ convolution, BatchNorm, GELU, and $1\times1$ convolution produce two-channel logits, which are bilinearly upsampled to $640\times1280$. Because the last fusion is at 1/4, the effective output stride is 4: a thin gland still occupies roughly 1--2 feature cells at decoding time instead of collapsing below a pixel.
+
+\textbf{Deep supervision} is attached to the 1/4, 1/8, and 1/16 fused features, each with a $1\times1$ auxiliary head supervising only the gland channel; auxiliary losses are weighted $1.0/0.5/0.25$ and normalised. This stabilises gradients on small data and forces intermediate scales to localise glands rather than leaving all discrimination to the final layer. Figure~\ref{fig:networks}(a) shows the structure.
+
+For \textbf{pretraining}, we use ADE20K semantic-segmentation weights (SegFormer-B2; encoder only, weight identifier in the appendix), with ImageNet as an alternative. ADE20K is preferred to training from scratch because 999 paired cases cannot teach generic edge, texture, and shape priors to a 20M-parameter Transformer; ADE20K already provides low-level filters sensitive to thin structures and local contrast, and fine-tuning only has to learn the semantics of ``gland''. If the target machine is offline and the local cache lacks the weights, the encoder degrades to random initialisation; the training log and run metadata record \texttt{pretrained\_status} and the reason. Reports must state whether pretraining was actually loaded and its coverage.
+
+\subsection{Loss Function and Deep Supervision}\label{sec:loss}
+
+The objective combines region overlap, pixel classification, skeleton continuity, and an auxiliary task:
+\begin{align}
+\mathcal{L}_{g} &= 0.4\,\mathcal{L}_{\mathrm{Dice}}(P_g,Y_g)+0.4\,\mathcal{L}_{\mathrm{CE}}(P_g,Y_g)
++\lambda_{cl}(t)\,\mathcal{L}_{\mathrm{clDice}}(P_g,Y_g),\\
+\mathcal{L}_{e} &= 0.4\,\mathcal{L}_{\mathrm{Dice}}(P_e,Y_e)+0.4\,\mathcal{L}_{\mathrm{CE}}(P_e,Y_e),\\
+\mathcal{L}_{\mathrm{total}} &= \mathcal{L}_{g}+0.25\,\mathcal{L}_{e}
++\frac{1}{1.75}\sum_{s\in\{4,8,16\}} w_s\,\mathcal{L}_{s},\qquad (w_4,w_8,w_{16})=(1.0,0.5,0.25),
+\end{align}
+where $P_g,P_e$ are sigmoid probabilities, $Y_g,Y_e$ the labels, and $\mathcal{L}_{s}$ the Dice+CE of the auxiliary head at scale $s$. The clDice weight rises linearly from 0 to 0.2 over the first 10\% of epochs:
+\begin{equation}
+\lambda_{cl}(t)=0.2\cdot\min\!\left(1,\frac{t}{0.1\,T}\right),
+\end{equation}
+with $T$ the total number of epochs. Warmup prevents skeleton noise from dominating early gradients: when predictions are fragmented, differentiable-skeleton topology is unreliable, and a large weight would push the network toward a ``merge first, refine later'' solution.
+
+\textbf{Why no separate skeleton-consistency term.} clDice is already a differentiable skeleton-consistency constraint: iterative soft erosion and opening extract centerlines from prediction and reference, and centerline overlap forms the loss\cite{cldice}. Adding an explicit skeleton loss would double-weight the same gradient direction and turn skeleton-extraction noise---especially endpoint jitter on 3--8-pixel glands---into a dominant gradient source. We therefore assign skeleton continuity to exactly one term, and present this as an active design trade-off: \emph{rather have one fewer hyperparameter than two near-redundant terms amplifying each other's noise}. Boundary loss remains an optional switch (default weight 0) for HD95-sensitive scenarios; the main configuration disables it to avoid duplicating clDice's boundary response.
+
+The eyelid auxiliary weight 0.25 is not decorative. It yields three concrete benefits: the eyelid channel provides anatomical ROI and suppresses false positives outside the lid; R\_loss uses eyelid area as its denominator, so a stable margin mask is required; and Meiboscore normalisation needs the margin extent. The ablation closes this branch to test the gain.
+
+\subsection{Baseline Architecture Family}\label{sec:baselines}
+
+All four baselines share the same input--output contract (single-channel input, two-channel logits, no internal sigmoid); only the backbone and skip handling differ. They provide controls under one protocol, not failed alternatives.
+
+\begin{itemize}
+\item \textbf{U-Net}\cite{ronneberger2015unet}: five-level encoder--decoder, channels $(64,128,256,512,1024)$, two residual units per level, PReLU, InstanceNorm, dropout 0.1. It represents the classical ``convolution + skip'' route.
+\item \textbf{Attention U-Net}\cite{oktay2018attention}: attention gates on skips,
+$\alpha=\sigma(\psi(\mathrm{ReLU}(W_g*g+W_x*x)))$, $x'=\alpha\odot x$, using coarse context to suppress irrelevant regions. It represent spatial re-weighting.
+\item \textbf{WRCANet}: an enhancement backbone built from residual channel attention blocks (RCAB)\cite{zhang2018rcan}. The backbone lifts the input to 64 channels, stacks 8 residual groups of 10 RCABs, returns to one channel with a $3\times3$ convolution, and adds a global residual; RCAB is
+\begin{align}
+u &= \mathrm{ReLU}(\mathrm{Conv}_{3\times3}(x)),\quad v=\mathrm{Conv}_{3\times3}(u),\\
+s &= \sigma\!\left(W_2\,\mathrm{ReLU}\!\left(W_1\,\mathrm{GAP}(v)\right)\right),\quad y=s\odot v+x,
+\end{align}
+with reduction ratio $r=16$, followed by a three-level U-shaped head. It represents ``enhancement backbone + lightweight head''.
+\item \textbf{MGD-PriorNet}: this project's structural-prior branch for thin glands. The FCAS front end enhances low-contrast strips with a Laplacian high-frequency residual and channel attention; ASAB runs $1\times k$ horizontal, $k\times1$ vertical, and $3\times3$ convolutions in parallel to model anisotropy; APG-DD uses multi-scale eyelid probabilities as a soft gate ($1+A_{\mathrm{eyelid}}$) on the gland decoder. It represents ``anatomical priors encoded in the network''.
+\end{itemize}
+
+Positioning matters: MGD-Former contributes an adaptation of a pretrained Transformer's high-resolution stage to this task, not a claim that the four baselines are worse in absolute terms. They differ in parameters, inference cost, and data requirements; Section~\ref{sec:results} provides comparable evidence on one test set. Figure~\ref{fig:networks}(b) summarises the four families and details RCAB.
+
+\input{figures/02_networks}
+
+\subsection{Training Recipe and Inference Strategy}\label{sec:recipe}
+
+The recipe is constrained by small data, cross-device variation, and consumer GPUs:
+
+\begin{itemize}
+\item \textbf{Precision and memory}: AMP on CUDA; disabled on CPU and logged. channels\_last is on by default; gradient accumulation emulates a larger batch on 8\,GB cards.
+\item \textbf{EMA}: decay 0.999; evaluation and saving use EMA weights. At 999 cases, online weights have high variance, and EMA is a low-cost stabiliser.
+\item \textbf{Optimiser}: AdamW, learning rate $1\times10^{-4}$ for the pretrained encoder, weight decay $1\times10^{-4}$; linear warmup over 5\% of steps, then cosine decay to 1\% of the initial rate ($10^{-6}$). Randomly initialised baselines may use $10^{-3}$.
+\item \textbf{Augmentation}: elastic deformation, rotation $\pm10^\circ$, scale $0.85$--$1.20$, \textbf{horizontal flip only}, intensity perturbation (gamma $0.8$--$1.25$, CLAHE clip $0.01$--$0.03$, Gaussian noise, 0--1 pixel blur). Intensity perturbation targets cross-device shift and matters more here than geometric augmentation.
+\item \textbf{Why vertical flip is disabled}: glands run near-vertically, and upper and lower lid anatomy is asymmetric. A vertical flip turns ``upper-lid glands'' into anatomically impossible ``lower-lid glands'' and breaks the relative-position prior between margin and glands. A horizontal flip preserves the vertical orientation and the upper/lower relationship, and is therefore safe and effective.
+\item \textbf{Multi-scale training}: random $0.75/1.0/1.25$ scaling while preserving the 2:1 aspect ratio, so the model sees different gland widths and depends less on one resolution.
+\item \textbf{TTA}: three levels---off, 2$\times$ (horizontal flip), and 8$\times$ (four flips $\times$ two scales: native and $1.125\times$). The 8$\times$ setting is used only for paper metrics and final delivery, not for training-time monitoring, so that validation curves are not bought with inference budget.
+\item \textbf{Ensemble}: probability averaging of five fold weights as the final model; single-fold and ensemble results are reported separately.
+\end{itemize}
+
+Inference defaults match training: tiles of $384\times768$, overlap 0.25, threshold 0.7. ROI constraint, a 120-pixel minimum component, and Gaussian smoothing $\sigma=1.2$ are postprocessing; whether they are enabled must be stated in results, and Section~\ref{sec:results} separates ``network capability'' from ``postprocessing gain''.
+
+\subsection{Evaluation Metrics and Statistical Protocol}\label{sec:metrics}
+
+With prediction $P$ and reference $Y$, Dice and IoU are
+\begin{equation}
+\mathrm{Dice}=\frac{2|P\cap Y|}{|P|+|Y|},\qquad
+\mathrm{IoU}=\frac{|P\cap Y|}{|P\cup Y|}.
+\end{equation}
+Surface distances use HD95 (95th percentile of the bidirectional surface distance) and ASSD (bidirectional mean). Skeleton continuity uses clDice, sharing its origin with the differentiable training term but computed on discrete skeletons at evaluation. We also report Precision, Recall, eyelid Dice, R\_loss, and Meiboscore agreement.
+
+Three caveats. First, images lack physical calibration, so HD95 and ASSD are in \textbf{pixels}; after resizing to $640\times1280$, values are not directly comparable across devices or original resolutions. Second, surface distance is undefined when either mask is empty; we return NaN and record the reason rather than reporting 0 as perfect. Third, aggregation ignores NaN and reports the number of valid cases $n$.
+
+Means are reported with 95\% confidence intervals from 1{,}000 bootstrap resamples. Model comparisons use the per-sample paired Wilcoxon signed-rank test with Holm correction. The significance level is 0.05, but $p$ values are not the only evidence: confidence intervals and effect direction matter equally. Every report must carry \texttt{split\_signature}; a missing signature invalidates the report (Section~\ref{sec:discipline}).
+
+\subsection{Evaluation Scope: Train-Self versus Independent Test}\label{sec:scope}
+
+We define two scopes explicitly:
+\begin{itemize}
+\item \textbf{Train-self (\texttt{train\_self})}: evaluation on samples used for training. It answers only whether the model fits the training data and does not represent generalisation; such values appear in a separate column/table labelled ``not generalisation''.
+\item \textbf{Independent test (\texttt{holdout})}: evaluation on samples never used for training, early stopping, or model selection. Only this scope supports performance conclusions.
+\end{itemize}
+
+This distinction is not formalism. The legacy UNet weights were trained after shuffling all 999 cases with no held-out test set, so any ``test'' metric may be train-self. Section~\ref{sec:results} places it only in the same-distribution column and states this explicitly.
+
+\subsection{Patient-Level Split and Leakage Audit}\label{sec:patient-split}
+
+MGD-1K filenames contain a numeric study id (e.g.\ \texttt{...\_11756049}); upper/lower eyelids and left/right eyes of the same subject share it. From \nTotal{} deduplicated pairs we extract 338 ids, group by id, stratify each group by its maximum expert Meiboscore, and assign whole subjects to train/val/test, obtaining \nTrain/\nVal/\nTest{} images (\nTrainPatients/\nValPatients/\nTestPatients{} patients) with mutually exclusive patients. The split file records two digests: the file-list signature \splitSig{} (identifying the \nTotal{} stems only) and the assignment signature \assignmentSig{} (SHA-256 of the ordered train/val/test lists). The former answers ``did the dataset change?''; the latter answers ``which assignment did this run actually use?''. Without the latter, the same file list can be re-assigned without traceability.
+
+The leakage audit has three levels. First, the official \officialTestImages-case Meiboscore test list contains \officialTestPatients{} patients; \officialLeakImages{} of the remaining 800 images come from those patients. Second, even with a patient-level split, the \nTrain{} training set still contains \officialLeakPatients/\officialTestPatients{} official-test patients (355 images). Third, we build a clean-official subset containing only official-test images whose patient is absent from the patient-level training set: \cleanOfficialImages{} images/\cleanOfficialPatients{} patients. We additionally train an image-level leaky model (\leakyTrainImages{} train / \leakyValImages{} val, official 200 test) and compare it with the patient-level model on the same clean-official subset to quantify the leakage gap.
+
+\subsection{Multi-Tile Ensemble and Uncertainty}\label{sec:mte}
+
+For input $I$, tile height $h\in\{256,384,512\}$, width $2h$, overlap 0.25, and threshold $\tau=0.7$, sliding-window inference produces $P_h$. MTE outputs
+\begin{equation}
+\bar P=\frac{1}{3}\sum_{h\in\{256,384,512\}}P_h,
+\end{equation}
+which is then thresholded at $\tau$. MTE does not change the weights or add training cost; inference costs about three single-tile passes, less than 8$\times$ TTA. We report Dice/HD95/clDice relative to the default 384 tile and compare with 8$\times$ TTA.
+
+For uncertainty, the three $P_h$ of one image give a pixel variance $V=\mathrm{Var}_h(P_h)$ and the Shannon entropy $H(\bar P)$ of the mean probability. Defining failure as Dice $<0.7$, we compute the AUROC of $V$, $H$, and the 8$\times$ TTA error ($1-\mathrm{Dice}_{\mathrm{TTA8}}$), using a tie-aware rank sum. This treats ``changing the tile'' itself as a low-cost uncertainty source, to be compared with TTA.
+
+\subsection{Clinical Grading Endpoints}\label{sec:clinical}
+
+Given a predicted gland mask $M_g$ and the reference eyelid mask $M_e$,
+\begin{equation}
+R_{\mathrm{loss}}=\left(1-\frac{|M_g\cap M_e|}{|M_e|}\right)\times100\%,
+\end{equation}
+and Meiboscore is mapped by the $0/1/2/3$ thresholds. We compare with the majority vote of the six expert Meiboscore rounds and report accuracy, MAE, and quadratic weighted kappa (QWK). We also report Dice/clDice separately for upper and lower eyelids to test whether the lower eyelid is significantly harder.

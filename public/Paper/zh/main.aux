@@ -1,0 +1,272 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand*\HyPL@Entry[1]{}
+\HyPL@Entry{0<</S/D>>}
+\citation{foulks2003}
+\citation{villani2020latest}
+\citation{wise2012meibography}
+\citation{ngo2014repeat}
+\citation{saha2022automated}
+\citation{setu2021deep}
+\citation{saha2022automated}
+\citation{li2025multicenter}
+\citation{yu2025quantitative}
+\@writefile{toc}{\contentsline {section}{\numberline {1}引言}{3}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{3}{引言}{section.1}{}}
+\citation{foulks2003}
+\citation{villani2020latest}
+\citation{wise2012meibography}
+\citation{ngo2014repeat}
+\citation{prabhu2020segmentation}
+\citation{wang2021morphology}
+\citation{liu2022scribble}
+\citation{setu2021deep}
+\citation{wang2019deep}
+\citation{yu2022automatic}
+\citation{zhang2022density}
+\citation{lin2021automatic}
+\citation{liang2024exploring}
+\@writefile{toc}{\contentsline {section}{\numberline {2}相关工作}{4}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{4}{相关工作}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}睑板腺功能障碍的临床诊断与红外成像}{4}{subsection.2.1}\protected@file@percent }
+\citation{saha2022automated}
+\citation{li2025multicenter}
+\citation{yu2025quantitative}
+\citation{buglakova2025tiling}
+\citation{maganti2026uncertainty}
+\citation{geissler2024structure}
+\citation{ronneberger2015unet}
+\citation{oktay2018attention}
+\citation{zhou2018unetplusplus}
+\citation{ibtehaz2020multiresunet}
+\citation{isensee2021nnunet}
+\citation{transunet}
+\citation{swinunet}
+\citation{segformer}
+\citation{unetr}
+\citation{unetrpp}
+\citation{mednext}
+\citation{vmunet}
+\citation{umamba}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}睑板腺影像的自动分割}{5}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}公开基准、患者级泄漏与推理混杂}{5}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}医学图像分割的架构路线}{5}{subsection.2.4}\protected@file@percent }
+\citation{cldice}
+\citation{skeletonrecall}
+\citation{boundaryloss}
+\citation{boundaryiou}
+\citation{infraredclahe}
+\citation{zerodce}
+\citation{lowlightsurvey}
+\citation{tent}
+\citation{cotta}
+\citation{wang2019aleatoric}
+\citation{gradcam}
+\citation{gradcampp}
+\citation{scorecam}
+\citation{wang2019aleatoric}
+\citation{uncertaintyreview}
+\citation{phiseg}
+\citation{claim2024update}
+\citation{tripodai}
+\citation{probast}
+\citation{reforms}
+\citation{metricsreloaded}
+\citation{metricpitfalls}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}细长/管状结构的损失与评价}{6}{subsection.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}低对比度增强、域偏移与推理策略}{6}{subsection.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7}可解释性、不确定性与报告规范}{6}{subsection.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}方法}{6}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{6}{方法}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}任务定义与符号}{6}{subsection.3.1}\protected@file@percent }
+\citation{segformer}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 方法总览。上行是本文默认链路：共享预处理、MiT-B2 编码器、保留 1/4 与 1/8 的高分辨率融合解码器（stride=4）、双通道头与后处理；下行是四条在同一协议下比较的基线。底部契约带表示训练与推理使用同一预处理实现。}}{7}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:overview}{{1}{7}{方法总览。上行是本文默认链路：共享预处理、MiT-B2 编码器、保留 1/4 与 1/8 的高分辨率融合解码器（stride=4）、双通道头与后处理；下行是四条在同一协议下比较的基线。底部契约带表示训练与推理使用同一预处理实现。}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}预处理}{7}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}MGD-Former：编码器与高分辨率融合解码器}{7}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:mgdformer}{{3.3}{7}{MGD-Former：编码器与高分辨率融合解码器}{subsection.3.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 预处理一致性契约。上行为影像路径，下行为标签路径（最近邻 + 二值化）；右侧为训练增强与推理分块。训练与推理调用同一实现，并由逐像素测试锁定；分块与阈值来自同一份参数 schema。}}{8}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:preprocess}{{2}{8}{预处理一致性契约。上行为影像路径，下行为标签路径（最近邻 + 二值化）；右侧为训练增强与推理分块。训练与推理调用同一实现，并由逐像素测试锁定；分块与阈值来自同一份参数 schema。}{figure.caption.3}{}}
+\citation{cldice}
+\citation{ronneberger2015unet}
+\citation{oktay2018attention}
+\citation{zhang2018rcan}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}损失函数与深监督}{9}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:loss}{{3.4}{9}{损失函数与深监督}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}基线架构族}{9}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:baselines}{{3.5}{9}{基线架构族}{subsection.3.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 网络结构。(a) MGD-Former：MiT-B2 四级编码器，1/32 特征逐级与 1/16、1/8、1/4 融合，输出 stride=4；三个辅助头分别接在 1/4、1/8、1/16。 (b) 四条基线：UNet 的对称 skip、Attention U-Net 的门控、WRCANet 的 RCAB 增强主干与三级 U 头、MGD-PriorNet 的 FCAS/ASAB/APG-DD。}}{10}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:networks}{{3}{10}{网络结构。(a) MGD-Former：MiT-B2 四级编码器，1/32 特征逐级与 1/16、1/8、1/4 融合，输出 stride=4；三个辅助头分别接在 1/4、1/8、1/16。 (b) 四条基线：UNet 的对称 skip、Attention U-Net 的门控、WRCANet 的 RCAB 增强主干与三级 U 头、MGD-PriorNet 的 FCAS/ASAB/APG-DD。}{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}训练配方与推理策略}{10}{subsection.3.6}\protected@file@percent }
+\newlabel{sec:recipe}{{3.6}{10}{训练配方与推理策略}{subsection.3.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}评价指标与统计口径}{11}{subsection.3.7}\protected@file@percent }
+\newlabel{sec:metrics}{{3.7}{11}{评价指标与统计口径}{subsection.3.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}评估口径：训练集自评与独立测试}{11}{subsection.3.8}\protected@file@percent }
+\newlabel{sec:scope}{{3.8}{11}{评估口径：训练集自评与独立测试}{subsection.3.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9}患者级划分与泄漏审计}{12}{subsection.3.9}\protected@file@percent }
+\newlabel{sec:patient-split}{{3.9}{12}{患者级划分与泄漏审计}{subsection.3.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.10}Multi-Tile Ensemble 与不确定性}{12}{subsection.3.10}\protected@file@percent }
+\newlabel{sec:mte}{{3.10}{12}{Multi-Tile Ensemble 与不确定性}{subsection.3.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.11}临床分级终点}{12}{subsection.3.11}\protected@file@percent }
+\newlabel{sec:clinical}{{3.11}{12}{临床分级终点}{subsection.3.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}工程即方法：一致性、分块与可复现性}{12}{section.4}\protected@file@percent }
+\newlabel{sec:engineering}{{4}{12}{工程即方法：一致性、分块与可复现性}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}患者级划分与泄漏审计}{13}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:leakage}{{4.1}{13}{患者级划分与泄漏审计}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}训练—推理一致性契约}{13}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:contract}{{4.2}{13}{训练—推理一致性契约}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}分块尺寸的隐性影响}{13}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:tiling}{{4.3}{13}{分块尺寸的隐性影响}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{实验口径。}{13}{paragraph*.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 三向配对、完整性与患者级划分。影像、腺体掩膜、睑缘掩膜按 basename 建立索引；完整性检查不通过时直接终止。划分采用患者级持久 holdout（694/153/152，239/50/49{} 名患者），同时记录文件清单签名与实际派分签名；5 折作为扩展复用同一患者分组。}}{14}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:pairing}{{4}{14}{三向配对、完整性与患者级划分。影像、腺体掩膜、睑缘掩膜按 basename 建立索引；完整性检查不通过时直接终止。划分采用患者级持久 holdout（\nTrain /\nVal /\nTest ，\nTrainPatients /\nValPatients /\nTestPatients {} 名患者），同时记录文件清单签名与实际派分签名；5 折作为扩展复用同一患者分组。}{figure.caption.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 分块高度对 Dice 的影响（同一权重、仅改分块；阈值 0.7、TTA 关闭、无后处理与 ROI；$n=40$）。}}{14}{table.caption.7}\protected@file@percent }
+\newlabel{tab:tiling}{{1}{14}{分块高度对 Dice 的影响（同一权重、仅改分块；阈值 0.7、TTA 关闭、无后处理与 ROI；$n=40$）。}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Multi-Tile Ensemble：把分块从混杂变量变成推理工具}{14}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:mte-system}{{4.4}{14}{Multi-Tile Ensemble：把分块从混杂变量变成推理工具}{subsection.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}显存档位与消费级复现}{14}{subsection.4.5}\protected@file@percent }
+\newlabel{sec:vram}{{4.5}{14}{显存档位与消费级复现}{subsection.4.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 分块敏感性（同一权重、仅改变分块高度；阈值 0.7、TTA 关闭、不含后处理与 ROI；$n=40$）。384 为默认值；整图推理因训练—推理尺度不匹配反而下降。}}{15}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:tiling}{{5}{15}{分块敏感性（同一权重、仅改变分块高度；阈值 0.7、TTA 关闭、不含后处理与 ROI；$n=\tilingN $）。384 为默认值；整图推理因训练—推理尺度不匹配反而下降。}{figure.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 显存档位配方。6 GB 与 8 GB 为实测，实测条件为去重前 700 训练样本；12 GB 及以上为外推估算，不得当作实测值引用。}}{15}{table.caption.9}\protected@file@percent }
+\newlabel{tab:vram}{{2}{15}{显存档位配方。6 GB 与 8 GB 为实测，实测条件为去重前 700 训练样本；12 GB 及以上为外推估算，不得当作实测值引用。}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}可编排流水线与实验登记}{15}{subsection.4.6}\protected@file@percent }
+\newlabel{sec:pipeline}{{4.6}{15}{可编排流水线与实验登记}{subsection.4.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 六档显存配方。6 GB 与 8 GB 为 RTX 4060 Laptop 8 GB 上、去重前 700 训练样本口径的实测（峰值与吞吐），12 GB 及以上仅为档位规划，不外推具体数值。估算档不得在正文中冒充实测。}}{16}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:vram}{{6}{16}{六档显存配方。6 GB 与 8 GB 为 RTX 4060 Laptop 8 GB 上、去重前 700 训练样本口径的实测（峰值与吞吐），12 GB 及以上仅为档位规划，不外推具体数值。估算档不得在正文中冒充实测。}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 实验流水线。数据完整性检查与患者级划分先行，文件清单签名与派分签名随运行写入；每次训练产出独立 run 目录，评估与统计在 patient-level test 上进行；报告阶段校验签名，缺失即拒绝。状态文件支持失败重试与断点续跑。}}{16}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:pipeline}{{7}{16}{实验流水线。数据完整性检查与患者级划分先行，文件清单签名与派分签名随运行写入；每次训练产出独立 run 目录，评估与统计在 patient-level test 上进行；报告阶段校验签名，缺失即拒绝。状态文件支持失败重试与断点续跑。}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}评测纪律与 \texttt  {split\_signature}}{16}{subsection.4.7}\protected@file@percent }
+\newlabel{sec:discipline}{{4.7}{16}{评测纪律与 \texttt {split\_signature}}{subsection.4.7}{}}
+\citation{saha2022automated}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces 系统分层与数据流。适配层只做薄壳，所有入口经过同一训练/推理/评估实现；workflow 负责编排与续跑；资产层保存配置快照、逐轮指标、完整 checkpoint 与带签名的评估报告。}}{17}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:system}{{8}{17}{系统分层与数据流。适配层只做薄壳，所有入口经过同一训练/推理/评估实现；workflow 负责编排与续跑；资产层保存配置快照、逐轮指标、完整 checkpoint 与带签名的评估报告。}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8}分层架构与部署形态}{17}{subsection.4.8}\protected@file@percent }
+\newlabel{sec:architecture}{{4.8}{17}{分层架构与部署形态}{subsection.4.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}实验设计}{17}{section.5}\protected@file@percent }
+\newlabel{sec:experiments}{{5}{17}{实验设计}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}数据与队列}{17}{subsection.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces 患者级划分与专家 Meiboscore 分布。}}{18}{table.caption.13}\protected@file@percent }
+\newlabel{tab:split}{{3}{18}{患者级划分与专家 Meiboscore 分布。}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}患者级划分与泄漏协议}{18}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:split-design}{{5.2}{18}{患者级划分与泄漏协议}{subsection.5.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}对比模型与训练预算}{18}{subsection.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 本轮实验矩阵（9 小时预算）。所有实验共用患者级划分、预处理、损失与推理协议；leaky 对照使用 image-level 划分。}}{19}{table.caption.14}\protected@file@percent }
+\newlabel{tab:ablation-design}{{4}{19}{本轮实验矩阵（9 小时预算）。所有实验共用患者级划分、预处理、损失与推理协议；leaky 对照使用 image-level 划分。}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}评价指标与统计}{19}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}运行环境与资源测量}{19}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}结果与讨论}{19}{section.6}\protected@file@percent }
+\newlabel{sec:results}{{6}{19}{结果与讨论}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}患者级主表}{19}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces 患者级测试集上的腺体分割（均值；括号内为 95\% bootstrap CI；$n=152$）。}}{20}{table.caption.15}\protected@file@percent }
+\newlabel{tab:main-gland}{{5}{20}{患者级测试集上的腺体分割（均值；括号内为 95\% bootstrap CI；$n=\nTest $）。}{table.caption.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces 官方 clean-official 子集上的泄漏对照（UNet；$n=60$）。}}{20}{table.caption.16}\protected@file@percent }
+\newlabel{tab:leakage}{{6}{20}{官方 clean-official 子集上的泄漏对照（UNet；$n=\cleanOfficialImages $）。}{table.caption.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}泄漏的代价}{20}{subsection.6.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces 官方 clean-official 子集上的泄漏代价。两柱为同一 UNet、同一 epoch 预算与推理协议，仅训练划分不同；差值 $\Delta =-0.0373$。}}{21}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:leakage}{{9}{21}{官方 clean-official 子集上的泄漏代价。两柱为同一 UNet、同一 epoch 预算与推理协议，仅训练划分不同；差值 $\Delta =\leakDelta $。}{figure.caption.17}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces 分块与 TTA（MGD-Former；患者级测试集）。}}{21}{table.caption.18}\protected@file@percent }
+\newlabel{tab:tta}{{7}{21}{分块与 TTA（MGD-Former；患者级测试集）。}{table.caption.18}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}分块、MTE 与 TTA}{21}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}不确定性引导复核}{21}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}临床分级与上/下睑分层}{21}{subsection.6.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces 分块与 TTA 的精度-成本权衡。MTE 为 256/384/512 概率平均，成本约 3 倍；8$\times $ TTA 成本约 8 倍。}}{22}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:mte}{{10}{22}{分块与 TTA 的精度-成本权衡。MTE 为 256/384/512 概率平均，成本约 3 倍；8$\times $ TTA 成本约 8 倍。}{figure.caption.19}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces 失败病例检测的 AUROC（MGD-Former；失败定义为 Dice $<0.7$）。}}{22}{table.caption.20}\protected@file@percent }
+\newlabel{tab:uncertainty}{{8}{22}{失败病例检测的 AUROC（MGD-Former；失败定义为 Dice $<0.7$）。}{table.caption.20}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6}未完成的 clDice 消融}{22}{subsection.6.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.7}定性结果}{22}{subsection.6.7}\protected@file@percent }
+\newlabel{sec:qualitative}{{6.7}{22}{定性结果}{subsection.6.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}旧权重的工程回归}{22}{subsection.6.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.9}讨论}{22}{subsection.6.9}\protected@file@percent }
+\citation{li2025multicenter}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces 三种不确定性信号对失败病例的 AUROC。多分块方差与 MTE 共享推理成本；熵几乎免费；8$\times $ TTA 成本最高。}}{23}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:uncertainty}{{11}{23}{三种不确定性信号对失败病例的 AUROC。多分块方差与 MTE 共享推理成本；熵几乎免费；8$\times $ TTA 成本最高。}{figure.caption.21}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces 分割导出的 Meiboscore 与专家分级的一致性（MGD-Former）。}}{23}{table.caption.22}\protected@file@percent }
+\newlabel{tab:clinical}{{9}{23}{分割导出的 Meiboscore 与专家分级的一致性（MGD-Former）。}{table.caption.22}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}局限性与风险}{23}{section.7}\protected@file@percent }
+\newlabel{sec:limitations}{{7}{23}{局限性与风险}{section.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{单中心、单设备的公开数据。}{23}{paragraph*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{9 小时预算与单次 holdout。}{23}{paragraph*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{泄漏对照的统计功效有限。}{23}{paragraph*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{临床终点仍不完整。}{23}{paragraph*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{距离指标缺少物理标定。}{23}{paragraph*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{预训练可能降级。}{23}{paragraph*.30}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces 上/下睑分层（MGD-Former；患者级测试集）。}}{24}{table.caption.23}\protected@file@percent }
+\newlabel{tab:subgroup}{{10}{24}{上/下睑分层（MGD-Former；患者级测试集）。}{table.caption.23}{}}
+\@writefile{toc}{\contentsline {paragraph}{协议边界。}{24}{paragraph*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{旧权重的数据泄漏。}{24}{paragraph*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{许可与伦理。}{24}{paragraph*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}结论}{24}{section.8}\protected@file@percent }
+\newlabel{sec:conclusion}{{8}{24}{结论}{section.8}{}}
+\@writefile{toc}{\contentsline {section}{声明}{24}{section*.34}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces 定性结果：输入、专家参考、模型预测与错误图（红为假阳性，蓝为假阴性）。行按上/下睑选取；错误图用于展示断裂、粘连与睑缘外漏的形态，而不是替代指标。}}{25}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:qualitative}{{12}{25}{定性结果：输入、专家参考、模型预测与错误图（红为假阳性，蓝为假阴性）。行按上/下睑选取；错误图用于展示断裂、粘连与睑缘外漏的形态，而不是替代指标。}{figure.caption.24}{}}
+\bibstyle{unsrt}
+\bibdata{refs}
+\bibcite{foulks2003}{1}
+\bibcite{villani2020latest}{2}
+\bibcite{wise2012meibography}{3}
+\bibcite{ngo2014repeat}{4}
+\bibcite{saha2022automated}{5}
+\bibcite{setu2021deep}{6}
+\bibcite{li2025multicenter}{7}
+\bibcite{yu2025quantitative}{8}
+\bibcite{prabhu2020segmentation}{9}
+\bibcite{wang2021morphology}{10}
+\bibcite{liu2022scribble}{11}
+\bibcite{wang2019deep}{12}
+\bibcite{yu2022automatic}{13}
+\bibcite{zhang2022density}{14}
+\bibcite{lin2021automatic}{15}
+\bibcite{liang2024exploring}{16}
+\bibcite{buglakova2025tiling}{17}
+\bibcite{maganti2026uncertainty}{18}
+\bibcite{geissler2024structure}{19}
+\bibcite{ronneberger2015unet}{20}
+\bibcite{oktay2018attention}{21}
+\bibcite{zhou2018unetplusplus}{22}
+\bibcite{ibtehaz2020multiresunet}{23}
+\bibcite{isensee2021nnunet}{24}
+\bibcite{transunet}{25}
+\bibcite{swinunet}{26}
+\bibcite{segformer}{27}
+\bibcite{unetr}{28}
+\bibcite{unetrpp}{29}
+\bibcite{mednext}{30}
+\bibcite{vmunet}{31}
+\bibcite{umamba}{32}
+\bibcite{cldice}{33}
+\bibcite{skeletonrecall}{34}
+\bibcite{boundaryloss}{35}
+\bibcite{boundaryiou}{36}
+\bibcite{infraredclahe}{37}
+\bibcite{zerodce}{38}
+\bibcite{lowlightsurvey}{39}
+\bibcite{tent}{40}
+\bibcite{cotta}{41}
+\bibcite{wang2019aleatoric}{42}
+\bibcite{gradcam}{43}
+\bibcite{gradcampp}{44}
+\bibcite{scorecam}{45}
+\bibcite{uncertaintyreview}{46}
+\bibcite{phiseg}{47}
+\bibcite{claim2024update}{48}
+\bibcite{tripodai}{49}
+\bibcite{probast}{50}
+\bibcite{reforms}{51}
+\bibcite{metricsreloaded}{52}
+\bibcite{metricpitfalls}{53}
+\bibcite{zhang2018rcan}{54}
+\@writefile{toc}{\contentsline {section}{\numberline {A}可复现性清单}{32}{appendix.A}\protected@file@percent }
+\newlabel{app:checklist}{{A}{32}{可复现性清单}{appendix.A}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}超参数与实现细节}{32}{appendix.B}\protected@file@percent }
+\newlabel{app:hyper}{{B}{32}{超参数与实现细节}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}构建与复现命令}{32}{appendix.C}\protected@file@percent }
+\newlabel{app:build}{{C}{32}{构建与复现命令}{appendix.C}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces 可复现性清单。}}{33}{table.caption.43}\protected@file@percent }
+\newlabel{tab:checklist}{{11}{33}{可复现性清单。}{table.caption.43}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces 训练与推理默认配置（唯一来源为工程的参数 schema）。}}{34}{table.caption.44}\protected@file@percent }
+\newlabel{tab:hyper}{{12}{34}{训练与推理默认配置（唯一来源为工程的参数 schema）。}{table.caption.44}{}}
+\gdef \@abspage@last{34}

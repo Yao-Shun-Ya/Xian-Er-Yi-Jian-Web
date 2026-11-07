@@ -1,0 +1,80 @@
+\section{实验设计}\label{sec:experiments}
+
+本节给出可执行的实验矩阵。所有实验共用第~\ref{sec:engineering}~节的一致性契约、分块默认值与评测协议；唯一允许变化的因素在表中显式列出。结果表由统一脚本从评测结果注入；未实测的位置保留为“—”，并注明需要哪些产物才能填。
+
+\subsection{数据与队列}
+
+公开 MGD-1K 提供 1000 幅 LipiView II 红外睑板影像、腺体与睑缘掩膜，以及 320 名受试者的人口学信息\cite{saha2022automated}。其中上睑 467 幅、下睑 533 幅，941 幅在 6 轮专家分级中均可评分；每幅影像有 6 轮 Meiboscore。影像原始尺寸不统一，统一缩放到 $640\times1280$，单通道灰度。
+
+配对检查要求影像、腺体掩膜与睑缘掩膜按 basename 一一对应：缺图、缺掩膜、孤儿掩膜、重名与命名异常均终止流程。配对后进行\textbf{内容级去重}：对每例的影像与两套掩膜分别计算 SHA-256 并在全库比对，发现 1 组同图异名样本；剔除多余副本后得到 \nTotal{} 对有效样本。源数据未做改动，去重记录写入 \texttt{dataset\_splits.json} 与 \texttt{dataset\_version.json}。
+
+\subsection{患者级划分与泄漏协议}\label{sec:split-design}
+
+MGD-1K 文件名中的数字研究编号是患者标识。我们按编号把 \nTotal{} 例分成 338 组，以每组最大专家 Meiboscore 分层，将整组受试者分配到 train/val/test，得到 \nTrain/\nVal/\nTest{} 图像（\nTrainPatients/\nValPatients/\nTestPatients{} 名患者），三部分患者互斥；Meiboscore 分布见表~\ref{tab:split}。划分文件同时记录文件清单签名 \splitSig{} 与实际派分签名 \assignmentSig{}；前者只标识 \nTotal{} 个 stems，后者对 train/val/test 的有序列表做 SHA-256，用于回答“本次实验到底用了哪一份派分”。
+
+泄漏协议分三层：
+\begin{enumerate}[label=\textbf{L\arabic*.}]
+\item \textbf{官方测试清单的患者构成。}官方 \officialTestImages{} 例 Meiboscore 测试清单来自 \officialTestPatients{} 名患者；其余 800 例中有 \officialLeakImages{} 例来自同一批患者。
+\item \textbf{患者级训练集的残余泄漏。}即使采用患者级划分，\nTrain{} 训练集中仍有 \officialLeakPatients/\officialTestPatients{} 名官方测试患者（355 张图像）。
+\item \textbf{clean-official 对照。}只保留官方测试中“患者不在患者级训练集”的 \cleanOfficialImages{} 图/\cleanOfficialPatients{} 患者；另训练一个 image-level leaky 对照（\leakyTrainImages{} 训练 / \leakyValImages{} 验证，官方 200 测试），在同一 clean-official 子集上比较。
+\end{enumerate}
+
+\begin{table}[t]
+\centering
+\caption{患者级划分与专家 Meiboscore 分布。}
+\label{tab:split}
+\small
+\begin{tabular}{lccc}
+\toprule
+Split & 图像 & 患者 & Meiboscore 0/1/2/3 \\
+\midrule
+Train & \nTrain & \nTrainPatients & 119/432/117/26 \\
+Val   & \nVal   & \nValPatients   & 26/92/28/7 \\
+Test  & \nTest  & \nTestPatients  & 35/87/23/7 \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\footnotesize 文件清单签名：\texttt{\splitSig}；实际派分签名：\texttt{\assignmentSig}。
+\end{table}
+
+阈值 0.7、分块 $384\times768$、重叠 0.25 在验证集上一次性确定后冻结；测试阶段不再调参。若某模型需要不同阈值，必须在结果中单独标注，并视为该模型配置的一部分。
+
+\subsection{对比模型与训练预算}
+
+主表包含五个模型：UNet、Attention U-Net、WRCANet、MGD-PriorNet 与 MGD-Former。所有模型使用同一损失组合（第~\ref{sec:loss}~节）、同一增强、同一优化器与同一患者级划分；唯一差异是主干与解码结构。为控制 9 小时总预算，本轮采用单次 holdout 而非 5 折；5 折作为后续扩展，不在本轮结果中冒充。表~\ref{tab:ablation-design} 给出实际执行的 7 次训练。
+
+\begin{table}[t]
+\centering
+\caption{本轮实验矩阵（9 小时预算）。所有实验共用患者级划分、预处理、损失与推理协议；leaky 对照使用 image-level 划分。}
+\label{tab:ablation-design}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llllll}
+\toprule
+ID & 模型 & 划分 & epochs & 有效 batch & 目的 \\
+\midrule
+E1 & MGD-Former（ADE20K） & patient-level & 45 & 4 & 主模型 \\
+E2 & UNet & patient-level & 30 & 4 & 经典基线 \\
+E3 & AttentionUNet & patient-level & 24 & 4 & 注意力基线 \\
+E4 & WRCANet & patient-level & 12 & 4（2$\times$2） & 增强主干基线 \\
+E5 & MGD-PriorNet & patient-level & 24 & 4 & 解剖先验基线 \\
+E6 & UNet w/o clDice & patient-level & — & 4 & 未运行（预算改用于 AttentionUNet 续训） \\
+E7 & UNet & official-200 leaky & 25 & 4 & 泄漏对照 \\
+\bottomrule
+\end{tabular}}
+\vspace{2pt}
+\footnotesize 实际完成 epochs 以 \texttt{metrics.jsonl} 为准：MGD-Former 45、UNet 30、AttentionUNet 15（9 + 6 续训）、WRCANet 1（预算截断，不进入排名）、MGD-PriorNet 约 12（预算截断）。表中 epochs 为计划上限。
+\end{table}
+
+训练配方：AdamW，学习率 $1\times10^{-4}$，权重衰减 $1\times10^{-4}$，Cosine 退火，AMP 与 channels\_last 开启，EMA 0.99。EMA 采用 0.99 而非 0.999，是因为 9 小时预算下 0.999 在数百步后仍以随机初始化为主，验证曲线会被影子权重掩盖；这一点在实现中显式记录，不作为长训练的默认值。WRCANet 的增强主干在 8\,GB 卡上使用梯度检查点，batch 2、累积 2；其余模型 batch 4、累积 1，等效 batch 均为 4。
+
+\subsection{评价指标与统计}
+
+腺体主任务报告 Dice、IoU、HD95、ASSD、clDice、Precision、Recall；睑缘辅助任务报告 Dice。表面距离单位为像素，因为影像没有物理标定。空掩膜导致的未定义值返回 NaN 并记录原因，不用 0 冒充。临床侧报告 R\_loss、Meiboscore 与 6 轮专家分级的 accuracy、MAE、quadratic weighted kappa（QWK）。分层报告 upper/lower eyelid 的 Dice 与 clDice。
+
+统计上，均值给 bootstrap 1000 次重采样的 95\% 置信区间；模型间用逐样本配对 Wilcoxon 符号秩检验，并以 Holm 校正控制多重比较；报告有效样本数。任何报告必须携带文件清单签名与派分签名；缺失即判无效。
+
+\subsection{运行环境与资源测量}
+
+训练在 Windows 11、RTX 4060 Laptop 8\,GB、Python 3.10.6、torch 2.5.1（CUDA 12.1）上完成。E1 的实测吞吐约 4.4--4.9 样本/秒，单轮约 143--159\,s；峰值显存约 3.6\,GB。每次运行记录峰值显存、样本/秒与墙钟时间；报告只引用实测值，估算档位单独标注。推理侧记录单例耗时、分块参数与 TTA 开关。

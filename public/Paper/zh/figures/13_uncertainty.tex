@@ -1,0 +1,31 @@
+\begin{figure}[t]
+\centering
+\ifnum\resultsavailable=1
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\linewidth, height=5.2cm,
+  ybar, bar width=16pt,
+  ymin=0.4, ymax=1.0,
+  ylabel={AUROC（失败检测）},
+  symbolic x coords={Tile variance, Entropy, 8x TTA},
+  xtick=data,
+  nodes near coords,
+  nodes near coords style={font=\scriptsize},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  enlarge x limits=0.25,
+  axis lines=left,
+]
+\addplot[fill=teal!65, draw=teal!80] coordinates {
+  (Tile variance,\aurocVarMF)
+  (Entropy,\aurocEntropyMF)
+  (8x TTA,\aurocTTAEightMF)
+};
+\end{axis}
+\end{tikzpicture}
+\else
+\fbox{\parbox[c][4.5cm][c]{0.78\linewidth}{\centering\small 不确定性 AUROC 待注入：失败定义为 Dice $<0.7$}}
+\fi
+\caption{三种不确定性信号对失败病例的 AUROC。多分块方差与 MTE 共享推理成本；熵几乎免费；8$\times$ TTA 成本最高。}
+\label{fig:uncertainty}
+\end{figure}

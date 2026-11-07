@@ -1,0 +1,30 @@
+\begin{figure}[t]
+\centering
+\ifnum\resultsavailable=1
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.72\linewidth, height=5.2cm,
+  ybar, bar width=18pt,
+  ymin=0, ymax=1,
+  ylabel={Dice（clean-official）},
+  symbolic x coords={Patient-level, Leaky},
+  xtick=data,
+  nodes near coords,
+  nodes near coords style={font=\scriptsize},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  enlarge x limits=0.45,
+  axis lines=left,
+]
+\addplot[fill=teal!65, draw=teal!80] coordinates {
+  (Patient-level,\leakDiceClean)
+  (Leaky,\leakDiceLeaky)
+};
+\end{axis}
+\end{tikzpicture}
+\else
+\fbox{\parbox[c][4.5cm][c]{0.72\linewidth}{\centering\small 泄漏对照结果待注入：clean-official \cleanOfficialImages{} 图/\cleanOfficialPatients{} 患者}}
+\fi
+\caption{官方 clean-official 子集上的泄漏代价。两柱为同一 UNet、同一 epoch 预算与推理协议，仅训练划分不同；差值 $\Delta=\leakDelta$。}
+\label{fig:leakage}
+\end{figure}

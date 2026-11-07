@@ -1,0 +1,31 @@
+\begin{figure}[t]
+\centering
+\ifnum\resultsavailable=1
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\linewidth, height=5.2cm,
+  ybar, bar width=16pt,
+  ymin=0.4, ymax=1.0,
+  ylabel={AUROC (failure detection)},
+  symbolic x coords={Tile variance, Entropy, 8x TTA},
+  xtick=data,
+  nodes near coords,
+  nodes near coords style={font=\scriptsize},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  enlarge x limits=0.25,
+  axis lines=left,
+]
+\addplot[fill=teal!65, draw=teal!80] coordinates {
+  (Tile variance,\aurocVarMF)
+  (Entropy,\aurocEntropyMF)
+  (8x TTA,\aurocTTAEightMF)
+};
+\end{axis}
+\end{tikzpicture}
+\else
+\fbox{\parbox[c][4.5cm][c]{0.78\linewidth}{\centering\small Uncertainty AUROC pending: failure defined as Dice $<0.7$}}
+\fi
+\caption{AUROC of three uncertainty signals for failure cases. Multi-tile variance shares the MTE cost; entropy is nearly free; 8$\times$ TTA is the most expensive.}
+\label{fig:uncertainty}
+\end{figure}

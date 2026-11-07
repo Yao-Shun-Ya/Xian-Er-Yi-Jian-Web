@@ -1,0 +1,24 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  cell/.style={draw=slate!45, dashed, rounded corners=1pt, minimum width=32mm, minimum height=17mm, align=center, font=\scriptsize, fill=mist!35},
+  rowlab/.style={anchor=east, font=\scriptsize, align=right},
+  colhead/.style={font=\scriptsize\bfseries, align=center}
+]
+\node[colhead] at (0,1.1) {Image};
+\node[colhead] at (3.6,1.1) {Reference};
+\node[colhead] at (7.2,1.1) {Overlay};
+\node[colhead] at (10.8,1.1) {Error map};
+
+\foreach \r/\name/\yy in {0/MGD-Former/0, 1/UNet/-2.0, 2/Attention U-Net/-4.0, 3/WRCANet/-6.0, 4/MGD-PriorNet/-8.0, 5/Failure cases/-10.0} {
+  \node[rowlab] at (-1.4,\yy+0.35) {\name};
+  \foreach \c/\x in {0/0,1/3.6,2/7.2,3/10.8} {
+    \node[cell] at (\x,\yy) {};
+  }
+}
+\node[font=\scriptsize, color=slate, align=center] at (5.4,-11.2) {Placeholder: replace with real predictions; error maps mark false positives (red) and false negatives (blue).};
+\end{tikzpicture}}
+\caption{Qualitative layout (placeholder). Rows are MGD-Former, the four baselines, and failure cases; columns are image, reference, overlay, and error map. Failure cases must cover breaks, merges, eyelid leakage, and missed low-contrast segments.}
+\label{fig:qualitative}
+\end{figure}

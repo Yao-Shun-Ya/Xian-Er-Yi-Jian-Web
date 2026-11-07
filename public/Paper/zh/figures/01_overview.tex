@@ -1,0 +1,49 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=5mm and 7mm,
+  box/.style={draw=slate, fill=mist, rounded corners=1.5pt, align=center, font=\footnotesize, minimum height=8mm, inner sep=3pt},
+  core/.style={draw=teal, fill=teal!12, rounded corners=1.5pt, align=center, font=\footnotesize, minimum height=8mm, inner sep=3pt},
+  base/.style={draw=slate!55, fill=white, rounded corners=1.5pt, align=center, font=\scriptsize, minimum height=7mm, inner sep=2pt},
+  arr/.style={-{Stealth[length=2mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize\itshape, color=slate}
+]
+% main row
+\node[box] (in) {红外/近红外影像\\$640\times1280$，单通道};
+\node[box, right=of in] (pre) {预处理\\灰度化 $\to$ 缩放 $\to$ 归一化 $\to$ CLAHE};
+\node[core, right=of pre] (enc) {MiT-B2 编码器\\1/4, 1/8, 1/16, 1/32};
+\node[core, right=of enc] (dec) {高分辨率融合解码器\\1/4 $\oplus$ 1/8，输出 stride=4};
+\node[core, right=of dec] (head) {双通道头\\腺体 $+$ 睑缘};
+\node[box, right=of head] (post) {后处理\\阈值 0.7 / ROI / 面积};
+
+\draw[arr] (in) -- (pre);
+\draw[arr] (pre) -- (enc);
+\draw[arr] (enc) -- (dec);
+\draw[arr] (dec) -- (head);
+\draw[arr] (head) -- (post);
+
+% aux heads
+\node[base, below=8mm of dec] (aux) {深监督：1/4, 1/8, 1/16\\权重 1.0 / 0.5 / 0.25};
+\draw[-{Stealth[length=1.6mm]}, dashed, draw=teal] (dec) -- (aux);
+
+% baseline row
+\node[lab, below=14mm of in] (blab) {基线对照（同一协议）};
+\node[base, right=8mm of blab] (b1) {UNet};
+\node[base, right=of b1] (b2) {Attention U-Net};
+\node[base, right=of b2] (b3) {WRCANet};
+\node[base, right=of b3] (b4) {MGD-PriorNet};
+\draw[-{Stealth[length=1.6mm]}, dotted, draw=slate!70] (pre |- b1) -- (b1);
+\draw[-{Stealth[length=1.6mm]}, dotted, draw=slate!70] (post |- b4) -- (b4);
+
+% contract band
+\node[draw=alert!70, fill=alert!6, rounded corners=2pt, minimum width=0.96\linewidth, minimum height=7mm, anchor=north] at ($(post.south)+(0,-16mm)$) (band)
+{\scriptsize 训练—推理一致性契约：共享预处理函数、逐像素容差 $10^{-6}$、分块参数统一、三方配对硬失败};
+
+% annotate
+\node[lab, above=4mm of enc] {预训练：ADE20K（离线可降级）};
+\node[lab, above=4mm of dec] {细腺体：3--8 px};
+\end{tikzpicture}}
+\caption{方法总览。上行是本文默认链路：共享预处理、MiT-B2 编码器、保留 1/4 与 1/8 的高分辨率融合解码器（stride=4）、双通道头与后处理；下行是四条在同一协议下比较的基线。底部契约带表示训练与推理使用同一预处理实现。}
+\label{fig:overview}
+\end{figure}

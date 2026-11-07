@@ -1,0 +1,22 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  layer/.style={draw=slate!60, fill=white, rounded corners=2pt, minimum width=150mm, minimum height=12mm, align=left, font=\scriptsize, inner sep=4pt},
+  core/.style={draw=teal, fill=teal!8, rounded corners=2pt, minimum width=150mm, minimum height=16mm, align=left, font=\scriptsize, inner sep=4pt},
+  arr/.style={-{Stealth[length=2mm]}, draw=slate, thick}
+]
+\node[layer] (ad) at (0,4.2) {\textbf{Adapters}: CLI (\texttt{mgd-train} / \texttt{mgd-eval} / \texttt{mgd-pipeline} / \texttt{mgd-data} / \texttt{mgd-verify})\quad WebUI (six sections)};
+\node[core] (wf) at (0,2.4) {\textbf{workflow}: stage orchestration (pretrain/train/finetune/eval/ablation/report), multi-config, multi-fold, retry, resume, \texttt{pipeline\_state.json}};
+\node[core] (svc) at (0,0.7) {\textbf{core services}: training (specs/presets/engine/runner/EMA/losses)\quad inference (tiling/TTA/threshold/ROI)\quad evaluation (Dice/IoU/HD95/ASSD/clDice/bootstrap/Wilcoxon)\quad reporting};
+\node[layer] (pri) at (0,-0.9) {\textbf{Primitives}: data (pairing/splits/dataset/transforms/versioning)\quad models (MGD-Former / four baselines / registry / manifest / verify)\quad imaging (preprocess / metrics / visualize)\quad runtime (device / errors / logging / doctor)};
+\node[layer] (art) at (0,-2.3) {\textbf{Artefacts}: \texttt{configs/} (YAML schema)\quad \texttt{runs/<run\_id>/} (config snapshot, env, metrics, checkpoint, reference report)\quad weight manifest};
+\draw[arr] (ad) -- (wf);
+\draw[arr] (wf) -- (svc);
+\draw[arr] (svc) -- (pri);
+\draw[arr] (pri) -- (art);
+\node[font=\scriptsize, color=slate, anchor=west] at (-7.7,5.0) {Device adaptation: CUDA / CPU; model singleton cache and explicit release; unverified weights require explicit permission and labelling};
+\end{tikzpicture}}
+\caption{System layers and data flow. Adapters are thin shells; every entry point passes through the same training, inference, and evaluation implementation. Workflow handles orchestration and resumption; the artefact layer stores configuration snapshots, per-epoch metrics, full checkpoints, and signed evaluation reports.}
+\label{fig:system}
+\end{figure}

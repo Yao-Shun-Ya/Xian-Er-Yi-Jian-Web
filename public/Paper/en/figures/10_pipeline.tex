@@ -1,0 +1,32 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  p/.style={draw=slate, fill=mist, rounded corners=1.2pt, align=center, font=\scriptsize, minimum width=23mm, minimum height=9mm},
+  s/.style={draw=teal, fill=teal!12, rounded corners=1.2pt, align=center, font=\scriptsize, minimum width=23mm, minimum height=9mm},
+  r/.style={draw=alert!70, fill=alert!6, rounded corners=1.2pt, align=center, font=\scriptsize, minimum width=23mm, minimum height=9mm},
+  arr/.style={-{Stealth[length=1.8mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize, color=slate}
+]
+\node[p] (data) at (0,0) {\texttt{mgd-data check}\\integrity};
+\node[p, right=5mm of data] (split) at (3.0,0) {patient-level split\\\nTrain/\nVal/\nTest};
+\node[s, right=5mm of split] (sig) at (6.0,0) {file-list +\\assignment signature};
+\node[s, right=5mm of sig] (train) at (9.0,0) {per-run training\\run dir/EMA};
+\node[s, right=5mm of train] (eval) at (12.0,0) {evaluation\\patient-level test};
+\node[s, right=5mm of eval] (stat) at (15.0,0) {statistics\\bootstrap/Wilcoxon};
+\node[r, right=5mm of stat] (rep) at (18.0,0) {report\\signature check};
+\draw[arr] (data)--(split);\draw[arr] (split)--(sig);\draw[arr] (sig)--(train);
+\draw[arr] (train)--(eval);\draw[arr] (eval)--(stat);\draw[arr] (stat)--(rep);
+
+\node[p, below=9mm of train] (state) {\texttt{pipeline\_state.json}\\stage state};
+\node[p, below=9mm of eval] (retry) {retry on failure\\resume};
+\draw[arr, dashed] (state) -- (train);
+\draw[arr, dashed] (retry) -- (eval);
+
+\node[lab, above=4mm of train] {config snapshot + env.json + metrics.jsonl};
+\node[lab, above=4mm of eval] {tiles 384×768, threshold 0.7, TTA level};
+\node[lab, above=4mm of rep] {missing signature $\Rightarrow$ invalid};
+\end{tikzpicture}}
+\caption{Experiment pipeline. Integrity checking and splitting come first, and the signature is written into each run. Per-fold training produces an independent run directory; evaluation and statistics use out-of-fold predictions; the report stage validates the signature and refuses reports without one. The state file supports retry and resumption.}
+\label{fig:pipeline}
+\end{figure}

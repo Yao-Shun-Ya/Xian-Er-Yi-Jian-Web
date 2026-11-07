@@ -1,0 +1,73 @@
+腺而易见 · 生产运维速查（单机 pm2 + SQLite）
+================================================
+
+前置要求
+--------
+- Node.js >= 22.6（推荐 24 LTS，生产与 CI 统一）
+- 只使用 npm；不要用 pnpm / yarn
+- 单实例运行，禁止 pm2 cluster 模式（内存限流依赖单进程）
+
+环境变量（.env.local 或 pm2 env 注入）
+--------------------------------------
+  ADMIN_PASSWORD   必填  单管理员口令，仅服务端读取
+  SESSION_SECRET   必填  会话签名密钥，>= 32 字符
+  DATABASE_PATH    建议  SQLite 绝对路径，位于持久化目录
+  PORT             建议  监听端口，默认 3001
+
+生成密钥：
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+上线前必须替换 .env.example 中的示例值；生产必须 HTTPS，否则 Secure Cookie 不发送、登录会循环。
+
+日常发布（在站点仓库根目录）
+----------------------------
+  cd /xianeryijian
+  npm ci
+  npm run db:migrate        # 幂等；有迁移时先自动备份
+  npm run build
+  pm2 restart xianeryijian
+  pm2 list
+
+首次部署补充：
+  cp .env.example .env.local   # 再改成真实值
+  pm2 start npm --name "xianeryijian" -- start
+  pm2 save
+
+数据库迁移 / 备份 / 恢复
+--------------------------
+  npm run db:migrate                          # 迁移（自动备份）
+  npm run db:backup                           # 手动备份到 db/backups/
+  npm run db:restore -- db/backups/<file>.db --yes   # 会覆盖目标库并清理 -wal/-shm
+
+SQLite 处于 WAL 模式，运行期会有 *.db-wal / *.db-shm；不要直接复制 .db，请用备份脚本。
+每日备份 crontab 示例：
+  10 3 * * * cd /srv/xianeryijian && /usr/bin/npm run db:backup >> /var/log/xianeryijian-backup.log 2>&1
+
+健康检查
+--------
+  GET /api/health
+  正常：{ "status": "ok", "database": "ok" }
+  数据库不可用：503
+
+静态资源与模型
+--------------
+- public/file/ 通过直链分发（MGD_UNet_v1.0.0.pth、*.7z），不做对象存储迁移。
+- *.pth / *.onnx 已被 .gitignore 忽略，不会随仓库出现在新机；首次部署或更新需手动上传 / rsync。
+- 权重 manifest 当前 verified=false，仅用于工程演示与回归；不得作为论文指标或临床部署模型。
+- MGD-Former 编码器预训练权重放入 MGD_PRETRAINED_DIR 或本地缓存；离线缺失会随机初始化，并在 run 的 pretrained_status 记录原因。
+- 不得重命名 public/file 下的目录与 7z 文件名（存在直链依赖）。
+
+换机部署
+--------
+1. 新机安装 Node >= 22.6、npm、pm2，确认磁盘能容纳数据库与 public/file。
+2. 复制仓库与 .env.local，重新核对 ADMIN_PASSWORD / SESSION_SECRET / DATABASE_PATH。
+3. 旧机 npm run db:backup，把备份复制到新机 db/backups/，再 npm run db:restore -- <file> --yes。
+4. npm ci -> npm run db:migrate -> npm run build。
+5. pm2 start npm --name "xianeryijian" -- start -> pm2 save（单实例）。
+6. 验收 /api/health、/docs、下载直链与登录后台；确认无误后再下线旧机（保留备份）。
+
+排查
+----
+- 登录循环：检查 HTTPS 与 SESSION_SECRET 是否为同一值。
+- 下载 404：确认 public/file 文件名未被改动、文件已上传。
+- 会话失效：SESSION_SECRET 变更会使所有既有 Cookie 失效，需重新登录。

@@ -1,0 +1,38 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  d/.style={draw=slate, fill=mist, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=9mm, minimum width=20mm, inner sep=2pt},
+  ok/.style={draw=teal, fill=teal!12, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=9mm, minimum width=20mm},
+  bad/.style={draw=alert, fill=alert!8, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=9mm, minimum width=20mm},
+  arr/.style={-{Stealth[length=1.8mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize, color=slate}
+]
+\node[d] (img) at (0,1.6) {\texttt{images/}\\$n$ files};
+\node[d] (gm)  at (0,0.5) {\texttt{gland\_masks/}\\same names};
+\node[d] (em)  at (0,-0.6) {\texttt{eyelid\_masks/}\\same names};
+
+\node[d] (idx) at (3.2,-0.05) {three-way index\\by basename};
+\node[d] (chk) at (6.3,-0.05) {integrity check\\missing/orphan/duplicate/name};
+\node[bad] (fail) at (6.3,-1.8) {hard failure\\terminate, no silent skip};
+
+\draw[arr] (img) -- (idx);
+\draw[arr] (gm) -- (idx);
+\draw[arr] (em) -- (idx);
+\draw[arr] (idx) -- (chk);
+\draw[arr] (chk) -- node[lab,right]{fail} (fail);
+
+\node[ok] (split) at (10.0,1.1) {patient-level holdout\\\nTrain/\nVal/\nTest\\seed 42};
+\node[ok] (kf) at (10.0,-0.05) {patient groups\\same ids};
+\node[ok] (sig) at (10.0,-1.2) {file-list +\\assignment signature};
+\draw[arr] (chk) -- node[lab,above]{pass} (split);
+\draw[arr] (chk) -- (kf);
+\draw[arr] (split) -- (sig);
+\draw[arr] (kf) -- (sig);
+
+\node[draw=alert!70, fill=alert!6, rounded corners=2pt, minimum width=0.95\linewidth, minimum height=7mm, align=center, font=\scriptsize] at (5.0,-3.0)
+{The signature is written into every evaluation report; a report without one is invalid and may not enter paper tables or weight promotion};
+\end{tikzpicture}}
+\caption{Three-way pairing, integrity, and patient-level splitting. Images, gland masks, and eyelid masks are indexed by basename; an integrity failure terminates the run. The patient-level persistent holdout uses \nTrain/\nVal/\nTest{} (\nTrainPatients/\nValPatients/\nTestPatients{} patients) and records both a file-list signature and an assignment signature; five-fold is an extension reusing the same patient groups.}
+\label{fig:pairing}
+\end{figure}

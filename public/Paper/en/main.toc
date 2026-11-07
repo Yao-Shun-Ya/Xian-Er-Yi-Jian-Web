@@ -1,0 +1,62 @@
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {section}{\numberline {2}Related Work}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Clinical Diagnosis and Infrared Meibography}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Automated Segmentation of Meibomian Glands}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Public Benchmarks, Patient-Level Leakage, and Inference Confounders}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Architectures for Medical Image Segmentation}{6}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Losses and Metrics for Thin Tubular Structures}{6}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Low-Contrast Enhancement, Domain Shift, and Inference Strategies}{7}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}Interpretability, Uncertainty, and Reporting Standards}{7}{subsection.2.7}%
+\contentsline {section}{\numberline {3}Method}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Task Definition and Notation}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Preprocessing}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}MGD-Former: Encoder and High-Resolution Fusion Decoder}{8}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Loss Function and Deep Supervision}{10}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Baseline Architecture Family}{10}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Training Recipe and Inference Strategy}{11}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Evaluation Metrics and Statistical Protocol}{12}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}Evaluation Scope: Train-Self versus Independent Test}{13}{subsection.3.8}%
+\contentsline {subsection}{\numberline {3.9}Patient-Level Split and Leakage Audit}{13}{subsection.3.9}%
+\contentsline {subsection}{\numberline {3.10}Multi-Tile Ensemble and Uncertainty}{14}{subsection.3.10}%
+\contentsline {subsection}{\numberline {3.11}Clinical Grading Endpoints}{14}{subsection.3.11}%
+\contentsline {section}{\numberline {4}Engineering as Method: Consistency, Tiling, and Reproducibility}{14}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Patient-Level Split and Leakage Audit}{14}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Train--Inference Consistency Contract}{15}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}The Hidden Effect of Tile Size}{15}{subsection.4.3}%
+\contentsline {paragraph}{Experimental protocol.}{15}{section*.6}%
+\contentsline {subsection}{\numberline {4.4}Multi-Tile Ensemble: Turning Tiling from a Confounder into an Inference Tool}{16}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}VRAM Tiers and Consumer-GPU Reproducibility}{17}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Orchestrated Pipeline and Experiment Registry}{18}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Evaluation Discipline and \texttt {split\_signature}}{19}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Layered Architecture and Deployment}{19}{subsection.4.8}%
+\contentsline {section}{\numberline {5}Experimental Design}{20}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Data and Cohort}{20}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Patient-Level Split and Leakage Protocol}{20}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Compared Models and Training Budget}{21}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Metrics and Statistics}{22}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Runtime Environment and Resource Measurement}{22}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Results and Discussion}{22}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Main Patient-Level Results}{22}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}The Cost of Leakage}{23}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Tiling, MTE, and TTA}{24}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Uncertainty-Guided Review}{24}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Clinical Grading and Upper/Lower Eyelid Subgroups}{25}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}The clDice Ablation Was Not Completed}{25}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}Qualitative Results}{26}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}Legacy Weights as an Engineering Anchor}{26}{subsection.6.8}%
+\contentsline {subsection}{\numberline {6.9}Discussion}{26}{subsection.6.9}%
+\contentsline {section}{\numberline {7}Limitations and Risks}{26}{section.7}%
+\contentsline {paragraph}{Single-centre, single-device public data.}{26}{section*.25}%
+\contentsline {paragraph}{Nine-hour budget and a single holdout.}{27}{section*.26}%
+\contentsline {paragraph}{Limited power of the leakage control.}{27}{section*.27}%
+\contentsline {paragraph}{Incomplete clinical endpoints.}{27}{section*.28}%
+\contentsline {paragraph}{Distance metrics lack physical calibration.}{27}{section*.29}%
+\contentsline {paragraph}{Pretraining may degrade.}{27}{section*.30}%
+\contentsline {paragraph}{Protocol boundary.}{27}{section*.31}%
+\contentsline {paragraph}{Leakage in legacy weights.}{27}{section*.32}%
+\contentsline {paragraph}{Licence and ethics.}{28}{section*.33}%
+\contentsline {section}{\numberline {8}Conclusion}{28}{section.8}%
+\contentsline {section}{Declarations}{29}{section*.34}%
+\contentsline {section}{\numberline {A}Reproducibility Checklist}{36}{appendix.A}%
+\contentsline {section}{\numberline {B}Hyperparameters and Implementation Details}{36}{appendix.B}%
+\contentsline {section}{\numberline {C}Build and Reproduction Commands}{36}{appendix.C}%

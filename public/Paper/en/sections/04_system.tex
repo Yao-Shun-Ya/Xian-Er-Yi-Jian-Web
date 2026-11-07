@@ -1,0 +1,122 @@
+\section{Engineering as Method: Consistency, Tiling, and Reproducibility}\label{sec:engineering}
+
+This section is not a system-implementation appendix. We argue that in thin-structure segmentation, several variables treated as engineering detail materially change conclusions; elevating them to methodological objects and fixing them with contracts and protocols is itself part of reproducible research. The five subsections address consistency, tiling, memory, pipelines, and evaluation discipline, followed by the layered architecture.
+
+\subsection{Patient-Level Split and Leakage Audit}\label{sec:leakage}
+
+A subject in MGD-1K often has multiple images (upper/lower eyelid, left/right eye), and the numeric study id in the filename provides an executable patient identifier. We assign whole subjects, not individual images, to train/val/test, obtaining \nTrain/\nVal/\nTest{} images (\nTrainPatients/\nValPatients/\nTestPatients{} patients) with mutually exclusive patients; stratification uses each subject's maximum expert Meiboscore so that severe cases are not missing from one split. The split file records both the file-list signature \splitSig{} and the assignment signature \assignmentSig{}: the former answers whether the dataset changed, the latter answers which assignment this run used. Without the latter, the same file list can be re-assigned without traceability, which is the root of ``same names, different split''.
+
+The leakage audit provides three levels of evidence. First, the official \officialTestImages-case Meiboscore test list comes from \officialTestPatients{} patients; \officialLeakImages{} of the remaining 800 images come from those patients. Second, even with a patient-level split, the \nTrain{} training set still contains \officialLeakPatients/\officialTestPatients{} official-test patients (355 images). Third, we build a clean-official subset containing only official-test images whose patient is absent from training: \cleanOfficialImages{} images/\cleanOfficialPatients{} patients, and train an image-level leaky control (\leakyTrainImages{} train / \leakyValImages{} val). The difference among the three on the same clean-official subset is the cost of leakage. Figure~\ref{fig:pairing} relates pairing, patient grouping, and the two signatures.
+
+\subsection{Train--Inference Consistency Contract}\label{sec:contract}
+
+Performance differences in deep segmentation are often attributed to networks, yet the same weights can yield very different Dice under different preprocessing, tiling, or thresholding. To remove this hidden variance, we turn ``what training sees'' and ``what inference sees'' into an executable contract rather than documentation.
+
+The contract has three hard rules.
+
+\begin{enumerate}[label=\textbf{C\arabic*.}]
+\item \textbf{Pixel-wise preprocessing identity.} Online training transforms and inference preprocessing call the same implementation: grayscale reading, EXIF orientation, bilinear resize to $640\times1280$, division by 255, and CLAHE (clip 0.02) are shared functions; training only appends random augmentation after the shared function. A unit test compares training and inference paths on fixed inputs pixel by pixel with tolerance $10^{-6}$; a change on either side fails the test.
+\item \textbf{Unified tiling parameters.} Training tiles, evaluation tiles, and deployment defaults come from one schema (default $384\times768$, overlap 0.25). Evaluation scripts may not rewrite tiling; an experiment that changes it must record the change and be treated as a separate experiment (Section~\ref{sec:tiling}).
+\item \textbf{Hard failure on three-way pairing.} Images, gland masks, and eyelid masks are indexed by basename. A missing item, orphan mask, duplicate name, or malformed name raises an integrity error and terminates loading instead of skipping samples. Silent skipping would make the effective sample set differ across experiments and destroy comparability.
+\end{enumerate}
+
+Figures~\ref{fig:preprocess} and~\ref{fig:pairing} show the contract and the pairing/splitting flow. The benefit is not cleaner code but the guarantee that all model comparisons in Section~\ref{sec:results} share one input distribution; any run violating the contract leaves inspectable traces in its artefacts.
+
+\input{figures/04_pairing}
+
+\subsection{The Hidden Effect of Tile Size}\label{sec:tiling}
+
+\paragraph{Experimental protocol.} All numbers in this subsection come from inference with \textbf{the same weights and only a changed tile height}: threshold 0.7, TTA off, no postprocessing (no ROI constraint, no connected-component filtering, no morphological smoothing), evaluated on 40 original images. Apart from tile height, preprocessing, weights, threshold, and evaluation code are identical. This protocol is a precondition for the conclusion; any change in these factors must not be compared directly with the table below.
+
+\begin{table}[t]
+\centering
+\caption{Effect of tile height on Dice (same weights, only tiling changed; threshold 0.7, TTA off, no postprocessing or ROI; $n=40$).}
+\label{tab:tiling}
+\begin{tabular}{lccccccc}
+\toprule
+Tile height (pixels) & 128 & 192 & 256 & 384 & 448 & 512 & full $640\times1280$ \\
+\midrule
+Dice & 0.370 & 0.410 & 0.480 & \textbf{0.644} & 0.643 & 0.655 & 0.593 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:tiling} and Figure~\ref{fig:tiling} give seven measured points. Three observations matter. First, Dice rises by about 27 percentage points from 128 to 384---not a network difference but an inference-configuration difference with identical weights. Second, 512 is slightly above 384, yet full-image inference drops to 0.593: the model was trained on $384\times768$ tiles, and full-image input changes the effective receptive field and context ratio, so train--inference scale no longer matches. Third, the plateau around 384 (0.644/0.643/0.655) shows saturation; increasing tiles further is not monotonically better.
+
+\input{figures/08_tiling}
+
+The default was therefore changed from earlier 192/256 to $384\times768$, and every report must record tile height and overlap. The methodological point is that a paper reporting only its ``best configuration'' can make the same model look strong or weak, and readers cannot reproduce it; tiling must be treated as an experimental variable on par with backbone and loss.
+
+\subsection{Multi-Tile Ensemble: Turning Tiling from a Confounder into an Inference Tool}\label{sec:mte-system}
+
+Tile sensitivity means that conclusions from a single tile do not transfer. Rather than reporting only one optimal tile, we average probability maps from multiple tiles: for $h\in\{256,384,512\}$, sliding-window inference gives $P_h$, and MTE outputs $\bar P=\frac{1}{3}\sum_h P_h$, thresholded at 0.7. MTE does not change the weights or add training cost; it costs about three single-tile passes, less than 8$\times$ TTA. Its purpose is not ``a little more Dice'' but to turn tiling from an uncontrolled confounder into an explicit inference tool: when 256 and 512 disagree, MTE gives a stable estimate that does not depend on a single choice.
+
+The pixel variance of the three $P_h$, $V=\mathrm{Var}_h(P_h)$, is a low-cost uncertainty source. We use it together with predictive entropy and 8$\times$ TTA error for failure detection (Dice $<0.7$) and report AUROC. Tiling is thus both the object of audit and the tool for auditing other variables.
+
+\subsection{VRAM Tiers and Consumer-GPU Reproducibility}\label{sec:vram}
+
+To make ``reproducible on a consumer GPU'' testable rather than rhetorical, we provide six memory tiers (Table~\ref{tab:vram}, Figure~\ref{fig:vram}). Each tier fixes tiling, batch, gradient accumulation, AMP, channels\_last, deep supervision, and TTA, and is labelled \textbf{measured} or \textbf{estimated}. Measurements come from an RTX 4060 Laptop 8\,GB, Python 3.11, torch 2.5.1 CUDA 12.1, with 700 training samples (pre-deduplication). The current deduplicated split has 699 training cases; a one-case difference does not affect the throughput conclusion.
+
+\begin{table}[t]
+\centering
+\caption{VRAM tier recipes. The 6\,GB and 8\,GB tiers are measured on the pre-deduplication 700-case training set; 12\,GB and above are extrapolated estimates and must not be cited as measurements.}
+\label{tab:vram}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+Tier & Tile & batch/accum & Deep sup. & Peak VRAM & Throughput (samples/s) & Status \\
+\midrule
+6 GB  & $256\times512$  & 1/4 & No  & 0.89 GB & 3.54 & measured \\
+8 GB  & $384\times768$  & 1/4 & Yes & 1.227 GB & 3.10 & measured \\
+12 GB & $384\times768$  & 2/2 & Yes & estimate & estimate & estimated \\
+16 GB & $512\times1024$  & 2/1 & Yes & estimate & estimate & estimated \\
+24 GB & $640\times1280$  & 2/1 & Yes & estimate & estimate & estimated \\
+40 GB+& $640\times1280$  & 4/1 & Yes & estimate & estimate & estimated \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+The 8\,GB tier measured 225.6\,s/epoch, 3.10 samples/s, and 1.227\,GB peak (run \path{20261106T203908Z_MGD-Former_nogit_7c6ef4}); the 6\,GB tier measured 197.5\,s/epoch, 3.54 samples/s, and 0.89\,GB peak. All epoch times, throughputs, and VRAM peaks above were measured on the same 700-case pre-deduplication training set. Both smoke runs used random initialisation because pretrained weights were unavailable offline, and the log records this degradation. These numbers answer ``can it run on 8\,GB and at what throughput'', not ``what accuracy after pretraining''.
+
+\input{figures/09_vram}
+
+A tier is a safety boundary, not a suggestion: selecting it overrides tiling, batch, and AMP fields, preventing ``starts but must OOM'' combinations. After moving machines, the first run must inspect \texttt{peak\_vram\_gb}; measured values are then back-filled and the status changed. Estimated tiers must never be presented as measured. This rule shares its rationale with Section~\ref{sec:discipline}: reproducibility depends on explicitly separating the known from the extrapolated.
+
+\subsection{Orchestrated Pipeline and Experiment Registry}\label{sec:pipeline}
+
+Model comparison requires multi-fold, multi-configuration, interruptible jobs, and manual notes easily lose context. We organise training, evaluation, statistics, and reporting into a pipeline with stages \texttt{pretrain}/\texttt{train}/\texttt{finetune}/\texttt{eval}/\texttt{ablation}/\texttt{report}; state is written to \texttt{pipeline\_state.json}, and a resumed run skips completed entries while retrying failures according to configuration.
+
+Each run gets an independent directory named
+\begin{equation}
+\texttt{run\_id}=\text{timestamp}\_\text{name}\_\text{code version}\_\text{config fingerprint (6 chars)},
+\end{equation}
+with automatic suffixes on collision and no overwriting. The directory contains a configuration snapshot \texttt{config.yaml} (fully resolved), an environment snapshot \texttt{env.json} (code version, git commit, dependencies, device, paths), per-epoch \texttt{metrics.jsonl}, full-state checkpoints, a \texttt{reference\_report.json} with \texttt{split\_signature}, and \texttt{run\_result.json} (peak VRAM, throughput, wall time). Resumption saves model, optimiser, scheduler, AMP scaler, epoch, global step, RNG state, EMA shadow, and data signature.
+
+The registry makes multi-configuration comparison machine-readable: the same \texttt{metrics.jsonl} and \texttt{run\_result.json} support both the paper tables and the traceability of failed runs. The experiment matrix in Section~\ref{sec:experiments} maps directly onto these fields rather than relying on handwritten notes.
+
+\input{figures/10_pipeline}
+
+\subsection{Evaluation Discipline and \texttt{split\_signature}}\label{sec:discipline}
+
+We write evaluation as a protocol, not ``run the test set once''. It has five rules:
+
+\begin{enumerate}[label=\textbf{E\arabic*.}]
+\item \textbf{Patient-level persistent splits.} Holdout uses \nTrain/\nVal/\nTest{} (\nTrainPatients/\nValPatients/\nTestPatients{} patients, seed 42), written to \texttt{dataset\_splits.json} with both a file-list signature and an assignment signature; five-fold cross-validation reuses the same patient groups and does not re-split.
+\item \textbf{Mandatory signature.} \texttt{split\_signature} is the SHA-256 digest of the ordered train/validation/test filename sets. Every evaluation report must carry it; a report without one is invalid and may not enter paper tables or weight promotion.
+\item \textbf{Scope separation.} \texttt{train\_self} must be labelled and can only describe fit; only holdout or out-of-fold predictions support performance conclusions.
+\item \textbf{Statistical completeness.} Means carry 95\% confidence intervals from 1{,}000 bootstrap resamples; models are compared with per-sample paired Wilcoxon signed-rank tests and Holm correction; the number of valid cases is reported.
+\item \textbf{Weight status.} Training artefacts are marked \texttt{verified=false}; only weights with a valid signature and independent evaluation can be promoted. Loading unverified weights requires explicit permission and a stated reason in logs and reports.
+\end{enumerate}
+
+The signature rule guards against three real risks: silently re-splitting after tuning, so that the test set effectively participates in model selection; comparing experiments whose effective sample sets differ because corrupted samples were skipped; and presenting legacy weights trained on all data as independent test results. The signature turns ``which samples participated in what'' into immutable metadata, excluding these risks by construction.
+
+\subsection{Layered Architecture and Deployment}\label{sec:architecture}
+
+The system separates kernel and adapters: \texttt{core} has no UI dependency and contains configuration, runtime, data, models, training, inference, evaluation, imaging, reporting, and workflow; \texttt{adapters} provide thin CLI and WebUI shells over the same API. Two delivery targets (Windows WebUI and Linux CLI) share one kernel at version 2.3.0, with 146 contract and regression tests passing.
+
+A model registry manages MGD-Former and the four baselines; \texttt{unwrap\_outputs()} unifies the output contract (legacy models return a tensor, MGD-Former returns \texttt{logits} plus three auxiliary heads). The weight manifest records filename, architecture, version, SHA-256, input size, normalisation tag (\texttt{scale01+clahe} with clip limit), training provenance, and \texttt{verified} status. Device adaptation covers CUDA/CPU; the inference service caches a model singleton and supports explicit release. Figure~\ref{fig:system} shows the layers and data flow.
+
+\input{figures/05_system}
+
+These details belong in the method section because they determine whether others can rerun the experiments: one manifest, one configuration snapshot, one set of tiling defaults, and one signature form the traceable result--code--data chain. Without any link, the comparisons in Section~\ref{sec:results} are only unverifiable numbers.

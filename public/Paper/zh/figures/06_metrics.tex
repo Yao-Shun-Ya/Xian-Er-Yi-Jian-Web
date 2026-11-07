@@ -1,0 +1,36 @@
+\begin{figure}[t]
+\centering
+\ifnum\resultsavailable=1
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.95\linewidth, height=64mm,
+  ybar, bar width=5pt,
+  ymin=0, ymax=1,
+  ylabel={指标值},
+  symbolic x coords={UNet,Att.UNet,WRCANet,MGD-PriorNet,MGD-Former},
+  xtick=data,
+  xticklabel style={font=\scriptsize, rotate=12, anchor=north east},
+  ytick={0,0.2,0.4,0.6,0.8,1.0},
+  tick label style={font=\scriptsize},
+  legend style={font=\scriptsize, at={(0.5,1.02)}, anchor=south, legend columns=2, draw=none},
+  grid=major, grid style={draw=mist},
+  axis line style={draw=slate}, tick style={draw=slate},
+]
+\addplot[fill=teal!35, draw=teal] coordinates {
+  (UNet,\gDiceUNet) (Att.UNet,\gDiceAtt) (WRCANet,\gDiceWRCANet)
+  (MGD-PriorNet,\gDicePrior) (MGD-Former,\gDiceMF)};
+\addplot[fill=sand!45, draw=sand!80!black] coordinates {
+  (UNet,\gClDiceUNet) (Att.UNet,\gClDiceAtt) (WRCANet,\gClDiceWRCANet)
+  (MGD-PriorNet,\gClDicePrior) (MGD-Former,\gClDiceMF)};
+\legend{Dice, clDice}
+\end{axis}
+\end{tikzpicture}
+\else
+\fbox{\parbox[c][46mm][c]{0.92\linewidth}{\centering\small
+指标对比图占位。真实结果注入条件：五模型在同一 holdout（带 \texttt{split\_signature}）\\
+完成评估，且 \texttt{data/results.tex} 中 \texttt{\textbackslash resultsavailable} 置为 1。\\
+当前不做任何数值估计。}}
+\fi
+\caption{五模型腺体分割指标对比（独立测试）。左起四条基线，最右为 MGD-Former。初稿阶段仅显示占位说明，不绘制任何虚构柱形。}
+\label{fig:metrics}
+\end{figure}

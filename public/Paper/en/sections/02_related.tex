@@ -1,0 +1,45 @@
+\section{Related Work}\label{sec:related}
+
+\subsection{Clinical Diagnosis and Infrared Meibography}
+
+MGD diagnosis combines gland morphology with secretion quality\cite{foulks2003,villani2020latest}. Infrared/near-infrared meibography exploits scattering differences to show dropout, tortuosity, shortening, and cystic dilation\cite{wise2012meibography}. Meiboscore grades dropout area and is the most widely used semi-quantitative tool, but repeatability differs across infrared systems and inter-observer agreement is not guaranteed\cite{ngo2014repeat}. Two requirements follow: segmentation must support consistent area, length, and grading rather than visual appeal; and the eyelid margin must be segmented as well, otherwise the denominators of R\_loss and Meiboscore are unstable.
+
+\subsection{Automated Segmentation of Meibomian Glands}
+
+Early work used thresholds, morphology, and strip filters, and was sensitive to low contrast and device variation. Deep learning followed: Prabhu et al.\ segmented glands and quantified morphology\cite{prabhu2020segmentation}; Wang et al.\ quantified gland morphology and linked it to clinical grading\cite{wang2021morphology}; Liu et al.\ used scribble supervision to reduce pixel-level annotation cost\cite{liu2022scribble}; Setu et al.\ and Wang et al.\ explored deeper or lighter encoder--decoder variants\cite{setu2021deep,wang2019deep}; Yu et al., Zhang et al., and Lin et al.\ introduced density estimation, attention, and multi-scale features\cite{yu2022automatic,zhang2022density,lin2021automatic}; Liang et al.\ discussed cross-device and cross-dataset generalisation\cite{liang2024exploring}.
+
+These studies establish feasibility, but their reporting differs substantially: whole-image versus sliding-window inference, Dice-only versus morphological metrics, and often unclear train/validation/test exclusivity. We do not dispute their conclusions; we place them under one protocol, with explicit tiling, threshold, and split signature.
+
+\subsection{Public Benchmarks, Patient-Level Leakage, and Inference Confounders}
+
+MGD-1K is the most representative public meibography dataset: 1000 infrared images, gland and eyelid masks, 320 subjects, and six expert Meiboscore rounds per image\cite{saha2022automated}. A 2025 multicentre study further shows that gland segmentation can reach high grading agreement at independent centres, but explicitly notes that its model covers only the upper eyelid and a single device\cite{li2025multicenter}; an MGD-1K baseline reports U-Net IoU around 0.72 and F1 around 0.82 without systematic patient-level splitting\cite{yu2025quantitative}. Public data are therefore available, but ``public'' does not imply ``comparable''.
+
+Patient-level leakage is the easiest of these problems to hide at the implementation level. A subject in MGD-1K often has multiple images (upper/lower eyelid, left/right eye), and image-level random splits place different images of the same subject into training and test. Even with a patient-level split, directly using the official 200-case Meiboscore test list leaves many other images of those test patients in training. Few studies report both a file-list signature and an assignment signature, so readers cannot tell whether two experiments actually used the same split.
+
+Tiling at inference is another hidden variable. Buglakova et al.\ show that stitching artefacts in sliding-window inference are tied to normalisation layers, and compare the trade-off between artifact-free and high-quality predictions\cite{buglakova2025tiling}. For 3--8-pixel glands, tile height also changes the effective receptive field and context ratio, and its effect can exceed architecture differences. We treat tiling as a first-class variable and build a multi-tile ensemble on top of it.
+
+For uncertainty, the decision-aware protocol of Maganti and Gowda shows that TTA often gives a stronger error-detection signal than MC Dropout under a fixed review budget, but estimator rankings are not universal\cite{maganti2026uncertainty}; Geißler et al.\ show that structure size confounds the relationship between uncertainty and segmentation quality\cite{geissler2024structure}. In thin-structure tasks, the uncertainty source and structure size must therefore be reported together rather than as a single AUROC.
+
+\subsection{Architectures for Medical Image Segmentation}
+
+Encoder--decoder with skip connections remains a strong baseline\cite{ronneberger2015unet}; Attention U-Net gates irrelevant skip responses\cite{oktay2018attention}; UNet++ and MultiResUNet improve nested connectivity and multi-resolution processing\cite{zhou2018unetplusplus,ibtehaz2020multiresunet}; nnU-Net contributes a self-configured recipe---patch sampling, deep supervision, strong augmentation---rather than a module\cite{isensee2021nnunet}. Among Transformers, TransUNet uses a Transformer encoder\cite{transunet}, Swin-UNet builds a U-shaped window-attention network\cite{swinunet}, and SegFormer pairs a hierarchical MiT encoder with a lightweight head\cite{segformer}; UNETR and UNETR++ bring Transformers to 3D medical segmentation\cite{unetr,unetrpp}, and MedNeXt scales ConvNets with Transformer-inspired blocks\cite{mednext}. State-space models, represented by VM-UNet and U-Mamba, model long-range dependencies with linear complexity\cite{vmunet,umamba}.
+
+For this task, long-range dependency is not the bottleneck; detail preservation is. SegFormer's finest stage has stride 4 and offers ADE20K/ImageNet pretraining, matching the 3--8-pixel target and the 999-case regime. Swin-UNet's windowed attention and four-stage downsampling are unfriendly to thin-line continuity; Mamba variants may fragment connectivity through 2D scan order and depend on compiled CUDA kernels, raising cross-platform reproduction cost. We therefore adopt SegFormer-B2 as the encoder and modify the decoder to retain 1/4 features; the other routes serve as literature comparisons and are not the default.
+
+\subsection{Losses and Metrics for Thin Tubular Structures}
+
+Region losses (Dice, cross-entropy) are sensitive to overlap but not to connectivity: when a gland breaks into two segments, Dice may drop only slightly while HD95 rises sharply. clDice constrains topology through soft-skeleton centerline overlap\cite{cldice}; skeleton-recall loss makes skeleton recall explicit\cite{skeletonrecall}; boundary loss and Boundary IoU focus optimisation and evaluation on the boundary band\cite{boundaryloss,boundaryiou}. Together they show that thin structures require multi-metric evaluation, since Dice alone hides topological failure.
+
+We use clDice as the only skeleton-continuity term and do not add an explicit skeleton loss; the rationale is given in Section~\ref{sec:loss}: two terms pushing the same gradient direction amplify skeleton noise. Boundary loss remains an optional switch, disabled by default.
+
+\subsection{Low-Contrast Enhancement, Domain Shift, and Inference Strategies}
+
+CLAHE is the most common local contrast enhancement for infrared and medical images; its clip limit and window size control noise amplification and artefacts\cite{infraredclahe}. Deep low-light enhancement, such as Zero-DCE, offers a data-driven alternative\cite{zerodce,lowlightsurvey}, but usually targets visual quality rather than segmentation metrics. For domain shift, test-time adaptation and continual test-time adaptation adjust statistics without labels\cite{tent,cotta}; TTA reduces variance by averaging geometric and scale views\cite{wang2019aleatoric}.
+
+We do not use test-time training, to avoid introducing adaptation on the test set; TTA is fixed to horizontal flips and two scales, and is enabled only for paper evaluation and final delivery. Cross-device variation is addressed mainly by intensity augmentation and a unified normalisation contract, not by modifying the model at test time.
+
+\subsection{Interpretability, Uncertainty, and Reporting Standards}
+
+Grad-CAM and its variants map gradients back to the input\cite{gradcam,gradcampp,scorecam}; uncertainty estimation separates aleatoric from epistemic, with TTA entropy and MC dropout as common approximations\cite{wang2019aleatoric,uncertaintyreview,phiseg}. Reporting standards include CLAIM, TRIPOD+AI, PROBAST, and REFORMS, covering imaging AI, prediction models, bias assessment, and reproducible research\cite{claim2024update,tripodai,probast,reforms}; metric selection itself has systematic recommendations and pitfalls\cite{metricsreloaded,metricpitfalls}.
+
+We borrow their structure but operationalise the three items most relevant here: split signature, tiling-parameter reporting, and weight-status labelling. The system implements true Grad-CAM and TTA entropy maps, but we treat them as review aids rather than performance evidence.

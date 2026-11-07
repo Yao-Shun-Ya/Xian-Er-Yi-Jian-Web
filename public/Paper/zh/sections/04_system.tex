@@ -1,0 +1,122 @@
+\section{工程即方法：一致性、分块与可复现性}\label{sec:engineering}
+
+本节不是“系统实现附录”。我们主张：在细长结构分割任务中，若干被当作工程细节的变量会实质改变结论；把它们提升为方法学对象、并用契约与协议固定下来，本身就是可复现研究的一部分。以下五节分别处理一致性、分块、显存、流水线与评测纪律，最后给出分层架构。
+
+\subsection{患者级划分与泄漏审计}\label{sec:leakage}
+
+MGD-1K 的同一名受试者常有多幅影像（上/下睑、左/右眼），文件名中的数字研究编号提供了可执行的患者标识。我们把整组受试者而不是单幅影像分配到 train/val/test，得到 \nTrain/\nVal/\nTest{} 图像（\nTrainPatients/\nValPatients/\nTestPatients{} 名患者），三部分患者互斥；分层依据是每组的最大专家 Meiboscore，以避免重度病例在某一 split 中缺失。划分文件同时记录文件清单签名 \splitSig{} 与实际派分签名 \assignmentSig{}：前者只回答数据集是否变化，后者回答本次实验到底用了哪一份派分。缺少后者时，同名文件可以被重新派分而无法追溯，这是“同名不同分”的根源。
+
+泄漏审计给出三层证据。第一，官方 \officialTestImages{} 例 Meiboscore 测试清单来自 \officialTestPatients{} 名患者；其余 800 例中有 \officialLeakImages{} 例来自这些患者。第二，即使采用患者级划分，\nTrain{} 训练集中仍有 \officialLeakPatients/\officialTestPatients{} 名官方测试患者（355 张图像）。第三，构造 clean-official 子集，只保留官方测试中患者不在训练集的 \cleanOfficialImages{} 图/\cleanOfficialPatients{} 患者，并训练一个 image-level leaky 对照（\leakyTrainImages{} 训练 / \leakyValImages{} 验证）。三者在同一 clean-official 子集上的差，就是泄漏的代价。图~\ref{fig:pairing} 给出配对、患者分组与两种签名的关系。
+
+\subsection{训练—推理一致性契约}\label{sec:contract}
+
+深度分割模型的性能差异常被归因于网络，但同一权重在不同预处理/分块/阈值组合下可以给出截然不同的 Dice。为排除这一类隐性变量，本文把“训练看到什么”与“推理看到什么”写成可执行的契约，而不是文档约定。
+
+契约由三条硬规则组成。
+
+\begin{enumerate}[label=\textbf{C\arabic*.}]
+\item \textbf{预处理逐像素一致。}训练时的在线变换与推理时的预处理调用同一个实现：灰度读取、EXIF 方向校正、双线性缩放到 $640\times1280$、除以 255、CLAHE（clip 0.02）都是共享函数；训练侧只在共享函数之后追加随机增强。单元测试对一组固定输入逐像素比对训练路径与推理路径，容差 $10^{-6}$，任何一侧改动都会使测试失败。
+\item \textbf{分块参数统一。}训练分块、评估分块与部署默认值来自同一份 schema（默认 $384\times768$、重叠 0.25）。评估脚本不得自行改写分块；若实验需要改变分块，必须在报告中显式记录，并视为一次独立实验（见第~\ref{sec:tiling}~节）。
+\item \textbf{三方数据配对硬失败。}影像、腺体掩膜、睑缘掩膜按 basename 建立索引；任一侧缺失、出现孤儿掩膜、重名或命名异常时，数据加载直接抛出完整性错误并终止，而不是跳过样本继续训练。静默跳过会让不同实验的“有效样本数”不同，从而使比较失去意义。
+\end{enumerate}
+
+图~\ref{fig:preprocess} 与图~\ref{fig:pairing} 分别给出一致性契约与三向配对/划分流程。契约的收益不是“代码更整洁”，而是让第~\ref{sec:results}~节的所有模型比较建立在同一输入分布上；任何不满足契约的运行都会在产物中留下可检查的痕迹。
+
+\input{figures/04_pairing}
+
+\subsection{分块尺寸的隐性影响}\label{sec:tiling}
+
+\paragraph{实验口径。}本节的全部数值来自\textbf{同一权重、仅改变分块高度}的推理实验：阈值 0.7，TTA 关闭，不含后处理（不做 ROI 约束、不做连通域过滤、不做形态学平滑），在 40 例原始影像上评估。除分块高度外，预处理、权重、阈值与评价代码完全相同。这一口径是本节结论成立的前提；任何一项改变都不应与下表直接比较。
+
+\begin{table}[t]
+\centering
+\caption{分块高度对 Dice 的影响（同一权重、仅改分块；阈值 0.7、TTA 关闭、无后处理与 ROI；$n=40$）。}
+\label{tab:tiling}
+\begin{tabular}{lccccccc}
+\toprule
+分块高度（像素） & 128 & 192 & 256 & 384 & 448 & 512 & 整图 $640\times1280$ \\
+\midrule
+Dice & 0.370 & 0.410 & 0.480 & \textbf{0.644} & 0.643 & 0.655 & 0.593 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+表~\ref{tab:tiling} 与图~\ref{fig:tiling} 给出七个真实测量点。三点值得强调。第一，从 128 到 384，Dice 提升了约 27 个百分点，这不是网络差异，而是同一权重的推理配置差异。第二，512 略高于 384，但整图推理反而降到 0.593：模型在 $384\times768$ 分块上训练，整图输入改变了有效感受野与上下文比例，训练—推理尺度不再匹配。第三，384 附近的平台（0.644/0.643/0.655）说明收益在某一区间饱和，继续增大分块并不单调变好。
+
+\input{figures/08_tiling}
+
+据此，本文把推理与训练的默认分块从早期的 192/256 统一修为 $384\times768$，并在所有报告中强制记录分块高度与重叠。该发现的方法学意义在于：若论文只报告“最优配置”而不报告分块，同一模型可以被叙述成强或弱，且读者无法复现；分块应被视为与主干、损失同等级的实验变量。
+
+\subsection{Multi-Tile Ensemble：把分块从混杂变量变成推理工具}\label{sec:mte-system}
+
+分块敏感性说明“单一分块”的结论不可迁移。与其只报告一个最优分块，我们把多个分块的概率图做平均：对 $h\in\{256,384,512\}$ 分别滑窗推理得到 $P_h$，MTE 输出 $\bar P=\frac{1}{3}\sum_h P_h$，再以阈值 0.7 二值化。MTE 不改变权重、不增加训练成本；推理成本约为单分块的 3 倍，低于 8 倍 TTA。它的作用不是“再涨一点 Dice”，而是把分块从不可控的混杂变量变成可显式控制的推理工具：当单分块 256 与 512 的结论冲突时，MTE 给出一个不依赖单点选择的稳定估计。
+
+同时，三张 $P_h$ 的像素方差 $V=\mathrm{Var}_h(P_h)$ 是一个低成本的不确定性来源。我们把它与预测熵、8 倍 TTA 误差一起用于失败病例（Dice $<0.7$）检测，报告 AUROC。这样，分块既是被审计的对象，也是审计其他变量的工具。
+
+\subsection{显存档位与消费级复现}\label{sec:vram}
+
+为了让“可在消费级显卡上复现”成为可检验的主张，而不是口号，本文给出六档显存配方（表~\ref{tab:vram}、图~\ref{fig:vram}）。每档固定分块、batch、梯度累积、AMP、channels\_last、深监督与 TTA 开关，并在元数据中标注状态为\textbf{实测}或\textbf{估算}。实测值来自 RTX 4060 Laptop 8 GB、Python 3.11、torch 2.5.1 CUDA 12.1、700 训练样本（去重前）。当前去重后划分的训练集为 699 例，单例差异不影响吞吐结论。
+
+\begin{table}[t]
+\centering
+\caption{显存档位配方。6 GB 与 8 GB 为实测，实测条件为去重前 700 训练样本；12 GB 及以上为外推估算，不得当作实测值引用。}
+\label{tab:vram}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+档位 & 分块 & batch/累积 & 深监督 & 峰值显存 & 吞吐（样本/秒） & 状态 \\
+\midrule
+6 GB  & $256\times512$  & 1/4 & 否 & 0.89 GB & 3.54 & 实测 \\
+8 GB  & $384\times768$  & 1/4 & 是 & 1.227 GB & 3.10 & 实测 \\
+12 GB & $384\times768$  & 2/2 & 是 & 估算 & 估算 & 估算 \\
+16 GB & $512\times1024$  & 2/1 & 是 & 估算 & 估算 & 估算 \\
+24 GB & $640\times1280$  & 2/1 & 是 & 估算 & 估算 & 估算 \\
+40 GB+& $640\times1280$  & 4/1 & 是 & 估算 & 估算 & 估算 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+8 GB 档的单轮实测为 225.6 s/epoch、3.10 样本/秒、峰值 1.227 GB；6 GB 档为 197.5 s/epoch、3.54 样本/秒、峰值 0.89 GB。上述 epoch 时间、吞吐与显存峰值均在同一批 700 个去重前训练样本上测得。对应实测 run 为 \path{20261106T203908Z_MGD-Former_nogit_7c6ef4}。两次冒烟均在预训练编码器未加载、随机初始化的条件下完成，日志记录了该降级原因。因此这些数字回答的是“能不能在 8 GB 上跑起来、吞吐多少”，不是“预训练后精度如何”。
+
+\input{figures/09_vram}
+
+档位是安全边界而非建议值：选择档位会覆盖分块、batch 与 AMP 等字段，避免出现“能启动但必然 OOM”的组合。换机后首次训练必须观察 \texttt{peak\_vram\_gb}，实测后回填并改状态；估算档不得冒充实测。这条规则与第~\ref{sec:discipline}~节的报告纪律同源：可复现性依赖对“已知”与“外推”的显式区分。
+
+\subsection{可编排流水线与实验登记}\label{sec:pipeline}
+
+模型比较需要多折、多配置、可中断的长任务，手工记录极易丢失上下文。本文把训练—评估—统计—报告组织为可编排流水线，阶段为 \texttt{pretrain}、\texttt{train}、\texttt{finetune}、\texttt{eval}、\texttt{ablation}、\texttt{report}；阶段状态写入 \texttt{pipeline\_state.json}，中断后重跑自动跳过已完成条目，失败条目按配置重试。
+
+每次运行生成独立目录，命名规则为
+\begin{equation}
+\texttt{run\_id}=\text{时间戳}\_\text{名称}\_\text{代码版本}\_\text{配置指纹前6位},
+\end{equation}
+重名自动追加序号，绝不覆盖已有 run。目录内固定包含：配置快照 \texttt{config.yaml}（含解析后的完整参数）、环境快照 \texttt{env.json}（代码版本、git commit、依赖、设备、路径）、逐轮指标 \texttt{metrics.jsonl}、完整训练状态 checkpoint、带 \texttt{split\_signature} 的 \texttt{reference\_report.json} 与结果摘要 \texttt{run\_result.json}（含峰值显存、吞吐、墙钟时间）。断点续训保存模型、优化器、调度器、AMP scaler、轮次、全局步数、随机数状态、EMA shadow 与数据签名。
+
+实验登记的价值在于“多配置对比”可被机器读取。逐轮指标 \path{metrics.jsonl} 与结果摘要 \path{run_result.json} 既可支撑论文表格，也可支撑失败运行的追溯。第~\ref{sec:experiments}~节的实验矩阵直接映射到这些字段，而不是依赖人工笔记。
+
+\input{figures/10_pipeline}
+
+\subsection{评测纪律与 \texttt{split\_signature}}\label{sec:discipline}
+
+本文把评测写成协议，而不是“跑一次测试集”。协议包含五条：
+
+\begin{enumerate}[label=\textbf{E\arabic*.}]
+\item \textbf{患者级持久划分。}holdout 采用 \nTrain/\nVal/\nTest（\nTrainPatients/\nValPatients/\nTestPatients{} 名患者，seed 42），写入 \path{dataset_splits.json} 并同时记录文件清单签名与实际派分签名；5 折交叉验证复用同一份患者分组，不重新切分。
+\item \textbf{签名强制。}\texttt{split\_signature} 是训练/验证/测试文件名有序集合的 SHA-256 摘要。任何评估报告必须携带该签名；缺失签名的报告判为无效，不得进入论文表格或模型转正流程。
+\item \textbf{口径分离。}\texttt{train\_self} 必须显式标注，只能回答拟合程度；只有 holdout 或 5 折中未参与训练的折外预测可作为性能结论。
+\item \textbf{统计完整。}均值给 bootstrap 1000 次重采样的 95\% 置信区间；模型间用逐样本配对 Wilcoxon 符号秩检验，并以 Holm 校正控制多重比较；报告有效样本数。
+\item \textbf{权重状态。}训练产物一律标记 \texttt{verified=false}；只有带有效签名与独立评估的权重才能转正。加载未验证权重必须显式允许，并在日志与报告中写明原因。
+\end{enumerate}
+
+这条签名规则防的是三类真实风险：其一，调参后悄悄重切划分，使测试集事实上参与模型选择；其二，不同实验使用了不同的有效样本集合（因静默跳过损坏样本），却仍被放在同一张表中比较；其三，旧权重在全部数据上训练过，却被当作独立测试结果。签名把“哪一份样本参与了什么”变成不可篡改的元数据，从流程上排除这些风险。
+
+\subsection{分层架构与部署形态}\label{sec:architecture}
+
+系统按“内核—适配器”分层：\texttt{core} 不含任何 UI 依赖，包含配置、运行时、数据、模型、训练、推理、评估、成像、报告与工作流；\texttt{adapters} 提供 CLI 与 WebUI 薄壳，两者调用同一套 API。两端（Windows WebUI、Linux CLI）共享同一内核，版本 2.3.0，契约与回归测试共 146 项通过。
+
+模型注册表统一管理 MGD-Former 与四条基线；输出契约由 \texttt{unwrap\_outputs()} 统一解包（旧模型返回张量，MGD-Former 返回 \texttt{logits} 与三个辅助头）。权重 manifest 记录文件名、架构、版本、SHA-256、输入尺寸、归一化口径（\texttt{scale01+clahe} 及 clip limit）、训练来源与 \texttt{verified} 状态；设备自适应覆盖 CUDA/CPU，推理服务对模型做单例缓存并支持显式释放。图~\ref{fig:system} 给出分层与数据流。
+
+\input{figures/05_system}
+
+这些实现细节之所以进入方法章，是因为它们决定了实验能否被他人重跑：同一份 manifest、同一份配置快照、同一套分块默认值与同一份签名，构成“结果—代码—数据”的可追溯链条。缺少任何一环，第~\ref{sec:results}~节的比较都只能是不可复核的数字。

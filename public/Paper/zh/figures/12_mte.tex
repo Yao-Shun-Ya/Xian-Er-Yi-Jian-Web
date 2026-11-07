@@ -1,0 +1,31 @@
+\begin{figure}[t]
+\centering
+\ifnum\resultsavailable=1
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.78\linewidth, height=5.2cm,
+  ybar, bar width=16pt,
+  ymin=0, ymax=1,
+  ylabel={Dice},
+  symbolic x coords={384 single, MTE, 8x TTA},
+  xtick=data,
+  nodes near coords,
+  nodes near coords style={font=\scriptsize},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  enlarge x limits=0.25,
+  axis lines=left,
+  legend style={font=\scriptsize, at={(0.5,-0.22)}, anchor=north, legend columns=3},
+]
+\addplot[fill=slate!35, draw=slate!70] coordinates {(384 single,\gDiceMF)};
+\addplot[fill=teal!65, draw=teal!80] coordinates {(MTE,\mteDiceMF)};
+\addplot[fill=alert!45, draw=alert!70] coordinates {(8x TTA,\ttaEight)};
+\legend{单分块,MTE,8$\times$ TTA}
+\end{axis}
+\end{tikzpicture}
+\else
+\fbox{\parbox[c][4.5cm][c]{0.78\linewidth}{\centering\small MTE / TTA 结果待注入：同一 MGD-Former 权重，患者级测试集}}
+\fi
+\caption{分块与 TTA 的精度-成本权衡。MTE 为 256/384/512 概率平均，成本约 3 倍；8$\times$ TTA 成本约 8 倍。}
+\label{fig:mte}
+\end{figure}

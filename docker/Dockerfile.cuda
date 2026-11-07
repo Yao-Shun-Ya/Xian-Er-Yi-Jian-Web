@@ -1,0 +1,48 @@
+# 腺而易见 · CUDA 版容器（PyTorch 2.5.1 + cu121）
+# 构建（在仓库根目录执行）：
+#   docker build -f docker/Dockerfile.cuda -t mgd-seg:cuda .
+# 运行（挂载数据 / 权重 / 产物目录，宿主目录不会被镜像覆盖）：
+#   docker run --gpus all -p 7860:7860 \
+#     -v /path/images:/data -v /path/weights:/weights -v /path/outputs:/outputs \
+#     mgd-seg:cuda
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# opencv / Pillow 运行期依赖
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# pyproject 的 readme 指向 docs/engineering/FREEZE_BASELINE.md，需一并复制
+COPY pyproject.toml ./
+COPY docs/engineering ./docs/engineering
+COPY mgd ./mgd
+
+RUN pip install --index-url https://download.pytorch.org/whl/cu121 torch==2.5.1 \
+    && pip install ".[ui]"
+
+RUN useradd --create-home --uid 10001 mgd \
+    && mkdir -p /data /weights /outputs \
+    && chown -R mgd:mgd /app /data /weights /outputs
+
+USER mgd
+
+ENV MGD_HOME=/app \
+    MGD_DATA_DIR=/data \
+    MGD_MODEL_DIR=/weights \
+    MGD_OUTPUT_DIR=/outputs \
+    MGD_PRETRAINED_DIR=/weights/pretrained \
+    MGD_HOST=0.0.0.0 \
+    MGD_PORT=7860 \
+    MGD_DEVICE=cuda
+
+EXPOSE 7860
+VOLUME ["/data", "/weights", "/outputs"]
+
+ENTRYPOINT ["mgd-ui"]

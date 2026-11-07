@@ -1,0 +1,272 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{foulks2003}
+\citation{villani2020latest}
+\citation{wise2012meibography}
+\citation{ngo2014repeat}
+\citation{saha2022automated}
+\citation{setu2021deep}
+\citation{saha2022automated}
+\citation{li2025multicenter}
+\citation{yu2025quantitative}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{3}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{3}{Introduction}{section.1}{}}
+\citation{foulks2003}
+\citation{villani2020latest}
+\citation{wise2012meibography}
+\citation{ngo2014repeat}
+\citation{prabhu2020segmentation}
+\citation{wang2021morphology}
+\citation{liu2022scribble}
+\citation{setu2021deep}
+\citation{wang2019deep}
+\citation{yu2022automatic}
+\citation{zhang2022density}
+\citation{lin2021automatic}
+\citation{liang2024exploring}
+\citation{saha2022automated}
+\citation{li2025multicenter}
+\citation{yu2025quantitative}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{5}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{5}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Clinical Diagnosis and Infrared Meibography}{5}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Automated Segmentation of Meibomian Glands}{5}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Public Benchmarks, Patient-Level Leakage, and Inference Confounders}{5}{subsection.2.3}\protected@file@percent }
+\citation{buglakova2025tiling}
+\citation{maganti2026uncertainty}
+\citation{geissler2024structure}
+\citation{ronneberger2015unet}
+\citation{oktay2018attention}
+\citation{zhou2018unetplusplus}
+\citation{ibtehaz2020multiresunet}
+\citation{isensee2021nnunet}
+\citation{transunet}
+\citation{swinunet}
+\citation{segformer}
+\citation{unetr}
+\citation{unetrpp}
+\citation{mednext}
+\citation{vmunet}
+\citation{umamba}
+\citation{cldice}
+\citation{skeletonrecall}
+\citation{boundaryloss}
+\citation{boundaryiou}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Architectures for Medical Image Segmentation}{6}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Losses and Metrics for Thin Tubular Structures}{6}{subsection.2.5}\protected@file@percent }
+\citation{infraredclahe}
+\citation{zerodce}
+\citation{lowlightsurvey}
+\citation{tent}
+\citation{cotta}
+\citation{wang2019aleatoric}
+\citation{gradcam}
+\citation{gradcampp}
+\citation{scorecam}
+\citation{wang2019aleatoric}
+\citation{uncertaintyreview}
+\citation{phiseg}
+\citation{claim2024update}
+\citation{tripodai}
+\citation{probast}
+\citation{reforms}
+\citation{metricsreloaded}
+\citation{metricpitfalls}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}Low-Contrast Enhancement, Domain Shift, and Inference Strategies}{7}{subsection.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7}Interpretability, Uncertainty, and Reporting Standards}{7}{subsection.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Method}{7}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{7}{Method}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Task Definition and Notation}{7}{subsection.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Method overview. The upper row is the default chain: shared preprocessing, a MiT-B2 encoder, a high-resolution fusion decoder retaining 1/4 and 1/8 features (stride 4), a dual-channel head, and postprocessing. The lower row lists four baselines compared under the same protocol. The bottom band denotes one preprocessing implementation shared by training and inference.}}{8}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:overview}{{1}{8}{Method overview. The upper row is the default chain: shared preprocessing, a MiT-B2 encoder, a high-resolution fusion decoder retaining 1/4 and 1/8 features (stride 4), a dual-channel head, and postprocessing. The lower row lists four baselines compared under the same protocol. The bottom band denotes one preprocessing implementation shared by training and inference}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Preprocessing}{8}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}MGD-Former: Encoder and High-Resolution Fusion Decoder}{8}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:mgdformer}{{3.3}{8}{MGD-Former: Encoder and High-Resolution Fusion Decoder}{subsection.3.3}{}}
+\citation{segformer}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Preprocessing consistency contract. The upper lane is the image path; the lower lane is the label path (nearest-neighbour + binarisation). The right side shows training augmentation and inference tiling. Training and inference call one implementation, locked by a pixel-wise test; tiling and threshold come from one schema.}}{9}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:preprocess}{{2}{9}{Preprocessing consistency contract. The upper lane is the image path; the lower lane is the label path (nearest-neighbour + binarisation). The right side shows training augmentation and inference tiling. Training and inference call one implementation, locked by a pixel-wise test; tiling and threshold come from one schema}{figure.caption.3}{}}
+\citation{cldice}
+\citation{ronneberger2015unet}
+\citation{oktay2018attention}
+\citation{zhang2018rcan}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Loss Function and Deep Supervision}{10}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:loss}{{3.4}{10}{Loss Function and Deep Supervision}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Baseline Architecture Family}{10}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:baselines}{{3.5}{10}{Baseline Architecture Family}{subsection.3.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Training Recipe and Inference Strategy}{11}{subsection.3.6}\protected@file@percent }
+\newlabel{sec:recipe}{{3.6}{11}{Training Recipe and Inference Strategy}{subsection.3.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Network structures. (a) MGD-Former: a four-stage MiT-B2 encoder; the 1/32 feature is fused successively with 1/16, 1/8, and 1/4 features, producing stride 4; three auxiliary heads attach at 1/4, 1/8, and 1/16. (b) The four baselines: symmetric UNet skips, Attention U-Net gating, WRCANet's RCAB enhancement backbone with a three-level U head, and MGD-PriorNet's FCAS/ASAB/APG-DD.}}{12}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:networks}{{3}{12}{Network structures. (a) MGD-Former: a four-stage MiT-B2 encoder; the 1/32 feature is fused successively with 1/16, 1/8, and 1/4 features, producing stride 4; three auxiliary heads attach at 1/4, 1/8, and 1/16. (b) The four baselines: symmetric UNet skips, Attention U-Net gating, WRCANet's RCAB enhancement backbone with a three-level U head, and MGD-PriorNet's FCAS/ASAB/APG-DD}{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Evaluation Metrics and Statistical Protocol}{12}{subsection.3.7}\protected@file@percent }
+\newlabel{sec:metrics}{{3.7}{12}{Evaluation Metrics and Statistical Protocol}{subsection.3.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}Evaluation Scope: Train-Self versus Independent Test}{13}{subsection.3.8}\protected@file@percent }
+\newlabel{sec:scope}{{3.8}{13}{Evaluation Scope: Train-Self versus Independent Test}{subsection.3.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9}Patient-Level Split and Leakage Audit}{13}{subsection.3.9}\protected@file@percent }
+\newlabel{sec:patient-split}{{3.9}{13}{Patient-Level Split and Leakage Audit}{subsection.3.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.10}Multi-Tile Ensemble and Uncertainty}{14}{subsection.3.10}\protected@file@percent }
+\newlabel{sec:mte}{{3.10}{14}{Multi-Tile Ensemble and Uncertainty}{subsection.3.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.11}Clinical Grading Endpoints}{14}{subsection.3.11}\protected@file@percent }
+\newlabel{sec:clinical}{{3.11}{14}{Clinical Grading Endpoints}{subsection.3.11}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Engineering as Method: Consistency, Tiling, and Reproducibility}{14}{section.4}\protected@file@percent }
+\newlabel{sec:engineering}{{4}{14}{Engineering as Method: Consistency, Tiling, and Reproducibility}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Patient-Level Split and Leakage Audit}{14}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:leakage}{{4.1}{14}{Patient-Level Split and Leakage Audit}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Train--Inference Consistency Contract}{15}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:contract}{{4.2}{15}{Train--Inference Consistency Contract}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}The Hidden Effect of Tile Size}{15}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:tiling}{{4.3}{15}{The Hidden Effect of Tile Size}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Experimental protocol.}{15}{section*.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Three-way pairing, integrity, and patient-level splitting. Images, gland masks, and eyelid masks are indexed by basename; an integrity failure terminates the run. The patient-level persistent holdout uses 694/153/152{} (239/50/49{} patients) and records both a file-list signature and an assignment signature; five-fold is an extension reusing the same patient groups.}}{16}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:pairing}{{4}{16}{Three-way pairing, integrity, and patient-level splitting. Images, gland masks, and eyelid masks are indexed by basename; an integrity failure terminates the run. The patient-level persistent holdout uses \nTrain /\nVal /\nTest {} (\nTrainPatients /\nValPatients /\nTestPatients {} patients) and records both a file-list signature and an assignment signature; five-fold is an extension reusing the same patient groups}{figure.caption.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Effect of tile height on Dice (same weights, only tiling changed; threshold 0.7, TTA off, no postprocessing or ROI; $n=40$).}}{16}{table.caption.7}\protected@file@percent }
+\newlabel{tab:tiling}{{1}{16}{Effect of tile height on Dice (same weights, only tiling changed; threshold 0.7, TTA off, no postprocessing or ROI; $n=40$)}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Multi-Tile Ensemble: Turning Tiling from a Confounder into an Inference Tool}{16}{subsection.4.4}\protected@file@percent }
+\newlabel{sec:mte-system}{{4.4}{16}{Multi-Tile Ensemble: Turning Tiling from a Confounder into an Inference Tool}{subsection.4.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Tiling sensitivity (same weights, only tile height changed; threshold 0.7, TTA off, no postprocessing or ROI; $n=40$). The default is 384; full-image inference drops because the train--inference scale no longer matches.}}{17}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:tiling}{{5}{17}{Tiling sensitivity (same weights, only tile height changed; threshold 0.7, TTA off, no postprocessing or ROI; $n=\tilingN $). The default is 384; full-image inference drops because the train--inference scale no longer matches}{figure.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces VRAM tier recipes. The 6\,GB and 8\,GB tiers are measured on the pre-deduplication 700-case training set; 12\,GB and above are extrapolated estimates and must not be cited as measurements.}}{17}{table.caption.9}\protected@file@percent }
+\newlabel{tab:vram}{{2}{17}{VRAM tier recipes. The 6\,GB and 8\,GB tiers are measured on the pre-deduplication 700-case training set; 12\,GB and above are extrapolated estimates and must not be cited as measurements}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}VRAM Tiers and Consumer-GPU Reproducibility}{17}{subsection.4.5}\protected@file@percent }
+\newlabel{sec:vram}{{4.5}{17}{VRAM Tiers and Consumer-GPU Reproducibility}{subsection.4.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Six VRAM tiers. The 6\,GB and 8\,GB tiers are measured on an RTX 4060 Laptop 8\,GB with the 700-case pre-deduplication training set (peak and throughput); 12\,GB and above are planning tiers with no numeric extrapolation. Estimated tiers must not be presented as measurements.}}{18}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:vram}{{6}{18}{Six VRAM tiers. The 6\,GB and 8\,GB tiers are measured on an RTX 4060 Laptop 8\,GB with the 700-case pre-deduplication training set (peak and throughput); 12\,GB and above are planning tiers with no numeric extrapolation. Estimated tiers must not be presented as measurements}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Experiment pipeline. Integrity checking and splitting come first, and the signature is written into each run. Per-fold training produces an independent run directory; evaluation and statistics use out-of-fold predictions; the report stage validates the signature and refuses reports without one. The state file supports retry and resumption.}}{18}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:pipeline}{{7}{18}{Experiment pipeline. Integrity checking and splitting come first, and the signature is written into each run. Per-fold training produces an independent run directory; evaluation and statistics use out-of-fold predictions; the report stage validates the signature and refuses reports without one. The state file supports retry and resumption}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Orchestrated Pipeline and Experiment Registry}{18}{subsection.4.6}\protected@file@percent }
+\newlabel{sec:pipeline}{{4.6}{18}{Orchestrated Pipeline and Experiment Registry}{subsection.4.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Evaluation Discipline and \texttt  {split\_signature}}{19}{subsection.4.7}\protected@file@percent }
+\newlabel{sec:discipline}{{4.7}{19}{Evaluation Discipline and \texttt {split\_signature}}{subsection.4.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8}Layered Architecture and Deployment}{19}{subsection.4.8}\protected@file@percent }
+\newlabel{sec:architecture}{{4.8}{19}{Layered Architecture and Deployment}{subsection.4.8}{}}
+\citation{saha2022automated}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces System layers and data flow. Adapters are thin shells; every entry point passes through the same training, inference, and evaluation implementation. Workflow handles orchestration and resumption; the artefact layer stores configuration snapshots, per-epoch metrics, full checkpoints, and signed evaluation reports.}}{20}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:system}{{8}{20}{System layers and data flow. Adapters are thin shells; every entry point passes through the same training, inference, and evaluation implementation. Workflow handles orchestration and resumption; the artefact layer stores configuration snapshots, per-epoch metrics, full checkpoints, and signed evaluation reports}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experimental Design}{20}{section.5}\protected@file@percent }
+\newlabel{sec:experiments}{{5}{20}{Experimental Design}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Data and Cohort}{20}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Patient-Level Split and Leakage Protocol}{20}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:split-design}{{5.2}{20}{Patient-Level Split and Leakage Protocol}{subsection.5.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Patient-level split and expert Meiboscore distribution.}}{21}{table.caption.13}\protected@file@percent }
+\newlabel{tab:split}{{3}{21}{Patient-level split and expert Meiboscore distribution}{table.caption.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Experiment matrix for the 9-hour budget. All runs share the patient-level split, preprocessing, loss, and inference protocol; the leaky control uses an image-level split.}}{21}{table.caption.14}\protected@file@percent }
+\newlabel{tab:ablation-design}{{4}{21}{Experiment matrix for the 9-hour budget. All runs share the patient-level split, preprocessing, loss, and inference protocol; the leaky control uses an image-level split}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Compared Models and Training Budget}{21}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Metrics and Statistics}{22}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Runtime Environment and Resource Measurement}{22}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Results and Discussion}{22}{section.6}\protected@file@percent }
+\newlabel{sec:results}{{6}{22}{Results and Discussion}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Main Patient-Level Results}{22}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Gland segmentation on the patient-level test set (mean; 95\% bootstrap CI in parentheses; $n=152$).}}{23}{table.caption.15}\protected@file@percent }
+\newlabel{tab:main-gland}{{5}{23}{Gland segmentation on the patient-level test set (mean; 95\% bootstrap CI in parentheses; $n=\nTest $)}{table.caption.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Leakage control on the clean-official subset (UNet; $n=60$).}}{23}{table.caption.16}\protected@file@percent }
+\newlabel{tab:leakage}{{6}{23}{Leakage control on the clean-official subset (UNet; $n=\cleanOfficialImages $)}{table.caption.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}The Cost of Leakage}{23}{subsection.6.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Leakage cost on the official clean-official subset. Both bars use the same UNet, epoch budget, and inference protocol; only the training split differs. Difference $\Delta =-0.0373$.}}{24}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:leakage}{{9}{24}{Leakage cost on the official clean-official subset. Both bars use the same UNet, epoch budget, and inference protocol; only the training split differs. Difference $\Delta =\leakDelta $}{figure.caption.17}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Tiling and TTA (MGD-Former; patient-level test set).}}{24}{table.caption.18}\protected@file@percent }
+\newlabel{tab:tta}{{7}{24}{Tiling and TTA (MGD-Former; patient-level test set)}{table.caption.18}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Tiling, MTE, and TTA}{24}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Uncertainty-Guided Review}{24}{subsection.6.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Accuracy--cost trade-off of tiling and TTA. MTE averages 256/384/512 probabilities and costs about 3$\times $; 8$\times $ TTA costs about 8$\times $.}}{25}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:mte}{{10}{25}{Accuracy--cost trade-off of tiling and TTA. MTE averages 256/384/512 probabilities and costs about 3$\times $; 8$\times $ TTA costs about 8$\times $}{figure.caption.19}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces AUROC for failure detection (MGD-Former; failure defined as Dice $<0.7$).}}{25}{table.caption.20}\protected@file@percent }
+\newlabel{tab:uncertainty}{{8}{25}{AUROC for failure detection (MGD-Former; failure defined as Dice $<0.7$)}{table.caption.20}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Clinical Grading and Upper/Lower Eyelid Subgroups}{25}{subsection.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6}The clDice Ablation Was Not Completed}{25}{subsection.6.6}\protected@file@percent }
+\citation{li2025multicenter}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces AUROC of three uncertainty signals for failure cases. Multi-tile variance shares the MTE cost; entropy is nearly free; 8$\times $ TTA is the most expensive.}}{26}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:uncertainty}{{11}{26}{AUROC of three uncertainty signals for failure cases. Multi-tile variance shares the MTE cost; entropy is nearly free; 8$\times $ TTA is the most expensive}{figure.caption.21}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Agreement between segmentation-derived Meiboscore and expert grading (MGD-Former).}}{26}{table.caption.22}\protected@file@percent }
+\newlabel{tab:clinical}{{9}{26}{Agreement between segmentation-derived Meiboscore and expert grading (MGD-Former)}{table.caption.22}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.7}Qualitative Results}{26}{subsection.6.7}\protected@file@percent }
+\newlabel{sec:qualitative}{{6.7}{26}{Qualitative Results}{subsection.6.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}Legacy Weights as an Engineering Anchor}{26}{subsection.6.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.9}Discussion}{26}{subsection.6.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Limitations and Risks}{26}{section.7}\protected@file@percent }
+\newlabel{sec:limitations}{{7}{26}{Limitations and Risks}{section.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Single-centre, single-device public data.}{26}{section*.25}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Upper/lower eyelid subgroups (MGD-Former; patient-level test set).}}{27}{table.caption.23}\protected@file@percent }
+\newlabel{tab:subgroup}{{10}{27}{Upper/lower eyelid subgroups (MGD-Former; patient-level test set)}{table.caption.23}{}}
+\@writefile{toc}{\contentsline {paragraph}{Nine-hour budget and a single holdout.}{27}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Limited power of the leakage control.}{27}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Incomplete clinical endpoints.}{27}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Distance metrics lack physical calibration.}{27}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pretraining may degrade.}{27}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Protocol boundary.}{27}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Leakage in legacy weights.}{27}{section*.32}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Qualitative results: input, expert reference, model prediction, and error map (red = false positive, blue = false negative). Rows are selected across upper/lower eyelids; the error map shows breaks, merges, and eyelid leakage, and does not replace metrics.}}{28}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:qualitative}{{12}{28}{Qualitative results: input, expert reference, model prediction, and error map (red = false positive, blue = false negative). Rows are selected across upper/lower eyelids; the error map shows breaks, merges, and eyelid leakage, and does not replace metrics}{figure.caption.24}{}}
+\@writefile{toc}{\contentsline {paragraph}{Licence and ethics.}{28}{section*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{28}{section.8}\protected@file@percent }
+\newlabel{sec:conclusion}{{8}{28}{Conclusion}{section.8}{}}
+\@writefile{toc}{\contentsline {section}{Declarations}{29}{section*.34}\protected@file@percent }
+\bibstyle{unsrt}
+\bibdata{refs}
+\bibcite{foulks2003}{1}
+\bibcite{villani2020latest}{2}
+\bibcite{wise2012meibography}{3}
+\bibcite{ngo2014repeat}{4}
+\bibcite{saha2022automated}{5}
+\bibcite{setu2021deep}{6}
+\bibcite{li2025multicenter}{7}
+\bibcite{yu2025quantitative}{8}
+\bibcite{prabhu2020segmentation}{9}
+\bibcite{wang2021morphology}{10}
+\bibcite{liu2022scribble}{11}
+\bibcite{wang2019deep}{12}
+\bibcite{yu2022automatic}{13}
+\bibcite{zhang2022density}{14}
+\bibcite{lin2021automatic}{15}
+\bibcite{liang2024exploring}{16}
+\bibcite{buglakova2025tiling}{17}
+\bibcite{maganti2026uncertainty}{18}
+\bibcite{geissler2024structure}{19}
+\bibcite{ronneberger2015unet}{20}
+\bibcite{oktay2018attention}{21}
+\bibcite{zhou2018unetplusplus}{22}
+\bibcite{ibtehaz2020multiresunet}{23}
+\bibcite{isensee2021nnunet}{24}
+\bibcite{transunet}{25}
+\bibcite{swinunet}{26}
+\bibcite{segformer}{27}
+\bibcite{unetr}{28}
+\bibcite{unetrpp}{29}
+\bibcite{mednext}{30}
+\bibcite{vmunet}{31}
+\bibcite{umamba}{32}
+\bibcite{cldice}{33}
+\bibcite{skeletonrecall}{34}
+\bibcite{boundaryloss}{35}
+\bibcite{boundaryiou}{36}
+\bibcite{infraredclahe}{37}
+\bibcite{zerodce}{38}
+\bibcite{lowlightsurvey}{39}
+\bibcite{tent}{40}
+\bibcite{cotta}{41}
+\bibcite{wang2019aleatoric}{42}
+\bibcite{gradcam}{43}
+\bibcite{gradcampp}{44}
+\bibcite{scorecam}{45}
+\bibcite{uncertaintyreview}{46}
+\bibcite{phiseg}{47}
+\bibcite{claim2024update}{48}
+\bibcite{tripodai}{49}
+\bibcite{probast}{50}
+\bibcite{reforms}{51}
+\bibcite{metricsreloaded}{52}
+\bibcite{metricpitfalls}{53}
+\bibcite{zhang2018rcan}{54}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Reproducibility Checklist}{36}{appendix.A}\protected@file@percent }
+\newlabel{app:checklist}{{A}{36}{Reproducibility Checklist}{appendix.A}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Hyperparameters and Implementation Details}{36}{appendix.B}\protected@file@percent }
+\newlabel{app:hyper}{{B}{36}{Hyperparameters and Implementation Details}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Build and Reproduction Commands}{36}{appendix.C}\protected@file@percent }
+\newlabel{app:build}{{C}{36}{Build and Reproduction Commands}{appendix.C}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Reproducibility checklist.}}{37}{table.caption.43}\protected@file@percent }
+\newlabel{tab:checklist}{{11}{37}{Reproducibility checklist}{table.caption.43}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Default training and inference configuration (single source: the engineering parameter schema).}}{38}{table.caption.44}\protected@file@percent }
+\newlabel{tab:hyper}{{12}{38}{Default training and inference configuration (single source: the engineering parameter schema)}{table.caption.44}{}}
+\gdef \@abspage@last{38}

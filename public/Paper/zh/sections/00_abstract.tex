@@ -1,0 +1,10 @@
+\begin{abstract}
+睑板腺功能障碍（MGD）的红外睑板影像分割已有大量深度学习方法，但公开基准的可比性仍受三类问题影响：图像级划分使同一患者跨训练与测试、分块推理参数未被报告、像素指标与临床 Meiboscore 脱节。本文在公开 MGD-1K 上建立一个患者独立、可复现的基准：\nTotal{} 例去重配对来自 338 名受试者，按患者分为 \nTrain/\nVal/\nTest{}（\nTrainPatients/\nValPatients/\nTestPatients{} 名患者），并公开划分文件与 assignment signature。
+
+我们首先量化一个被忽视的泄漏：官方 \officialTestImages{} 例 Meiboscore 测试清单含 \officialTestPatients{} 名患者，而其余 800 例中有 \officialLeakImages{} 例来自同一批患者；即使在患者级训练集中，仍有 \officialLeakPatients/\officialTestPatients{} 名测试患者出现。随后，在同一预处理、同一患者级划分、同一损失与同一推理协议下比较 UNet、Attention U-Net、WRCANet、MGD-PriorNet 与 MGD-Former 五条路线；其中 WRCANet 在 8\,GB 卡上未能在预算内收敛，主表只对四条可比较路线排名，WRCANet 作为预算可行性反例单独报告。MGD-Former 使用 ADE20K 预训练 MiT-B2 编码器与 stride=4 高分辨率融合解码器。
+
+我们把分块尺寸作为一等实验变量：同一权重仅改变分块高度即可使 Dice 从 0.370 变到 0.655；据此提出 Multi-Tile Ensemble（MTE），在 256/384/512 三个分块上平均概率。MTE 在 HD95 上改善边界，但未提高 Dice。进一步，我们比较多分块方差、预测熵与 8 倍 TTA 对失败病例的 AUROC，并报告分割导出的 R\_loss/Meiboscore 与 6 轮专家分级的一致性，以及上/下睑分层差异。临床一致性仅为 QWK \qwkMF，说明像素指标不能替代专家分级；TTA8 的 AUROC 接近 1.0 但存在标签--信号耦合，不能直接作为 triage 证据。全部精度数值来自统一训练与患者级独立测试；本文不报告任何未经实测的性能结论。
+
+\vspace{0.6em}
+\noindent\textbf{关键词：}睑板腺分割；公开基准；患者级泄漏；分块集成；不确定性；临床分级
+\end{abstract}

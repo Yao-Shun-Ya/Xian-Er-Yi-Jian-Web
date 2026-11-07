@@ -1,0 +1,32 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  p/.style={draw=slate, fill=mist, rounded corners=1.2pt, align=center, font=\scriptsize, minimum width=23mm, minimum height=9mm},
+  s/.style={draw=teal, fill=teal!12, rounded corners=1.2pt, align=center, font=\scriptsize, minimum width=23mm, minimum height=9mm},
+  r/.style={draw=alert!70, fill=alert!6, rounded corners=1.2pt, align=center, font=\scriptsize, minimum width=23mm, minimum height=9mm},
+  arr/.style={-{Stealth[length=1.8mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize, color=slate}
+]
+\node[p] (data) at (0,0) {\texttt{mgd-data check}\\完整性};
+\node[p, right=5mm of data] (split) at (3.0,0) {患者级划分\\\nTrain/\nVal/\nTest};
+\node[s, right=5mm of split] (sig) at (6.0,0) {文件清单 +\\派分签名};
+\node[s, right=5mm of sig] (train) at (9.0,0) {每次 run 训练\\run 目录/EMA};
+\node[s, right=5mm of train] (eval) at (12.0,0) {评估\\patient-level test};
+\node[s, right=5mm of eval] (stat) at (15.0,0) {统计\\bootstrap/Wilcoxon};
+\node[r, right=5mm of stat] (rep) at (18.0,0) {报告\\签名校验};
+\draw[arr] (data)--(split);\draw[arr] (split)--(sig);\draw[arr] (sig)--(train);
+\draw[arr] (train)--(eval);\draw[arr] (eval)--(stat);\draw[arr] (stat)--(rep);
+
+\node[p, below=9mm of train] (state) {\texttt{pipeline\_state.json}\\阶段状态};
+\node[p, below=9mm of eval] (retry) {失败重试\\断点续跑};
+\draw[arr, dashed] (state) -- (train);
+\draw[arr, dashed] (retry) -- (eval);
+
+\node[lab, above=4mm of train] {配置快照 + env.json + metrics.jsonl};
+\node[lab, above=4mm of eval] {分块 384×768、阈值 0.7、TTA 档位};
+\node[lab, above=4mm of rep] {缺签名 $\Rightarrow$ 无效};
+\end{tikzpicture}}
+\caption{实验流水线。数据完整性检查与患者级划分先行，文件清单签名与派分签名随运行写入；每次训练产出独立 run 目录，评估与统计在 patient-level test 上进行；报告阶段校验签名，缺失即拒绝。状态文件支持失败重试与断点续跑。}
+\label{fig:pipeline}
+\end{figure}

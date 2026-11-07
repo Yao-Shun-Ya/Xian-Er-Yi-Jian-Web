@@ -1,0 +1,7 @@
+\section{结论}\label{sec:conclusion}
+
+本文把睑板腺红外影像分割的问题从“再设计一个分割网络”转为“建立可比较、可审计的证据”。在公开 MGD-1K 上，我们建立了患者级划分（\nTrain/\nVal/\nTest{} 图像，\nTrainPatients/\nValPatients/\nTestPatients{} 名患者），并同时记录文件清单签名与派分签名；这使得“同名文件、不同派分”不再是不可追溯的隐性变量。
+
+方法学上，本文给出三项可复用的发现。第一，泄漏是可量化的：官方 \officialTestImages{} 例 Meiboscore 测试清单来自 \officialTestPatients{} 名患者，其余 800 例中有 \officialLeakImages{} 例来自同一批患者；即使患者级训练集也仍含 \officialLeakPatients/\officialTestPatients{} 名测试患者。第二，分块是与主干同等级的实验变量：同一权重仅改分块高度，Dice 可从 0.370 变到 0.655；MTE 用 256/384/512 三个分块的概率平均，在本轮主要改善 HD95（68.05→61.85）而非 Dice，因此定位为边界校正而非涨点方法。多分块方差的失败检测 AUROC 仅 0.639，TTA8 的 1.000 受标签--信号耦合影响，二者都不足以单独作为 triage 规则。第三，像素指标与临床终点必须同时报告：本队列中分割导出的 Meiboscore 与专家分级的 QWK 仅 0.131，说明当前 R\_loss→Meiboscore 链条不足以替代专家分级；上/下睑也必须分开报告。
+
+架构上，MGD-Former 用 MiT-B2 编码器保留 1/4 特征，以融合解码器输出 stride=4，并在三个尺度深监督；ADE20K 预训练针对 \nTotal{} 例的小数据冷启动。它是五条路线之一，而不是本文的唯一卖点。本文不提供未经实测的精度结论；所有数值已从统一训练与患者级独立测试的结果文件注入，并以置信区间、配对检验与多指标（Dice、clDice、HD95、ASSD、临床 QWK）共同支撑。

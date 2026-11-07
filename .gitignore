@@ -1,41 +1,90 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ==========================================
+# 1. 依赖与编译产物 (Dependencies & Build)
+# ==========================================
+node_modules/
+.next/
+out/
+build/
+dist/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# ==========================================
+# 2. 数据库与本地持久化 (Database)
+# ==========================================
+# 必须忽略，防止泄露反馈数据，同时也避免 Git 追踪二进制文件的频繁变化
+feedbacks.db
+feedbacks.db-journal
+xianeryijian.db
+xianeryijian.db-journal
+xianeryijian.db-wal
+xianeryijian.db-shm
+db/backups/
 
-# testing
-/coverage
+# ==========================================
+# 3. 环境与敏感信息 (Environment & Secrets)
+# ==========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# next.js
-/.next/
-/out/
+# ==========================================
+# 4. AI 模型与大型二进制文件 (AI & Binary Files)
+# ==========================================
+# 你的 U-Net/DeepLabV3+ 权重文件体积很大，不建议存入 Git
+*.pth
+*.onnx
+*.weights
+*.bin
 
-# production
-/build
+# 软件安装包/执行文件
+*.exe
+*.msi
+*.zip
 
-# misc
+# ==========================================
+# 5. 系统与编辑器缓存 (OS & Editors)
+# ==========================================
 .DS_Store
-*.pem
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.log
 
-# debug
+# ==========================================
+# 6. 其他 (Misc)
+# ==========================================
+# 自动生成的目录快照，不进入版本库
+folder_structure.txt
+# TypeScript 增量编译缓存
+*.tsbuildinfo
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# ==========================================
+# 7. Python 工程 mgd/ (Python Artifacts)
+# ==========================================
+# 解释器缓存与构建产物
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+# 虚拟环境（安装脚本会在仓库内创建）
+.venv/
+venv/
+# 训练与推理运行产物
+mgd/data/
+mgd/models_weights/
+mgd/outputs/
+mgd/logs/
+mgd/infer_presets.json
+*.ckpt
+# Local nested MGD_Project clone and extracted delivery folders (archives are tracked)
+public/file/upload/
+public/file/Windows.*WebUI/
+public/file/Linux.*/

@@ -1,0 +1,80 @@
+\section{Experimental Design}\label{sec:experiments}
+
+This section specifies an executable experiment matrix. All experiments share the consistency contract, tiling defaults, and evaluation protocol of Section~\ref{sec:engineering}; the only varying factor is stated in each table. Result tables are populated from the evaluation output by script; positions without a measurement remain ``---'', with a note on which artefacts are required.
+
+\subsection{Data and Cohort}
+
+The public MGD-1K dataset provides 1000 LipiView II infrared meibography images, gland and eyelid masks, and demographics for 320 subjects\cite{saha2022automated}. Of these, 467 are upper eyelids and 533 lower eyelids; 941 are gradable across six expert rounds, and every image has six Meiboscore rounds. Original sizes vary and are resized to $640\times1280$; images are single-channel grayscale.
+
+Integrity is enforced by three-way pairing: missing images, missing gland masks, missing eyelid masks, orphan masks, duplicate names, and malformed names all terminate the pipeline. After pairing we apply \textbf{content-level deduplication}: SHA-256 is computed for the image and both masks of every case and compared across the corpus. One group of differently named cases shares an image and both masks byte-for-byte; removing the redundant copy yields \nTotal{} valid pairs. Source data are unchanged, and the deduplication record is written to \texttt{dataset\_splits.json} and \texttt{dataset\_version.json}.
+
+\subsection{Patient-Level Split and Leakage Protocol}\label{sec:split-design}
+
+The numeric study id in MGD-1K filenames is a patient identifier. We group the \nTotal{} cases into 338 ids, stratify each group by its maximum expert Meiboscore, and assign whole subjects to train/val/test, obtaining \nTrain/\nVal/\nTest{} images (\nTrainPatients/\nValPatients/\nTestPatients{} patients) with mutually exclusive patients; the Meiboscore distribution is given in Table~\ref{tab:split}. The split file records both the file-list signature \splitSig{} and the assignment signature \assignmentSig{}; the former identifies the \nTotal{} stems, while the latter hashes the ordered train/val/test lists and answers which assignment this run actually used.
+
+The leakage protocol has three levels:
+\begin{enumerate}[label=\textbf{L\arabic*.}]
+\item \textbf{Patient composition of the official test list.} The official \officialTestImages-case Meiboscore test list comes from \officialTestPatients{} patients; \officialLeakImages{} of the remaining 800 images come from the same patients.
+\item \textbf{Residual leakage in the patient-level training set.} Even with a patient-level split, the \nTrain{} training set still contains \officialLeakPatients/\officialTestPatients{} official-test patients (355 images).
+\item \textbf{Clean-official control.} We keep only official-test images whose patient is absent from the patient-level training set: \cleanOfficialImages{} images/\cleanOfficialPatients{} patients. We additionally train an image-level leaky control (\leakyTrainImages{} train / \leakyValImages{} val, official 200 test) and compare it on the same clean-official subset.
+\end{enumerate}
+
+\begin{table}[t]
+\centering
+\caption{Patient-level split and expert Meiboscore distribution.}
+\label{tab:split}
+\small
+\begin{tabular}{lccc}
+\toprule
+Split & Images & Patients & Meiboscore 0/1/2/3 \\
+\midrule
+Train & \nTrain & \nTrainPatients & 119/432/117/26 \\
+Val   & \nVal   & \nValPatients   & 26/92/28/7 \\
+Test  & \nTest  & \nTestPatients  & 35/87/23/7 \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\footnotesize File-list signature: \texttt{\splitSig}; assignment signature: \texttt{\assignmentSig}.
+\end{table}
+
+Threshold 0.7, tiles $384\times768$, and overlap 0.25 are fixed once on validation and frozen; no test-time tuning is permitted. If a model requires a different threshold, it is reported as part of that model's configuration.
+
+\subsection{Compared Models and Training Budget}
+
+The main table includes five models: UNet, Attention U-Net, WRCANet, MGD-PriorNet, and MGD-Former. All use the same loss (Section~\ref{sec:loss}), augmentation, optimiser, and patient-level split; only backbone and decoder differ. To keep the 9-hour budget, this round uses a single holdout rather than five-fold cross-validation; five-fold is left as an extension and is not presented as if it had been run. Table~\ref{tab:ablation-design} lists the seven training runs actually executed.
+
+\begin{table}[t]
+\centering
+\caption{Experiment matrix for the 9-hour budget. All runs share the patient-level split, preprocessing, loss, and inference protocol; the leaky control uses an image-level split.}
+\label{tab:ablation-design}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llllll}
+\toprule
+ID & Model & Split & Epochs & Effective batch & Purpose \\
+\midrule
+E1 & MGD-Former (ADE20K) & patient-level & 45 & 4 & main model \\
+E2 & UNet & patient-level & 30 & 4 & classical baseline \\
+E3 & AttentionUNet & patient-level & 24 & 4 & attention baseline \\
+E4 & WRCANet & patient-level & 12 & 4 (2$\times$2) & enhancement baseline \\
+E5 & MGD-PriorNet & patient-level & 24 & 4 & anatomical-prior baseline \\
+E6 & UNet w/o clDice & patient-level & — & 4 & not run (compute moved to AttentionUNet continuation) \\
+E7 & UNet & official-200 leaky & 25 & 4 & leakage control \\
+\bottomrule
+\end{tabular}}
+\vspace{2pt}
+\footnotesize Actual epochs are taken from \texttt{metrics.jsonl}: MGD-Former 45, UNet 30, AttentionUNet 15 (9 + 6 continuation), WRCANet 1 (budget-truncated, not ranked), MGD-PriorNet about 12 (budget-truncated). The table lists planned maxima.
+\end{table}
+
+Recipe: AdamW, learning rate $1\times10^{-4}$, weight decay $1\times10^{-4}$, cosine annealing, AMP and channels\_last on, EMA 0.99. EMA is 0.99 rather than 0.999 because under a 9-hour budget the 0.999 shadow is still dominated by random initialisation after a few hundred steps, hiding the validation curve behind the shadow weights; this is logged and is not the long-training default. The WRCANet enhancement backbone uses gradient checkpointing on the 8\,GB card with batch 2 and accumulation 2; other models use batch 4 and accumulation 1, giving an effective batch of 4.
+
+\subsection{Metrics and Statistics}
+
+For glands we report Dice, IoU, HD95, ASSD, clDice, Precision, and Recall; for the eyelid auxiliary task we report Dice. Surface distances are in pixels because images lack physical calibration. Undefined values from empty masks are returned as NaN with a reason, never replaced by 0. Clinical endpoints include R\_loss, Meiboscore, and accuracy/MAE/quadratic weighted kappa (QWK) against six expert rounds. Dice and clDice are also reported separately for upper and lower eyelids.
+
+Means carry 95\% confidence intervals from 1{,}000 bootstrap resamples; models are compared with per-sample paired Wilcoxon signed-rank tests and Holm correction; valid $n$ is reported. Every report must carry both the file-list signature and the assignment signature; a missing signature invalidates the report.
+
+\subsection{Runtime Environment and Resource Measurement}
+
+Training was performed on Windows 11, RTX 4060 Laptop 8\,GB, Python 3.10.6, torch 2.5.1 (CUDA 12.1). E1 measured about 4.4--4.9 samples/s and 143--159\,s per epoch, with a peak of about 3.6\,GB. Each run records peak VRAM, samples/s, and wall time; reports cite measured values only, with estimated tiers labelled. Inference records per-case latency, tiling parameters, and whether TTA is enabled.

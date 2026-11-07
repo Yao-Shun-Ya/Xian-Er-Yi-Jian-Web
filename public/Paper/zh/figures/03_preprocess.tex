@@ -1,0 +1,37 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  b/.style={draw=slate, fill=mist, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=8mm, inner sep=2pt},
+  hi/.style={draw=teal, fill=teal!12, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=8mm, inner sep=2pt},
+  arr/.style={-{Stealth[length=1.8mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize, color=slate}
+]
+\node[lab] at (0,2.2) {\textbf{影像路径（训练 \& 推理共用）}};
+\node[b] (i1) at (0,1.4) {原始影像};
+\node[b, right=4mm of i1] (i2) {EXIF 方向};
+\node[b, right=4mm of i2] (i3) {灰度化\\BT.601};
+\node[b, right=4mm of i3] (i4) {双线性\\$\to 640\times1280$};
+\node[b, right=4mm of i4] (i5) {除以 255};
+\node[b, right=4mm of i5] (i6) {CLAHE\\clip 0.02};
+\draw[arr] (i1)--(i2);\draw[arr] (i2)--(i3);\draw[arr] (i3)--(i4);\draw[arr] (i4)--(i5);\draw[arr] (i5)--(i6);
+
+\node[lab] at (0,-0.5) {\textbf{标签路径}};
+\node[b] (m1) at (0,-1.3) {原始掩膜};
+\node[b, right=4mm of m1] (m2) {EXIF 方向};
+\node[b, right=4mm of m2] (m3) {最近邻缩放};
+\node[b, right=4mm of m3] (m4) {$>0$ 二值化};
+\draw[arr] (m1)--(m2);\draw[arr] (m2)--(m3);\draw[arr] (m3)--(m4);
+
+\node[hi] (aug) at (11.6,1.4) {训练期增强\\翻转/旋转/强度};
+\draw[arr] (i6) -- (aug);
+\node[hi] (tile) at (11.6,-1.3) {推理期分块\\$384\times768$, overlap 0.25};
+\draw[arr] (i6) |- (tile);
+
+\node[draw=alert!70, fill=alert!6, rounded corners=2pt, minimum width=0.95\linewidth, minimum height=10mm, align=center, font=\scriptsize] at (5.2,-2.5)
+{一致性契约：同一函数、同一参数；训练/推理逐像素比对容差 $10^{-6}$。任何一侧改动都会使契约测试失败。};
+\node[lab] at (5.2,-3.15) {分块参数（尺寸、重叠、阈值）来自同一份 schema，评估脚本不得自行改写};
+\end{tikzpicture}}
+\caption{预处理一致性契约。上行为影像路径，下行为标签路径（最近邻 + 二值化）；右侧为训练增强与推理分块。训练与推理调用同一实现，并由逐像素测试锁定；分块与阈值来自同一份参数 schema。}
+\label{fig:preprocess}
+\end{figure}

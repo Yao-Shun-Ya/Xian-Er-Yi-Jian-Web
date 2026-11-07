@@ -1,0 +1,84 @@
+% !TeX program = xelatex
+% 编译顺序：xelatex main -> bibtex main -> xelatex main -> xelatex main
+\documentclass[11pt,a4paper,fontset=windows]{ctexart}
+
+\usepackage[left=2.6cm,right=2.6cm,top=2.8cm,bottom=2.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit,backgrounds,patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,labelsep=quad}
+\captionsetup[table]{skip=3pt}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=2em}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\floatname{algorithm}{算法}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!55!black]{hyperref}
+\usepackage{url}
+
+\linespread{1.18}
+\setlength{\emergencystretch}{2em}
+
+\definecolor{ink}{HTML}{22303C}
+\definecolor{slate}{HTML}{4A6572}
+\definecolor{mist}{HTML}{E9EEF1}
+\definecolor{teal}{HTML}{6E8F8C}
+\definecolor{sand}{HTML}{C9B79C}
+\definecolor{alert}{HTML}{B23A48}
+
+% 占位标记：稿件定稿前统一检索并替换
+\newcommand{\needdata}[1]{\textcolor{alert}{[待补数据：#1]}}
+\newcommand{\needcheck}[1]{\textcolor{alert}{[待核：#1]}}
+\newcommand{\ph}{\,--\,}
+
+% 唯一数字入口：所有实验数值宏在此定义
+\input{data/results}
+
+\title{\bfseries 面向公开基准的睑板腺分割：\\[2pt]
+患者级泄漏、分块混杂与不确定性引导复核}
+\author{第一作者$^{1}$\thanks{通信作者：待填（姓名、邮箱、单位地址）。}\quad
+第二作者$^{1}$\quad 第三作者$^{2}$\\[4pt]
+{\small $^{1}$待填单位一，城市，邮编\quad $^{2}$待填单位二，城市，邮编}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\footnotesize\color{gray}
+稿件状态：基准稿 v0.4（MGD-1K 患者级划分 + 工程基线 v2.3.0）\quad|\quad 实验数值由统一训练与患者级独立测试注入\quad|\quad
+作者、单位、基金、伦理批号均为待替换项
+\end{center}
+
+\vspace{-0.6em}
+
+\tableofcontents
+\newpage
+
+\input{sections/00_abstract}
+\input{sections/01_intro}
+\input{sections/02_related}
+\input{sections/03_method}
+\input{sections/04_system}
+\input{sections/05_experiments}
+\input{sections/06_results}
+\input{sections/07_limitations}
+\input{sections/08_conclusion}
+\input{sections/09_declarations}
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\appendix
+\input{sections/90_appendix}
+
+\end{document}

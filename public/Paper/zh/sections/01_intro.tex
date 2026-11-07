@@ -1,0 +1,26 @@
+\section{引言}\label{sec:intro}
+
+睑板腺功能障碍（Meibomian Gland Dysfunction, MGD）是干眼症最常见的病因之一\cite{foulks2003,villani2020latest}。红外/近红外睑板摄影可以在无创条件下显示腺体缺失、扭曲与缩短，Meiboscore 等分级体系据此把腺体丢失程度映射为临床等级\cite{wise2012meibography,ngo2014repeat}。人工分级依赖观察者经验，重复性有限；把腺体与睑缘从影像中逐像素分割出来，是实现面积、长度、弯曲度与 R\_loss 等定量指标的前提。
+
+这项分割任务有三个不同于通用语义分割的特点。第一，目标极细：在 $640\times1280$ 输入下，腺体宽度仅 3--8 像素，任何 stride 16 的主干都会把目标压到亚像素，断裂先于 Dice 出现，并集中体现在 HD95 与骨架连续性上。第二，对比度低且跨设备差异大：不同红外相机的曝光、增益与噪声分布不同。第三，数据规模小：千例级配对数据不足以从零训练大规模 Transformer，预训练初始化与强正则成为必要条件\cite{saha2022automated,setu2021deep}。
+
+公开数据已经改变了这一领域的研究方式。MGD-1K 提供 1000 幅 LipiView II 红外影像、腺体与睑缘掩膜、320 名受试者的人口学信息，以及每幅影像 6 轮专家 Meiboscore\cite{saha2022automated}；近年的多中心工作与 MGD-1K 上的基线也说明，公开数据足以支撑可复现比较\cite{li2025multicenter,yu2025quantitative}。但公开数据并不自动带来可比较性。本文认为，当前证据仍受三类问题影响。
+
+\textbf{(i) 患者级泄漏。}MGD-1K 的官方 \officialTestImages{} 例 Meiboscore 测试清单来自 \officialTestPatients{} 名患者；其余 800 例中有 \officialLeakImages{} 例来自同一批患者。图像级随机划分会让同一患者的上下睑、左右眼跨训练与测试；即使先在患者级做划分，若直接使用官方 200 例测试，仍有 \officialLeakPatients/\officialTestPatients{} 名测试患者出现在训练集中。泄漏不是“多用了数据”，而是把受试者身份当成可记忆的特征，系统性高估泛化。
+
+\textbf{(ii) 分块推理的隐性影响。}分块高度、重叠、阈值与 TTA 往往只写在实现细节里，甚至不写。我们在同一权重、仅改变分块高度的条件下观察到 Dice 从 0.370 变到 0.655，整图推理反而降到 0.593。这意味着同一模型可以被叙述成强或弱，而读者无法判断差异来自架构还是推理配置。
+
+\textbf{(iii) 像素指标与临床终点的脱节。}Dice、HD95 与 clDice 描述的是像素与拓扑，不等同于 Meiboscore 分级或腺体丢失率。公开数据提供 6 轮专家分级，使我们能够把“分割→R\_loss→Meiboscore”的链条与临床分级直接对照，并检验上/下睑分层差异——既往工作常因下睑暴露不全而排除下睑，这会掩盖真实的临床难度。
+
+本文因此把“可比较性”与“泄漏审计”作为第一贡献，而不是把某个新模块作为卖点。具体贡献如下。
+
+\begin{enumerate}[label=(\arabic*)]
+\item \textbf{患者级公开基准。}在 MGD-1K 的 \nTotal{} 例去重配对上建立患者独立划分：\nTrain/\nVal/\nTest{} 图像（\nTrainPatients/\nValPatients/\nTestPatients{} 名患者），公开划分文件、文件清单签名与 assignment signature，避免“同名文件不同派分”的不可追溯问题。
+\item \textbf{泄漏审计与量化。}报告官方 \officialTestImages{} 例测试清单的患者构成（\officialTestPatients{} 名患者）、\officialLeakImages/800{} 的图像级泄漏与 \officialLeakPatients/\officialTestPatients{} 的患者级泄漏；构造 \cleanOfficialImages{} 图/\cleanOfficialPatients{} 患者的 clean-official 子集，并比较 patient-level 与 leaky 协议的性能差。
+\item \textbf{同协议五路线比较。}UNet、Attention U-Net、WRCANet、MGD-PriorNet 与 MGD-Former 在同一预处理、同一患者级划分、同一损失组合、同一分块与阈值下训练与评估；WRCANet 在 8\,GB 卡上未能在预算内收敛，主表只对四条可比较路线排名，WRCANet 作为显存/时间可行性反例单独报告。四条可比较路线是基线对照与消融分支，不是被替代的失败尝试。
+\item \textbf{分块作为一等变量与 Multi-Tile Ensemble（MTE）。}在同一权重上系统报告 128--512 与整图的分块敏感性；提出在 256/384/512 三个分块上平均概率的 MTE，并报告其在 HD95 上的边界改善（Dice 未提高），与 8 倍 TTA 比较精度与推理成本。
+\item \textbf{不确定性引导复核。}比较多分块方差、预测熵与 8 倍 TTA 对失败病例（Dice $<0.7$）的 AUROC，并报告其局限；本轮方差信号只有中等偏弱，TTA8 存在标签--信号耦合，不能单独作为 triage 规则。
+\item \textbf{临床分级与分层。}报告分割导出的 R\_loss/Meiboscore 与 6 轮专家分级的准确率、MAE 与 quadratic weighted kappa，并按上/下睑分层报告 Dice/clDice 差异。
+\end{enumerate}
+
+本文不虚构任何精度结论。所有 Dice/IoU/HD95/clDice、AUROC 与临床一致性数值在统一训练与独立测试完成后由脚本从结果文件注入；分块敏感性与显存/吞吐是工程实测，单独标注测量条件。第~\ref{sec:method}~节描述方法与训练配方，第~\ref{sec:engineering}~节把患者级划分、泄漏审计与 MTE 写成方法学章节，第~\ref{sec:experiments}~节给出实验矩阵，第~\ref{sec:results}~节给出结果结构与讨论，第~\ref{sec:limitations}~节列出限制。

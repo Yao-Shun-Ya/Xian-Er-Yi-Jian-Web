@@ -1,0 +1,79 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  st/.style={draw=teal, fill=teal!10, rounded corners=1.5pt, align=center, font=\scriptsize, minimum width=20mm, minimum height=10mm},
+  dc/.style={draw=slate, fill=mist, rounded corners=1.5pt, align=center, font=\scriptsize, minimum width=20mm, minimum height=9mm},
+  hd/.style={draw=alert!70, fill=alert!7, rounded corners=1.5pt, align=center, font=\scriptsize, minimum width=18mm, minimum height=7mm},
+  arr/.style={-{Stealth[length=2mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize, color=slate}
+]
+\node[font=\small\bfseries] at (-1.2,4.3) {(a) MGD-Former};
+\node[st] (s1) at (1.2,2.7) {Stage 1\\stride 4, 64ch\\depth 3, head 1};
+\node[st] (s2) at (5.0,2.7) {Stage 2\\stride 8, 128ch\\depth 4, head 2};
+\node[st] (s3) at (8.8,2.7) {Stage 3\\stride 16, 320ch\\depth 6, head 5};
+\node[st] (s4) at (12.6,2.7) {Stage 4\\stride 32, 512ch\\depth 3, head 8};
+
+\node[dc] (d16) at (8.8,0.6) {fuse 1/16\\$3\times3$+BN+GELU};
+\node[dc] (d8)  at (5.0,0.6) {fuse 1/8\\$3\times3$+BN+GELU};
+\node[dc] (d4)  at (1.2,0.6) {fuse 1/4\\$3\times3$+BN+GELU};
+\node[hd] (out) at (-2.6,0.6) {双通道\\腺体/睑缘};
+\node[hd] (aux) at (2.9,-1.1) {辅助头\\1/4,1/8,1/16};
+
+\draw[arr] (s4.south) -- node[lab,right]{1$\times$1} (d16.north);
+\draw[arr] (s3.south) -- (d16.north);
+\draw[arr] (d16) -- node[lab,above]{上采样+加} (d8);
+\draw[arr] (s2.south) -- (d8.north);
+\draw[arr] (d8) -- node[lab,above]{上采样+加} (d4);
+\draw[arr] (s1.south) -- (d4.north);
+\draw[arr] (d4) -- node[lab,above]{$3\times3$, $1\times1$} (out);
+\draw[-{Stealth[length=2mm]}, dashed, draw=alert] (d4.south) -- (aux.north);
+\draw[-{Stealth[length=2mm]}, dashed, draw=alert] (d8.south) -- (aux.north);
+\draw[-{Stealth[length=2mm]}, dashed, draw=alert] (d16.south) -- (aux.north);
+\node[lab] at (11.4,-1.15) {输出 stride = 4，双线性回 $640\times1280$};
+\node[lab] at (5.0,3.8) {编码器：MiT-B2，ADE20K 预训练（仅编码器）};
+
+% (b)
+\begin{scope}[yshift=-6.4cm]
+\node[font=\small\bfseries] at (-1.2,3.1) {(b) 基线架构族};
+% row 1 UNet
+\node[dc, minimum width=16mm] (u1) at (0,2.2) {enc 64--1024};
+\node[dc, minimum width=16mm, right=6mm of u1] (u2) {skip + decoder};
+\node[hd, right=6mm of u2] (u3) {2 通道};
+\draw[arr] (u1)--(u2);\draw[arr] (u2)--(u3);
+\node[lab, left=4mm of u1] {UNet};
+
+% row 2 attention
+\node[dc, minimum width=16mm] (a1) at (0,0.8) {enc};
+\node[dc, minimum width=16mm, right=6mm of a1] (a2) {attention gate};
+\node[hd, right=6mm of a2] (a3) {2 通道};
+\draw[arr] (a1)--(a2);\draw[arr] (a2)--(a3);
+\node[lab, left=4mm of a1] {Att. U-Net};
+
+% row 3 WRCANet
+\node[dc, minimum width=16mm] (w1) at (0,-0.6) {8 组 $\times$ 10 RCAB};
+\node[dc, minimum width=16mm, right=6mm of w1] (w2) {3 级 U 头};
+\node[hd, right=6mm of w2] (w3) {2 通道};
+\draw[arr] (w1)--(w2);\draw[arr] (w2)--(w3);
+\node[lab, left=4mm of w1] {WRCANet};
+
+% row 4 prior
+\node[dc, minimum width=16mm] (p1) at (0,-2.0) {FCAS 前端};
+\node[dc, minimum width=16mm, right=6mm of p1] (p2) {ASAB 各向异性};
+\node[dc, minimum width=16mm, right=6mm of p2] (p3) {APG-DD 门控};
+\node[hd, right=6mm of p3] (p4) {2 通道};
+\draw[arr] (p1)--(p2);\draw[arr] (p2)--(p3);\draw[arr] (p3)--(p4);
+\node[lab, left=4mm of p1] {MGD-PriorNet};
+
+% RCAB inset
+\node[draw=slate!60, dashed, rounded corners=2pt, minimum width=78mm, minimum height=24mm] at (10.8,0.5) (rcabbox) {};
+\node[font=\scriptsize\bfseries] at (10.8,1.55) {RCAB（WRCANet 内部）};
+\node[font=\tiny, align=center] at (10.8,0.55) {conv $3\times3$ $\to$ ReLU $\to$ conv $3\times3$ $\to$ GAP\\[1pt]
+$\to$ FC($r{=}16$) $\to$ ReLU $\to$ FC $\to$ sigmoid\\[1pt]
+$\to$ 通道缩放 $\odot$ $+$ 恒等路径};
+\node[font=\tiny, color=slate, align=center] at (10.8,-0.75) {通道注意力重标定，保留低对比度细结构};
+\end{scope}
+\end{tikzpicture}}
+\caption{网络结构。(a) MGD-Former：MiT-B2 四级编码器，1/32 特征逐级与 1/16、1/8、1/4 融合，输出 stride=4；三个辅助头分别接在 1/4、1/8、1/16。 (b) 四条基线：UNet 的对称 skip、Attention U-Net 的门控、WRCANet 的 RCAB 增强主干与三级 U 头、MGD-PriorNet 的 FCAS/ASAB/APG-DD。}
+\label{fig:networks}
+\end{figure}

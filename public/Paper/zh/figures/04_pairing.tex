@@ -1,0 +1,38 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  d/.style={draw=slate, fill=mist, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=9mm, minimum width=20mm, inner sep=2pt},
+  ok/.style={draw=teal, fill=teal!12, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=9mm, minimum width=20mm},
+  bad/.style={draw=alert, fill=alert!8, rounded corners=1.2pt, align=center, font=\scriptsize, minimum height=9mm, minimum width=20mm},
+  arr/.style={-{Stealth[length=1.8mm]}, draw=slate, thick},
+  lab/.style={font=\scriptsize, color=slate}
+]
+\node[d] (img) at (0,1.6) {\texttt{images/}\\$n$ 张};
+\node[d] (gm)  at (0,0.5) {\texttt{gland\_masks/}\\同名};
+\node[d] (em)  at (0,-0.6) {\texttt{eyelid\_masks/}\\同名};
+
+\node[d] (idx) at (3.2,-0.05) {按 basename\\建立三元索引};
+\node[d] (chk) at (6.3,-0.05) {完整性检查\\缺项/孤儿/重名/命名};
+\node[bad] (fail) at (6.3,-1.8) {硬失败\\终止，不静默跳过};
+
+\draw[arr] (img) -- (idx);
+\draw[arr] (gm) -- (idx);
+\draw[arr] (em) -- (idx);
+\draw[arr] (idx) -- (chk);
+\draw[arr] (chk) -- node[lab,right]{不通过} (fail);
+
+\node[ok] (split) at (10.0,1.1) {患者级 holdout\\\nTrain/\nVal/\nTest\\seed 42};
+\node[ok] (kf) at (10.0,-0.05) {患者分组\\复用同一编号};
+\node[ok] (sig) at (10.0,-1.2) {文件清单签名 +\\派分签名（SHA-256）};
+\draw[arr] (chk) -- node[lab,above]{通过} (split);
+\draw[arr] (chk) -- (kf);
+\draw[arr] (split) -- (sig);
+\draw[arr] (kf) -- (sig);
+
+\node[draw=alert!70, fill=alert!6, rounded corners=2pt, minimum width=0.95\linewidth, minimum height=7mm, align=center, font=\scriptsize] at (5.0,-3.0)
+{签名随评估报告写入；缺失签名的报告判为无效，不得进入论文表格或权重转正};
+\end{tikzpicture}}
+\caption{三向配对、完整性与患者级划分。影像、腺体掩膜、睑缘掩膜按 basename 建立索引；完整性检查不通过时直接终止。划分采用患者级持久 holdout（\nTrain/\nVal/\nTest，\nTrainPatients/\nValPatients/\nTestPatients{} 名患者），同时记录文件清单签名与实际派分签名；5 折作为扩展复用同一患者分组。}
+\label{fig:pairing}
+\end{figure}

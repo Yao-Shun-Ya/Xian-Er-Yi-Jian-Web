@@ -1,0 +1,422 @@
+\begin{thebibliography}{10}
+
+\bibitem{foulks2003}
+Gary~N. Foulks and Anthony~J. Bron.
+\newblock Meibomian gland dysfunction: A clinical scheme for description,
+  diagnosis, classification, and grading.
+\newblock {\em The Ocular Surface}, 1(3):107–126, July 2003.
+
+\bibitem{villani2020latest}
+Edoardo Villani, Luca Marelli, Andrea Dellavalle, Massimiliano Serafino, and
+  Paolo Nucci.
+\newblock Latest evidences on meibomian gland dysfunction diagnosis and
+  management.
+\newblock {\em The Ocular Surface}, 18(4):871–892, Oct 2020.
+
+\bibitem{wise2012meibography}
+Ryan~J. Wise, Rachel~K. Sobel, and Richard~C. Allen.
+\newblock Meibography: A review of techniques and technologies.
+\newblock {\em Saudi Journal of Ophthalmology}, 26(4):349–356, Oct 2012.
+
+\bibitem{ngo2014repeat}
+William Ngo, Sruthi Srinivasan, Marc Schulze, and Lyndon Jones.
+\newblock Repeatability of grading meibomian gland dropout using two infrared
+  systems.
+\newblock {\em Optometry and Vision Science}, 91(6):658–667, June 2014.
+
+\bibitem{saha2022automated}
+Ripon~Kumar Saha, A.~M.~Mahmud Chowdhury, Kyung-Sun Na, Gyu~Deok Hwang,
+  Youngsub Eom, Jaeyoung Kim, Hae-Gon Jeon, Ho~Sik Hwang, and Euiheon Chung.
+\newblock Automated quantification of meibomian gland dropout in infrared
+  meibography using deep learning.
+\newblock {\em The Ocular Surface}, 26:283--294, 2022.
+
+\bibitem{setu2021deep}
+Md~Asif~Khan Setu, Jens Horstmann, Stefan Schmidt, Michael~E. Stern, and
+  Philipp Steven.
+\newblock Deep learning-based automatic meibomian gland segmentation and
+  morphology assessment in infrared meibography.
+\newblock {\em Scientific Reports}, 11:7649, 2021.
+
+\bibitem{li2025multicenter}
+Li~Li, Kunhong Xiao, Taichen Lai, Kunfeng Lai, Jiawen Lin, Zongyuan Ge, Lingyi
+  Liang, Hao Huang, Xiaoshan Zhang, Li~Liu, Yujie Wang, Xianwen Shang,
+  Mingguang He, Ying Xue, and Zhuoting Zhu.
+\newblock Development and multicenter validation of an ai driven model for
+  quantitative meibomian gland evaluation.
+\newblock {\em npj Digital Medicine}, 8:403, 2025.
+
+\bibitem{yu2025quantitative}
+Ziyang Yu, Zhijun Wei, Mini~Han Wang, Jiazheng Cui, Jiaxiang Tan, and Yang Xu.
+\newblock Quantitative evaluation of meibomian gland dysfunction via deep
+  learning-based infrared image segmentation.
+\newblock {\em Frontiers in Artificial Intelligence}, 8:1642361, 2025.
+
+\bibitem{prabhu2020segmentation}
+Sahana~M. Prabhu, Abhijith Chakiat, Shashank S, Krishna~Poojita Vunnava, and
+  Rohit Shetty.
+\newblock Deep learning segmentation and quantification of meibomian glands.
+\newblock {\em Biomedical Signal Processing and Control}, 57:101776, Mar 2020.
+
+\bibitem{wang2021morphology}
+Jiayun Wang, Shixuan Li, Thao~N. Yeh, Rudrasis Chakraborty, Andrew~D. Graham,
+  Stella~X. Yu, and Meng~C. Lin.
+\newblock Quantifying meibomian gland morphology using artificial intelligence.
+\newblock {\em Optometry and Vision Science}, 98(9):1094–1103, Sept 2021.
+
+\bibitem{liu2022scribble}
+Xiaoming Liu, Shuo Wang, Ying Zhang, and Quan Yuan.
+\newblock Scribble-supervised meibomian glands segmentation in infrared images.
+\newblock {\em ACM Transactions on Multimedia Computing, Communications, and
+  Applications}, 18(3):1–23, Mar 2022.
+
+\bibitem{wang2019deep}
+Jiayun Wang, Thao~N. Yeh, Rudrasis Chakraborty, Stella~X. Yu, and Meng~C. Lin.
+\newblock A deep learning approach for meibomian gland atrophy evaluation in
+  meibography images.
+\newblock {\em Translational Vision Science \& Technology}, 8(6):37, 2019.
+
+\bibitem{yu2022automatic}
+Yi~Yu, Yiwen Zhou, Miao Tian, Yabiao Zhou, Yuejiao Tan, Lianlian Wu, Hongmei
+  Zheng, and Yanning Yang.
+\newblock Automatic identification of meibomian gland dysfunction with
+  meibography images using deep learning.
+\newblock {\em International Ophthalmology}, 42(11):3275--3284, 2022.
+
+\bibitem{zhang2022density}
+Zuhui Zhang, Xiaolei Lin, Xinxin Yu, Yana Fu, Xiaoyu Chen, Weihua Yang, and
+  Qi~Dai.
+\newblock Meibomian gland density: An effective evaluation index of meibomian
+  gland dysfunction based on deep learning and transfer learning.
+\newblock {\em Journal of Clinical Medicine}, 11(9):2396, 2022.
+
+\bibitem{lin2021automatic}
+Zhiming Lin, Jiawen Lin, and Li~Li.
+\newblock Automatic segmentation of glands in infrared meibomian gland image.
+\newblock In {\em 2021 11th International Conference on Information Technology
+  in Medicine and Education (ITME)}, pages 399--403, 2021.
+
+\bibitem{liang2024exploring}
+Congxiao Liang, Mini~Han Wang, Haoyang Liu, and Kelvin K.~L. Chong.
+\newblock Exploring meibomian gland dysfunction grading: A comparison of
+  machine learning and xai approaches.
+\newblock In {\em 2024 IEEE 2nd International Conference on Image Processing
+  and Computer Applications (ICIPCA)}, pages 2021--2024, 2024.
+
+\bibitem{buglakova2025tiling}
+Elena Buglakova, Anwai Archit, Edoardo D'Imprima, Julia Mahamid, Constantin
+  Pape, and Anna Kreshuk.
+\newblock Tiling artifacts and trade-offs of feature normalization in the
+  segmentation of large biological images, 2025.
+
+\bibitem{maganti2026uncertainty}
+Saket Maganti and Shreyank~N. Gowda.
+\newblock A decision-aware evaluation protocol for uncertainty in medical image
+  segmentation, 2026.
+
+\bibitem{geissler2024structure}
+Kai Gei{\ss}ler, Jochen~G. Hirsch, Stefan Heldmann, and Hans Meine.
+\newblock Structure size as confounder in uncertainty based segmentation
+  quality prediction.
+\newblock In {\em Proceedings of the 7th International Conference on Medical
+  Imaging with Deep Learning (MIDL)}, volume 250 of {\em Proceedings of Machine
+  Learning Research}, pages 504--519, 2024.
+
+\bibitem{ronneberger2015unet}
+Olaf Ronneberger, Philipp Fischer, and Thomas Brox.
+\newblock {U-Net}: Convolutional networks for biomedical image segmentation.
+\newblock In {\em Medical Image Computing and Computer-Assisted Intervention --
+  {MICCAI} 2015}, volume 9351 of {\em Lecture Notes in Computer Science}, pages
+  234--241. Springer, 2015.
+
+\bibitem{oktay2018attention}
+Ozan Oktay, Jo~Schlemper, Loic Le~Folgoc, Matthew Lee, Mattias Heinrich,
+  Kazunari Misawa, Kensaku Mori, Steven McDonagh, Nils~Y. Hammerla, Bernhard
+  Kainz, Ben Glocker, and Daniel Rueckert.
+\newblock Attention {U-Net}: Learning where to look for the pancreas.
+\newblock In {\em Medical Imaging with Deep Learning ({MIDL})}, 2018.
+
+\bibitem{zhou2018unetplusplus}
+Zongwei Zhou, Md~Mahfuzur Rahman~Siddiquee, Nima Tajbakhsh, and Jianming Liang.
+\newblock {UNet++}: A nested {U-Net} architecture for medical image
+  segmentation.
+\newblock In {\em Deep Learning in Medical Image Analysis and Multimodal
+  Learning for Clinical Decision Support ({DLMIA})}, volume 11045 of {\em
+  Lecture Notes in Computer Science}, pages 3--11. Springer, 2018.
+
+\bibitem{ibtehaz2020multiresunet}
+Nabil Ibtehaz and M.~Sohel Rahman.
+\newblock {MultiResUNet}: Rethinking the {U-Net} architecture for multimodal
+  biomedical image segmentation.
+\newblock {\em Neural Networks}, 121:74--87, 2020.
+
+\bibitem{isensee2021nnunet}
+Fabian Isensee, Paul~F. Jaeger, Simon A.~A. Kohl, Jens Petersen, and Klaus~H.
+  Maier-Hein.
+\newblock {nnU-Net}: a self-configuring method for deep learning-based
+  biomedical image segmentation.
+\newblock {\em Nature Methods}, 18(2):203--211, 2021.
+
+\bibitem{transunet}
+Jieneng Chen, Yongyi Lu, Qihang Yu, Xiangde Luo, Ehsan Adeli, Yan Wang, Le~Lu,
+  Alan~L. Yuille, and Yuyin Zhou.
+\newblock Transunet: Transformers make strong encoders for medical image
+  segmentation, 2021.
+
+\bibitem{swinunet}
+Hu~Cao, Yueyue Wang, Joy Chen, Dongsheng Jiang, Xiaopeng Zhang, Qi~Tian, and
+  Manning Wang.
+\newblock Swin-unet: Unet-like pure transformer for medical image segmentation,
+  2021.
+
+\bibitem{segformer}
+Enze Xie, Wenhai Wang, Zhiding Yu, Anima Anandkumar, Jose~M. Alvarez, and Ping
+  Luo.
+\newblock Segformer: Simple and efficient design for semantic segmentation with
+  transformers, 2021.
+
+\bibitem{unetr}
+Ali Hatamizadeh, Yucheng Tang, Vishwesh Nath, Dong Yang, Andriy Myronenko,
+  Bennett Landman, Holger~R. Roth, and Daguang Xu.
+\newblock Unetr: Transformers for 3d medical image segmentation.
+\newblock In {\em 2022 IEEE/CVF Winter Conference on Applications of Computer
+  Vision (WACV)}, page 1748–1758. IEEE, Jan 2022.
+
+\bibitem{unetrpp}
+Abdelrahman Shaker, Muhammad Maaz, Hanoona Rasheed, Salman Khan, Ming-Hsuan
+  Yang, and Fahad Shahbaz~Khan.
+\newblock Unetr++: Delving into efficient and accurate 3d medical image
+  segmentation.
+\newblock {\em IEEE Transactions on Medical Imaging}, 43(9):3377–3390, Sept
+  2024.
+
+\bibitem{mednext}
+Saikat Roy, Gregor Koehler, Constantin Ulrich, Michael Baumgartner, Jens
+  Petersen, Fabian Isensee, Paul~F. Jäger, and Klaus~H. Maier-Hein.
+\newblock {\em MedNeXt: Transformer-Driven Scaling of ConvNets for Medical
+  Image Segmentation}, page 405–415.
+\newblock Springer Nature Switzerland, 2023.
+
+\bibitem{vmunet}
+Jiacheng Ruan, Jincheng Li, and Suncheng Xiang.
+\newblock Vm-unet: Vision mamba unet for medical image segmentation.
+\newblock {\em ACM Transactions on Multimedia Computing, Communications, and
+  Applications}, Sept 2025.
+
+\bibitem{umamba}
+Jun Ma, Feifei Li, and Bo~Wang.
+\newblock U-mamba: Enhancing long-range dependency for biomedical image
+  segmentation, 2024.
+
+\bibitem{cldice}
+Suprosanna Shit, Johannes~C. Paetzold, Anjany Sekuboyina, Ivan Ezhov, Alexander
+  Unger, Andrey Zhylka, Josien P.~W. Pluim, Ulrich Bauer, and Bjoern~H. Menze.
+\newblock cldice - a novel topology-preserving loss function for tubular
+  structure segmentation.
+\newblock In {\em 2021 IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, page 16555–16564. IEEE, June 2021.
+
+\bibitem{skeletonrecall}
+Yannick Kirchhoff, Maximilian~R. Rokuss, Saikat Roy, Balint Kovacs, Constantin
+  Ulrich, Tassilo Wald, Maximilian Zenk, Philipp Vollmuth, Jens Kleesiek,
+  Fabian Isensee, and Klaus Maier-Hein.
+\newblock Skeleton recall loss for connectivity conserving and resource
+  efficient segmentation of thin tubular structures, 2024.
+
+\bibitem{boundaryloss}
+Hoel Kervadec, Jihene Bouchtiba, Christian Desrosiers, Eric Granger, Jose Dolz,
+  and Ismail Ben~Ayed.
+\newblock Boundary loss for highly unbalanced segmentation.
+\newblock {\em Medical Image Analysis}, 67:101851, Jan 2021.
+
+\bibitem{boundaryiou}
+Bowen Cheng, Ross Girshick, Piotr Dollar, Alexander~C. Berg, and Alexander
+  Kirillov.
+\newblock Boundary iou: Improving object-centric image segmentation evaluation.
+\newblock In {\em 2021 IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, page 15329–15337. IEEE, June 2021.
+
+\bibitem{infraredclahe}
+Yu~Tian, Yan Shiyang, Guo Chenlong, Du~Baolin, Xining Liang, and Ke~Wang.
+\newblock A real-time infrared image enhancement algorithm based on improved
+  clahe.
+\newblock In Ruidan Su, editor, {\em 2018 International Conference on Image and
+  Video Processing, and Artificial Intelligence}, page 104. SPIE, Oct 2018.
+
+\bibitem{zerodce}
+Chunle Guo, Chongyi Li, Jichang Guo, Chen~Change Loy, Junhui Hou, Sam Kwong,
+  and Runmin Cong.
+\newblock Zero-reference deep curve estimation for low-light image enhancement.
+\newblock In {\em 2020 IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, page 1777–1786. IEEE, June 2020.
+
+\bibitem{lowlightsurvey}
+Chongyi Li, Chunle Guo, Linghao Han, Jun Jiang, Ming-Ming Cheng, Jinwei Gu, and
+  Chen~Change Loy.
+\newblock Low-light image and video enhancement using deep learning: A survey.
+\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  44(12):9396–9416, Dec 2022.
+
+\bibitem{tent}
+Dequan Wang, Evan Shelhamer, Shaoteng Liu, Bruno Olshausen, and Trevor Darrell.
+\newblock Tent: Fully test-time adaptation by entropy minimization, 2020.
+
+\bibitem{cotta}
+Qin Wang, Olga Fink, Luc Van~Gool, and Dengxin Dai.
+\newblock Continual test-time domain adaptation.
+\newblock In {\em 2022 IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, page 7191–7201. IEEE, June 2022.
+
+\bibitem{wang2019aleatoric}
+Guotai Wang, Wenqi Li, Michael Aertsen, Jan Deprest, S{\'e}bastien Ourselin,
+  and Tom Vercauteren.
+\newblock Aleatoric uncertainty estimation with test-time augmentation for
+  medical image segmentation with convolutional neural networks.
+\newblock {\em Neurocomputing}, 338:34--45, 2019.
+
+\bibitem{gradcam}
+Ramprasaath~R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam,
+  Devi Parikh, and Dhruv Batra.
+\newblock Grad-cam: Visual explanations from deep networks via gradient-based
+  localization.
+\newblock In {\em 2017 IEEE International Conference on Computer Vision
+  (ICCV)}, page 618–626. IEEE, Oct 2017.
+
+\bibitem{gradcampp}
+Aditya Chattopadhay, Anirban Sarkar, Prantik Howlader, and Vineeth~N
+  Balasubramanian.
+\newblock Grad-cam++: Generalized gradient-based visual explanations for deep
+  convolutional networks.
+\newblock In {\em 2018 IEEE Winter Conference on Applications of Computer
+  Vision (WACV)}, page 839–847. IEEE, Mar 2018.
+
+\bibitem{scorecam}
+Haofan Wang, Zifan Wang, Mengnan Du, Fan Yang, Zijian Zhang, Sirui Ding, Piotr
+  Mardziel, and Xia Hu.
+\newblock Score-cam: Score-weighted visual explanations for convolutional
+  neural networks.
+\newblock In {\em 2020 IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition Workshops (CVPRW)}, page 111–119. IEEE, June 2020.
+
+\bibitem{uncertaintyreview}
+Moloud Abdar, Farhad Pourpanah, Sadiq Hussain, Dana Rezazadegan, Li~Liu,
+  Mohammad Ghavamzadeh, Paul Fieguth, Xiaochun Cao, Abbas Khosravi, U.~Rajendra
+  Acharya, Vladimir Makarenkov, and Saeid Nahavandi.
+\newblock A review of uncertainty quantification in deep learning: Techniques,
+  applications and challenges.
+\newblock {\em Information Fusion}, 76:243–297, Dec 2021.
+
+\bibitem{phiseg}
+Christian~F. Baumgartner, Kerem~C. Tezcan, Krishna Chaitanya, Andreas~M.
+  Hötker, Urs~J. Muehlematter, Khoschy Schawkat, Anton~S. Becker, Olivio
+  Donati, and Ender Konukoglu.
+\newblock {\em PHiSeg: Capturing Uncertainty in Medical Image Segmentation},
+  page 119–127.
+\newblock Springer International Publishing, 2019.
+
+\bibitem{claim2024update}
+Ali~S. Tejani, Michail~E. Klontzas, Anthony~A. Gatti, John~T. Mongan, Linda
+  Moy, Seong~Ho Park, Charles~E. Kahn, Sunhy Abbara, Saif Afat, Udunna~C.
+  Anazodo, Anna Andreychenko, Folkert~W. Asselbergs, Aldo Badano, Bettina
+  Baessler, Bayarbaatar Bold, Sotirios Bisdas, Torkel~B. Brismar, Giovanni~E.
+  Cacciamani, John~A. Carrino, Julius Chapiro, Michael~F. Chiang, Tessa~S.
+  Cook, Renato Cuocolo, John Damilakis, Roxana Daneshjou, Carlo~N. De~Cecco,
+  Hesham Elhalawani, Guillermo Elizondo-Riojas, Andrey Fedorov, Benjamin Fine,
+  Adam~E. Flanders, Judy Wawira~Gichoya, Maryellen~L. Giger, Safwan~S. Halabi,
+  Sven Haller, William Hsu, Krishna Juluru, Jayashree Kalpathy-Cramer,
+  Apostolos~H. Karantanas, Felipe~C. Kitamura, Burak Kocak, Dow-Mu Koh, Elmar
+  Kotter, Elizabeth~A. Krupinski, Curtis~P. Langlotz, Cecilia~S. Lee, Mario
+  Maas, Anant Madabhushi, Lena Maier-Hein, Kostas Marias, Luis Martí-Bonmatí,
+  Jaishree Naidoo, Emanuele Neri, Robert Ochs, Nikolaos Papanikolaou, Thomas
+  Papathomas, Katja Pinker-Domenig, Daniel Pinto~dos Santos, Fred Prior,
+  Alexandros Protonotarios, Mauricio Reyes, Veronica Rotemberg, Jeffrey~D.
+  Rudie, Emmanuel Salinas-Miranda, Francesco Sardanelli, Mark~E. Schweitzer,
+  Luca~Maria Sconfienza, Ronnie Sebro, Prateek Sharma, An~Tang, Antonios
+  Tzortzakakis, Jeroen van~der Laak, Peter M.~A. van Ooijen, Vasantha~K.
+  Venugopal, Jacob~J. Visser, Bradford~J. Wood, Carol~C. Wu, Greg Zaharchuk,
+  and Marc Zins.
+\newblock Checklist for artificial intelligence in medical imaging ({CLAIM}):
+  2024 update.
+\newblock {\em Radiology: Artificial Intelligence}, 6(4), July 2024.
+
+\bibitem{tripodai}
+Gary~S Collins, Karel G~M Moons, Paula Dhiman, Richard~D Riley, Andrew~L Beam,
+  Ben Van~Calster, Marzyeh Ghassemi, Xiaoxuan Liu, Johannes~B Reitsma, Maarten
+  van Smeden, Anne-Laure Boulesteix, Jennifer~Catherine Camaradou, Leo~Anthony
+  Celi, Spiros Denaxas, Alastair~K Denniston, Ben Glocker, Robert~M Golub, Hugh
+  Harvey, Georg Heinze, Michael~M Hoffman, André~Pascal Kengne, Emily Lam,
+  Naomi Lee, Elizabeth~W Loder, Lena Maier-Hein, Bilal~A Mateen, Melissa~D
+  McCradden, Lauren Oakden-Rayner, Johan Ordish, Richard Parnell, Sherri Rose,
+  Karandeep Singh, Laure Wynants, and Patricia Logullo.
+\newblock Tripod+ai statement: updated guidance for reporting clinical
+  prediction models that use regression or machine learning methods.
+\newblock {\em BMJ}, 385:e078378, Apr 2024.
+
+\bibitem{probast}
+Robert~F. Wolff, Karel~G.M. Moons, Richard~D. Riley, Penny~F. Whiting, Marie
+  Westwood, Gary~S. Collins, Johannes~B. Reitsma, Jos Kleijnen, and Sue
+  Mallett.
+\newblock Probast: A tool to assess the risk of bias and applicability of
+  prediction model studies.
+\newblock {\em Annals of Internal Medicine}, 170(1):51–58, Jan 2019.
+
+\bibitem{reforms}
+Sayash Kapoor, Emily~M. Cantrell, Kenny Peng, Thanh~Hien Pham, Christopher~A.
+  Bail, Odd~Erik Gundersen, Jake~M. Hofman, Jessica Hullman, Michael~A. Lones,
+  Momin~M. Malik, Priyanka Nanayakkara, Russell~A. Poldrack, Inioluwa~Deborah
+  Raji, Michael Roberts, Matthew~J. Salganik, Marta Serra-Garcia, Brandon~M.
+  Stewart, Gilles Vandewiele, and Arvind Narayanan.
+\newblock Reforms: Consensus-based recommendations for machine-learning-based
+  science.
+\newblock {\em Science Advances}, 10(18), May 2024.
+
+\bibitem{metricsreloaded}
+Lena Maier-Hein, Annika Reinke, Patrick Godau, Minu~D. Tizabi, Florian
+  Buettner, Evangelia Christodoulou, Ben Glocker, Fabian Isensee, Jens
+  Kleesiek, Michal Kozubek, Mauricio Reyes, Michael~A. Riegler, Manuel
+  Wiesenfarth, A.~Emre Kavur, Carole~H. Sudre, Michael Baumgartner, Matthias
+  Eisenmann, Doreen Heckmann-Nötzel, Tim Rädsch, Laura Acion, Michela
+  Antonelli, Tal Arbel, Spyridon Bakas, Arriel Benis, Matthew~B. Blaschko,
+  M.~Jorge Cardoso, Veronika Cheplygina, Beth~A. Cimini, Gary~S. Collins,
+  Keyvan Farahani, Luciana Ferrer, Adrian Galdran, Bram van Ginneken, Robert
+  Haase, Daniel~A. Hashimoto, Michael~M. Hoffman, Merel Huisman, Pierre Jannin,
+  Charles~E. Kahn, Dagmar Kainmueller, Bernhard Kainz, Alexandros Karargyris,
+  Alan Karthikesalingam, Florian Kofler, Annette Kopp-Schneider, Anna Kreshuk,
+  Tahsin Kurc, Bennett~A. Landman, Geert Litjens, Amin Madani, Klaus
+  Maier-Hein, Anne~L. Martel, Peter Mattson, Erik Meijering, Bjoern Menze,
+  Karel G.~M. Moons, Henning Müller, Brennan Nichyporuk, Felix Nickel, Jens
+  Petersen, Nasir Rajpoot, Nicola Rieke, Julio Saez-Rodriguez, Clara~I.
+  Sánchez, Shravya Shetty, Maarten van Smeden, Ronald~M. Summers, Abdel~A.
+  Taha, Aleksei Tiulpin, Sotirios~A. Tsaftaris, Ben Van~Calster, Gaël
+  Varoquaux, and Paul~F. Jäger.
+\newblock Metrics reloaded: recommendations for image analysis validation.
+\newblock {\em Nature Methods}, 21(2):195–212, Feb 2024.
+
+\bibitem{metricpitfalls}
+Annika Reinke, Minu~D. Tizabi, Michael Baumgartner, Matthias Eisenmann, Doreen
+  Heckmann-Nötzel, A.~Emre Kavur, Tim Rädsch, Carole~H. Sudre, Laura Acion,
+  Michela Antonelli, Tal Arbel, Spyridon Bakas, Arriel Benis, Florian Buettner,
+  M.~Jorge Cardoso, Veronika Cheplygina, Jianxu Chen, Evangelia Christodoulou,
+  Beth~A. Cimini, Keyvan Farahani, Luciana Ferrer, Adrian Galdran, Bram van
+  Ginneken, Ben Glocker, Patrick Godau, Daniel~A. Hashimoto, Michael~M.
+  Hoffman, Merel Huisman, Fabian Isensee, Pierre Jannin, Charles~E. Kahn,
+  Dagmar Kainmueller, Bernhard Kainz, Alexandros Karargyris, Jens Kleesiek,
+  Florian Kofler, Thijs Kooi, Annette Kopp-Schneider, Michal Kozubek, Anna
+  Kreshuk, Tahsin Kurc, Bennett~A. Landman, Geert Litjens, Amin Madani, Klaus
+  Maier-Hein, Anne~L. Martel, Erik Meijering, Bjoern Menze, Karel G.~M. Moons,
+  Henning Müller, Brennan Nichyporuk, Felix Nickel, Jens Petersen, Susanne~M.
+  Rafelski, Nasir Rajpoot, Mauricio Reyes, Michael~A. Riegler, Nicola Rieke,
+  Julio Saez-Rodriguez, Clara~I. Sánchez, Shravya Shetty, Ronald~M. Summers,
+  Abdel~A. Taha, Aleksei Tiulpin, Sotirios~A. Tsaftaris, Ben Van~Calster, Gaël
+  Varoquaux, Ziv~R. Yaniv, Paul~F. Jäger, and Lena Maier-Hein.
+\newblock Understanding metric-related pitfalls in image analysis validation.
+\newblock {\em Nature Methods}, 21(2):182–194, Feb 2024.
+
+\bibitem{zhang2018rcan}
+Yulun Zhang, Kunpeng Li, Kai Li, Lichen Wang, Bineng Zhong, and Yun Fu.
+\newblock Image super-resolution using very deep residual channel attention
+  networks.
+\newblock In {\em Computer Vision -- {ECCV} 2018}, volume 11211 of {\em Lecture
+  Notes in Computer Science}, pages 294--310. Springer, 2018.
+
+\end{thebibliography}

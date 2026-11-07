@@ -1,0 +1,22 @@
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  layer/.style={draw=slate!60, fill=white, rounded corners=2pt, minimum width=150mm, minimum height=12mm, align=left, font=\scriptsize, inner sep=4pt},
+  core/.style={draw=teal, fill=teal!8, rounded corners=2pt, minimum width=150mm, minimum height=16mm, align=left, font=\scriptsize, inner sep=4pt},
+  arr/.style={-{Stealth[length=2mm]}, draw=slate, thick}
+]
+\node[layer] (ad) at (0,4.2) {\textbf{适配层}：CLI（\texttt{mgd-train} / \texttt{mgd-eval} / \texttt{mgd-pipeline} / \texttt{mgd-data} / \texttt{mgd-verify}）\quad WebUI（六分区）};
+\node[core] (wf) at (0,2.4) {\textbf{workflow}：阶段编排（pretrain/train/finetune/eval/ablation/report）、多配置、多折、重试、断点续跑、\texttt{pipeline\_state.json}};
+\node[core] (svc) at (0,0.7) {\textbf{core 服务}：training（specs/presets/engine/runner/EMA/losses）\quad inference（分块/TTA/阈值/ROI）\quad evaluation（Dice/IoU/HD95/ASSD/clDice/bootstrap/Wilcoxon）\quad reporting};
+\node[layer] (pri) at (0,-0.9) {\textbf{原语}：data（pairing/splits/dataset/transforms/versioning）\quad models（MGD-Former / 四基线 / registry / manifest / verify）\quad imaging（preprocess / metrics / visualize）\quad runtime（device / errors / logging / doctor）};
+\node[layer] (art) at (0,-2.3) {\textbf{资产}：\texttt{configs/}（YAML schema）\quad \texttt{runs/<run\_id>/}（配置快照、env、metrics、checkpoint、reference report）\quad 权重 manifest};
+\draw[arr] (ad) -- (wf);
+\draw[arr] (wf) -- (svc);
+\draw[arr] (svc) -- (pri);
+\draw[arr] (pri) -- (art);
+\node[font=\scriptsize, color=slate, anchor=west] at (-7.7,5.0) {设备自适应：CUDA / CPU；模型单例缓存与显式释放；未验证权重必须显式允许并标注};
+\end{tikzpicture}}
+\caption{系统分层与数据流。适配层只做薄壳，所有入口经过同一训练/推理/评估实现；workflow 负责编排与续跑；资产层保存配置快照、逐轮指标、完整 checkpoint 与带签名的评估报告。}
+\label{fig:system}
+\end{figure}

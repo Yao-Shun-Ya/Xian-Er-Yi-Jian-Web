@@ -1,0 +1,19 @@
+\section{Limitations and Risks}\label{sec:limitations}
+
+\paragraph{Single-centre, single-device public data.} MGD-1K comes from a LipiView II device and 320 subjects. Our patient-level split guarantees that subjects do not cross splits, but it cannot guarantee cross-device or cross-centre generalisation. The 2025 multicentre study shows that device and population differences materially affect performance\cite{li2025multicenter}; we have no external multicentre test set and therefore cannot claim clinical generalisation.
+
+\paragraph{Nine-hour budget and a single holdout.} To control the total budget, this round uses a single patient-level holdout rather than five-fold cross-validation; several models (especially WRCANet and MGD-PriorNet) are not fully converged. The results should be framed as reproducible preliminary evidence, not as optimality; five-fold and longer training are future work.
+
+\paragraph{Limited power of the leakage control.} The clean-official subset contains only \cleanOfficialImages{} images/\cleanOfficialPatients{} patients. It is enough to show the direction of leakage but not enough for a stable clinical conclusion. The leaky-versus-patient-level difference must be read with confidence intervals, not as a point estimate alone.
+
+\paragraph{Incomplete clinical endpoints.} Clinical agreement stops at Meiboscore; there are no symptom scores, gland expression, secretion quality, or prospective follow-up. Whether segmentation gains translate into diagnostic or treatment benefit requires an independent prospective study.
+
+\paragraph{Distance metrics lack physical calibration.} Images have no mm/pixel calibration, so HD95 and ASSD are in pixels; values are not directly comparable across devices or original resolutions after resizing to $640\times1280$. R\_loss and Meiboscore are pixel-ratio references, not diagnostic measurements.
+
+\paragraph{Pretraining may degrade.} MGD-Former's encoder is initialised from ADE20K weights by default; on an offline machine without a local cache it degrades to random initialisation, and the run metadata and log record \texttt{pretrained\_status} and the reason. If the final results come from random initialisation, this must be stated.
+
+\paragraph{Protocol boundary.} The architecture comparison holds only for this data, preprocessing, patient-level split, and inference configuration. Changing data, device, or tiling may change the ranking. We do not claim that one architecture is universally better, nor do we treat significance on one dataset as clinical evidence.
+
+\paragraph{Leakage in legacy weights.} The legacy UNet weights shuffled all \nTotal{} cases with no held-out test set; they are an engineering regression anchor only, not independent-test performance, and cannot be compared with the models here.
+
+\paragraph{Licence and ethics.} MGD-1K is public, but its licence and redistribution terms must be re-checked before submission; we claim no redistribution rights beyond the original dataset licence.

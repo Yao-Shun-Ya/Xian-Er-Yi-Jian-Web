@@ -1,0 +1,154 @@
+\section{方法}\label{sec:method}
+
+\subsection{任务定义与符号}
+
+给定一幅红外睑板影像 $I\in\mathbb{R}^{H\times W}$，其中 $H=640$、$W=1280$，单通道灰度。定义两个像素级二值目标：
+\begin{equation}
+G\in\{0,1\}^{H\times W},\qquad E\in\{0,1\}^{H\times W},
+\end{equation}
+其中 $G$ 为腺体掩膜，$E$ 为睑缘掩膜。网络 $f(\cdot;\theta)$ 输出两通道 logits：
+\begin{equation}
+\mathbf{z}=f(I;\theta)\in\mathbb{R}^{2\times H\times W},\quad
+\hat{G}=\mathbf{1}[\sigma(z_G)\ge \tau],\quad
+\hat{E}=\mathbf{1}[\sigma(z_E)\ge \tau],
+\end{equation}
+$\sigma$ 为 sigmoid，$\tau$ 为阈值。腺体是主任务，睑缘是辅助任务：它提供解剖范围（ROI）、R\_loss 的分母以及 Meiboscore 的归一化基准。两通道共享编码器，输出端各自独立，原因在于二者来自同一成像过程，低层纹理与光照条件高度相关；完全不共享会浪费数据，完全共享又会迫使两个几何形态差异很大的目标共用同一组判别特征。
+
+图~\ref{fig:overview} 给出方法总览。与“采集—预处理—网络—输出—后处理”的线性叙述不同，图中同时画出了一条基线分支：UNet、Attention U-Net、WRCANet 与 MGD-PriorNet 不是被取代的历史实现，而是在同一协议下接受比较的对照组。底部的契约带表示训练与推理共用同一预处理实现，并由逐像素测试锁定。
+
+\input{figures/01_overview}
+
+\subsection{预处理}
+
+预处理的目的是把不同设备、不同曝光条件下的影像映射到同一数值空间，并保证训练与推理完全一致。管线固定为五步，顺序不可交换：
+
+\begin{enumerate}[label=\textbf{P\arabic*.}]
+\item \textbf{方向校正。}以 PIL 读取影像并应用 EXIF 方向变换，避免相机写入的旋转标记导致训练与推理出现 90$^\circ$ 或 180$^\circ$ 偏差。
+\item \textbf{灰度化。}若输入为 RGB/RGBA，按 BT.601 权重转为单通道；浮点输入按最大值是否 $\le 1$ 决定是否乘以 255，随后裁剪到 $[0,255]$ 并转为 \texttt{uint8}。
+\item \textbf{几何缩放。}双线性插值到 $640\times1280$；若原图已是目标尺寸则跳过重采样。
+\item \textbf{强度归一化。}将 \texttt{uint8} 灰度除以 255，得到 $[0,1]$ 浮点表示。
+\item \textbf{局部对比度增强。}对归一化图像做 CLAHE，clip limit 取 0.02，输出为 $[0,1]$ 的 \texttt{float32}。
+\end{enumerate}
+
+标签走独立路径：同样的方向校正与几何缩放，但插值为最近邻，随后以 $>0$ 二值化。最近邻保证细腺体不被插值成灰色边缘；二值化保证网络只见到 0/1 监督。该路径对腺体与睑缘同时生效。图~\ref{fig:preprocess} 给出两条路径的对照，并在底部标出一致性契约。
+
+\input{figures/03_preprocess}
+
+CLAHE 采用 scikit-image 的 \texttt{equalize\_adapthist}，局部窗口约为图像尺寸的 1/8，直方图分箱数为 256。不同库对 clip limit 的定义并不一致（有的按归一化频率，有的按像素计数），因此权重 manifest 同时记录库名、参数值与归一化标签 \texttt{scale01+clahe}，而不是只记录一个数值。
+
+\subsection{MGD-Former：编码器与高分辨率融合解码器}\label{sec:mgdformer}
+
+本任务的瓶颈不是长程依赖，而是\textbf{细节保留}与\textbf{小数据冷启动}。在 $640\times1280$ 输入下，腺体宽度只有 3--8 像素；若主干以 stride 16 为最细尺度，特征图仅 $40\times80$，一条 4 像素宽的腺体在特征图上不足 0.25 像素，必然在下采样中消失。HD95 对断裂极其敏感，这类结构性丢失无法靠后处理恢复。因此本文采用\textbf{输出 stride=4} 的架构，并直接把 1/4 特征送入解码器。
+
+MGD-Former 由两部分组成。\textbf{编码器}为 MiT-B2\cite{segformer}：四个阶段的步长分别为 4/8/16/32，通道数为 64/128/320/512，Transformer 块深度为 3/4/6/3，注意力头数为 1/2/5/8，空间缩减比为 8/4/2/1；第一阶段用 $7\times7$、步长 4 的重叠卷积嵌入，后三级用 $3\times3$、步长 2 的重叠卷积嵌入。每个块由高效自注意力与 Mix-FFN 组成，后者在两层线性变换之间插入 $3\times3$ 深度可分离卷积，把位置信息注入前馈路径，从而避免固定位置编码在分辨率变化时失效。DropPath 率从 0 线性增至 0.1。
+
+\textbf{解码器}不使用 SegFormer 原生的轻量 MLP 头，而是构造一个自顶向下的融合结构：四个阶段先经 $1\times1$ 卷积统一到 128 通道；从 1/32 开始，逐级与上一尺度特征相加并上采样，每级经过一个融合块（$3\times3$ 卷积 + BatchNorm + GELU），依次得到 1/16、1/8、1/4 的融合特征；最后由 $3\times3$ 卷积、BatchNorm、GELU 与 $1\times1$ 卷积输出两通道 logits，再双线性上采样回 $640\times1280$。由于最终融合发生在 1/4 尺度，网络的有效输出步长为 4，细腺体在解码阶段仍保有约 1--2 个特征单元，而不是被压缩到亚像素。
+
+\textbf{深监督}接在 1/4、1/8、1/16 三个尺度的融合特征上，每个尺度一个 $1\times1$ 辅助头，仅监督腺体通道；辅助损失按 $1.0/0.5/0.25$ 加权并归一化。深监督的作用是让小数据下的梯度更稳定，同时迫使中间尺度学会定位腺体，而不是把全部判别压力留给最后一层。图~\ref{fig:networks}(a) 给出完整结构。
+
+\textbf{预训练初始化}采用 ADE20K 语义分割权重（SegFormer-B2，仅加载编码器；权重标识见附录），ImageNet 权重作为备选。选择 ADE20K 而非从零训练的理由是：999 例配对数据不足以让 20 M 级 Transformer 学到通用的边缘、纹理与形状先验；ADE20K 预训练已经提供了对细长结构与局部对比度敏感的低层滤波器，微调只需要学习“腺体”这一特定语义。若目标机器离线且本地缓存中没有权重，编码器退化为随机初始化，训练日志与 run 元数据会显式记录 \texttt{pretrained\_status} 及降级原因；论文报告必须注明实际是否加载预训练以及覆盖率。
+
+\subsection{损失函数与深监督}\label{sec:loss}
+
+训练目标由区域重叠、像素分类、骨架连续性与辅助任务四部分构成：
+\begin{align}
+\mathcal{L}_{g} &= 0.4\,\mathcal{L}_{\mathrm{Dice}}(P_g,Y_g)+0.4\,\mathcal{L}_{\mathrm{CE}}(P_g,Y_g)
++\lambda_{cl}(t)\,\mathcal{L}_{\mathrm{clDice}}(P_g,Y_g),\\
+\mathcal{L}_{e} &= 0.4\,\mathcal{L}_{\mathrm{Dice}}(P_e,Y_e)+0.4\,\mathcal{L}_{\mathrm{CE}}(P_e,Y_e),\\
+\mathcal{L}_{\mathrm{total}} &= \mathcal{L}_{g}+0.25\,\mathcal{L}_{e}
++\frac{1}{1.75}\sum_{s\in\{4,8,16\}} w_s\,\mathcal{L}_{s},\qquad (w_4,w_8,w_{16})=(1.0,0.5,0.25),
+\end{align}
+其中 $P_g,P_e$ 为两通道的 sigmoid 概率，$Y_g,Y_e$ 为对应标签，$\mathcal{L}_{s}$ 为第 $s$ 尺度辅助头的 Dice+CE。clDice 的权重在训练前 10\% 的轮次内由 0 线性升至 0.2：
+\begin{equation}
+\lambda_{cl}(t)=0.2\cdot\min\!\left(1,\frac{t}{0.1\,T}\right),
+\end{equation}
+$T$ 为总轮数。warmup 的作用是避免训练早期骨架噪声主导梯度：初始预测充满碎片时，可微骨架的拓扑精度很低，直接施加大权重会把网络推向“先连成一片、再细化”的错误解。
+
+\textbf{为什么不再单独加骨架一致性项。}clDice 已经是可微骨架一致性约束：它通过迭代软腐蚀与软开运算提取预测与金标准的中心线，再用中心线覆盖率构造损失\cite{cldice}。若再叠加一个显式的 skeleton loss，两者在同一梯度方向上重复加权，会把骨架提取本身的噪声（尤其是 3--8 像素宽腺体的端点抖动）放大成主要梯度来源。本文因此把“骨架连续性”只由一个项承担，并把它写成主动的设计取舍：\emph{宁可少一个可调超参，也不让两个近似冗余的项互相放大噪声}。边界损失作为可选开关保留（默认权重 0），用于对 HD95 特别敏感的场景；主配置不启用，以避免与 clDice 的边界响应重复。
+
+睑缘辅助任务的权重 0.25 不是装饰性多任务。它提供三类实际收益：第一，眼睑通道给出解剖 ROI，抑制眼睑外伪阳性；第二，R\_loss 以眼睑面积为分母，没有稳定的睑缘掩膜就无法计算；第三，Meiboscore 的归一化需要睑缘范围。消融中会单独关闭该分支以检验增益。
+
+\subsection{基线架构族}\label{sec:baselines}
+
+四个基线共享同一输入输出契约（单通道输入、两通道 logits、无内部 sigmoid），差异只在主干与 skip 连接。它们的作用是提供“同一协议下的对照”，而不是作为被替代的失败尝试。
+
+\begin{itemize}
+\item \textbf{U-Net}\cite{ronneberger2015unet}：五级编码—解码，通道数 $(64,128,256,512,1024)$，每级两个残差单元，PReLU 激活，InstanceNorm，dropout 0.1。它代表“纯卷积 + skip”的经典路线。
+\item \textbf{Attention U-Net}\cite{oktay2018attention}：在 skip 连接处加入注意力门控，
+$\alpha=\sigma(\psi(\mathrm{ReLU}(W_g*g+W_x*x)))$，$x'=\alpha\odot x$，用粗尺度上下文抑制无关区域。它代表“空间重加权”路线。
+\item \textbf{WRCANet}：以 RCAN 的残差通道注意力块（RCAB）构建增强主干\cite{zhang2018rcan}。主干先升维到 64 通道，堆叠 8 个残差组、每组 10 个 RCAB，再以 $3\times3$ 卷积回到单通道并与输入做全局残差；RCAB 为
+\begin{align}
+u &= \mathrm{ReLU}(\mathrm{Conv}_{3\times3}(x)),\quad v=\mathrm{Conv}_{3\times3}(u),\\
+s &= \sigma\!\left(W_2\,\mathrm{ReLU}\!\left(W_1\,\mathrm{GAP}(v)\right)\right),\quad y=s\odot v+x,
+\end{align}
+通道压缩比 $r=16$；之后接三级 U 形分割头。它代表“图像增强主干 + 轻量分割头”路线。
+\item \textbf{MGD-PriorNet}：本项目的结构先验分支，面向细长腺体设计。FCAS 前端用拉普拉斯高频残差与通道注意力增强低对比度条带；ASAB 并联 $1\times k$ 水平卷积、$k\times1$ 纵向卷积与 $3\times3$ 卷积，显式建模腺体的各向异性；APG-DD 用眼睑分支的多尺度概率作为软门控（$1+A_{\mathrm{eyelid}}$）调制腺体解码器。它代表“把解剖先验写进网络”的路线。
+\end{itemize}
+
+需要说明定位：MGD-Former 的贡献是“把预训练 Transformer 的高分辨率阶段适配到本任务”，而不是宣称四条基线在绝对意义上更差。四族基线在参数量、推理成本与数据需求上各有优势，第~\ref{sec:results}~节将按同一测试集给出可比证据。图~\ref{fig:networks}(b) 画出四族的结构要点，并单独给出 RCAB 细节。
+
+\input{figures/02_networks}
+
+\subsection{训练配方与推理策略}\label{sec:recipe}
+
+训练配方以“小数据、跨设备、消费级显卡”为约束：
+
+\begin{itemize}
+\item \textbf{精度与显存}：CUDA 上启用 AMP；CPU 自动关闭并在日志中说明。channels\_last 默认开启；梯度累积用于在 8 GB 卡上等效放大 batch。
+\item \textbf{EMA}：衰减 0.999，评估与保存均使用 EMA 权重。999 例规模下在线权重的方差较大，EMA 是低成本稳定器。
+\item \textbf{优化器}：AdamW，学习率 $1\times10^{-4}$（预训练编码器），权重衰减 $1\times10^{-4}$；线性 warmup 占 5\% 步数，随后余弦退火至初始学习率的 1\%（$10^{-6}$）。随机初始化的基线可用 $10^{-3}$。
+\item \textbf{增强}：弹性形变、旋转 $\pm10^\circ$、缩放 $0.85$--$1.20$、\textbf{仅水平翻转}、强度扰动（gamma $0.8$--$1.25$、CLAHE clip $0.01$--$0.03$、高斯噪声、0--1 像素模糊）。强度扰动针对跨设备域偏移，是本任务比几何增强更关键的一项。
+\item \textbf{禁用垂直翻转的理由}：腺体走向接近垂直，上下睑的解剖结构并不对称；垂直翻转会把“上睑腺体”变成解剖上不存在的“下睑腺体”，同时破坏睑缘与腺体的相对位置先验。水平翻转不改变腺体的纵向走向，也不改变睑缘的上下关系，因此是安全且有效的。
+\item \textbf{多尺度训练}：以 $0.75/1.0/1.25$ 随机缩放并保持 2:1 宽高比，使模型见到不同腺体宽度，减少对单一分辨率的依赖。
+\item \textbf{TTA}：关闭、2 倍（水平翻转）与 8 倍（四个翻转 × 两个尺度：原尺度与 $1.125\times$）三档。8 倍仅用于论文指标与最终交付，不参与训练期监控，避免用推理预算换取验证曲线的“好看”。
+\item \textbf{集成}：5 折权重的概率平均作为最终模型；论文同时报告单折与集成，二者不混为一谈。
+\end{itemize}
+
+推理默认参数与训练侧保持一致：分块 $384\times768$、重叠 0.25、阈值 0.7。ROI 约束、最小连通域 120 像素、高斯平滑 $\sigma=1.2$ 属于后处理，是否启用必须在结果中显式说明；第~\ref{sec:results}~节的消融会区分“网络能力”与“后处理收益”。
+
+\subsection{评价指标与统计口径}\label{sec:metrics}
+
+设预测掩膜为 $P$，金标准为 $Y$。Dice 与 IoU 定义为
+\begin{equation}
+\mathrm{Dice}=\frac{2|P\cap Y|}{|P|+|Y|},\qquad
+\mathrm{IoU}=\frac{|P\cap Y|}{|P\cup Y|}.
+\end{equation}
+表面距离采用 HD95 与 ASSD：HD95 取双向表面距离的 95\% 分位数，ASSD 取双向均值。骨架连续性采用 clDice，与训练损失中的可微版本同源但评测时用离散骨架。另报告 Precision、Recall、眼睑 Dice、R\_loss 与 Meiboscore 分级一致率。
+
+必须说明三点。第一，影像没有像素物理标定，HD95 与 ASSD 的单位是\textbf{像素}，不同设备、不同原始分辨率缩放到 $640\times1280$ 后不可直接比较。第二，预测或金标准为空时表面距离无定义，返回 NaN 并记录原因，不用 0 冒充完美。第三，聚合时忽略 NaN 并同时报告有效样本数 $n$。
+
+统计上，均值报告 bootstrap 1000 次重采样的 95\% 置信区间；模型间比较使用逐样本配对的 Wilcoxon 符号秩检验，并用 Holm 校正控制多重比较。显著性水平 0.05，但不把 $p$ 值作为唯一证据：置信区间与效应方向同样重要。任何报告必须携带 \texttt{split\_signature}，缺失即判无效（第~\ref{sec:discipline}~节）。
+
+\subsection{评估口径：训练集自评与独立测试}\label{sec:scope}
+
+本文显式定义两种口径：
+\begin{itemize}
+\item \textbf{训练集自评（\texttt{train\_self}）}：在参与训练的样本上评估。它只回答“模型是否拟合了训练数据”，不代表泛化性能；该口径的数值在表格中单独成列/成表，并标注“不代表泛化性能”。
+\item \textbf{独立测试（\texttt{holdout}）}：在训练、早停与模型选择中从未使用的样本上评估。只有该口径的数值可以作为性能结论。
+\end{itemize}
+
+这一区分不是形式主义。旧工程的 UNet 权重曾对全部 999 例做随机打乱后训练，没有留出测试集，因此其任何“测试”指标都可能是训练集自评；第~\ref{sec:results}~节只把它放在同分布栏，并明确说明这一点。
+
+\subsection{患者级划分与泄漏审计}\label{sec:patient-split}
+
+MGD-1K 的文件名包含数字研究编号（如 \texttt{...\_11756049}），同一受试者的上/下睑、左/右眼共享该编号。我们从 \nTotal{} 例去重配对中提取 338 个编号，按编号分组，并以每组的最大专家 Meiboscore 分层，将整组受试者分配到 train/val/test，得到 \nTrain/\nVal/\nTest{} 图像（\nTrainPatients/\nValPatients/\nTestPatients{} 名患者），三部分患者互斥。划分文件同时记录两种摘要：文件清单签名 \splitSig（只标识 \nTotal{} 个 stems）与实际派分签名 \assignmentSig（对 train/val/test 的有序列表做 SHA-256）。前者回答“数据集是否变化”，后者回答“这次实验到底用了哪一份派分”；缺少后者时，同名文件可以被重新派分而无法追溯。
+
+泄漏审计分三层。第一，官方 \officialTestImages{} 例 Meiboscore 测试清单含 \officialTestPatients{} 名患者；其余 800 例中有 \officialLeakImages{} 例来自这些患者。第二，即使采用患者级划分，\nTrain{} 训练集中仍有 \officialLeakPatients/\officialTestPatients{} 名官方测试患者（355 张图像）。第三，构造 clean-official 子集：只保留官方测试中“患者不在患者级训练集”的 \cleanOfficialImages{} 图/\cleanOfficialPatients{} 患者，用于无泄漏对照。我们另外训练一个 image-level leaky 模型（\leakyTrainImages{} 训练 / \leakyValImages{} 验证，官方 200 测试），与 patient-level 模型在同一 clean-official 子集上比较，量化泄漏带来的性能差。
+
+\subsection{Multi-Tile Ensemble 与不确定性}\label{sec:mte}
+
+设输入为 $I$，分块高度 $h\in\{256,384,512\}$，宽度 $2h$，重叠 0.25，阈值 $\tau=0.7$。对每个 $h$，滑窗推理得到概率图 $P_h$；MTE 输出
+\begin{equation}
+\bar P=\frac{1}{3}\sum_{h\in\{256,384,512\}}P_h,
+\end{equation}
+再以 $\tau$ 二值化。MTE 不改变权重、不增加训练成本；推理成本约为单分块的 3 倍，但低于 8 倍 TTA。我们报告 MTE 相对默认 384 的 Dice/HD95/clDice 变化，并与 8 倍 TTA 比较。
+
+不确定性方面，对同一图像的三张 $P_h$ 计算像素方差 $V=\mathrm{Var}_h(P_h)$，并计算均值概率的香农熵 $H(\bar P)$。以 Dice $<0.7$ 定义失败病例，计算 $V$、$H$ 与 8 倍 TTA 误差（$1-\mathrm{Dice}_{\mathrm{TTA8}}$）的 AUROC；AUROC 用 tie-aware 秩和实现。这样可以把“换分块”本身作为一种低成本的不确定性来源，与 TTA 对照。
+
+\subsection{临床分级终点}\label{sec:clinical}
+
+对预测腺体掩膜 $M_g$ 与金标准睑缘掩膜 $M_e$，
+\begin{equation}
+R_{\mathrm{loss}}=\left(1-\frac{|M_g\cap M_e|}{|M_e|}\right)\times100\%,
+\end{equation}
+Meiboscore 按 $0/1/2/3$ 阈值映射。与 6 轮专家 Meiboscore 的多数票比较，报告 accuracy、MAE 与 quadratic weighted kappa（QWK）。同时按 upper/lower eyelid 分层报告 Dice/clDice，检验下睑是否显著更难。

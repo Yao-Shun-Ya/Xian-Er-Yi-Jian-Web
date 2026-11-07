@@ -1,0 +1,65 @@
+\section{可复现性清单}\label{app:checklist}
+
+本附录按 CLAIM 与 REFORMS 的结构给出可核对项。表中“状态”为本文当前的完成度；“待完成”项必须在投稿前补齐。
+
+\begin{table}[h]
+\centering
+\caption{可复现性清单。}
+\label{tab:checklist}
+\small
+\begin{tabular}{p{0.34\linewidth}p{0.42\linewidth}p{0.14\linewidth}}
+\toprule
+项目 & 本文做法 & 状态 \\
+\midrule
+数据来源与许可 & 公开 MGD-1K（1000 图 / 320 受试者 / LipiView II）；内容级去重后 \nTotal{} 例；许可与再分发条款投稿前复核 & 已实现，许可待核 \\
+患者级划分 & \nTrain/\nVal/\nTest{} 图像；\nTrainPatients/\nValPatients/\nTestPatients{} 名患者；患者互斥 & 已实现 \\
+签名 & 文件清单签名 \splitSig{} + 实际派分签名 \assignmentSig{} & 已实现 \\
+泄漏审计 & 官方 200 图/\officialTestPatients{} 患者；\officialLeakImages/800{} 图像级泄漏；\officialLeakPatients/\officialTestPatients{} 患者级泄漏；clean-official \cleanOfficialImages{} 图/\cleanOfficialPatients{} 患者 & 已实现 \\
+预处理口径 & 五步固定管线；训练/推理逐像素一致 & 已实现 \\
+模型与损失 & MGD-Former + 四基线；统一损失组合 & 已实现 \\
+训练配方 & AdamW/余弦/AMP/EMA 0.99/增强/多尺度；每模型 epochs 见表~\ref{tab:ablation-design} & 已实现 \\
+推理参数 & 分块 $384\times768$、重叠 0.25、阈值 0.7 & 已实现 \\
+分块敏感性 & 7 个实测点；同权重、仅改分块 & 已实测 \\
+MTE 与不确定性 & 256/384/512 概率平均；方差/熵/TTA 的 AUROC & 已实现，数值待注入 \\
+临床分级 & 分割→R\_loss→Meiboscore 与 6 轮专家分级的 accuracy/MAE/QWK & 已实现，数值待注入 \\
+显存档位 & 6/8 实测；12--40 GB 估算 & 部分实测 \\
+统计协议 & bootstrap 1000；Wilcoxon + Holm & 已实现 \\
+精度结果 & 9 小时统一训练与 patient-level 独立测试；数值见结果表 & 已实现 \\
+权重状态 & \texttt{verified=false} 草稿；转正需独立评估 & 待完成 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{超参数与实现细节}\label{app:hyper}
+
+\begin{table}[h]
+\centering
+\caption{训练与推理默认配置（唯一来源为工程的参数 schema）。}
+\label{tab:hyper}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+分节 & 参数 & 默认值 \\
+\midrule
+run & seed / 设备 & 42 / 自适应（CUDA、CPU） \\
+data & 输入尺寸 / 划分 & $640\times1280$ / patient-level \nTrain/\nVal/\nTest \\
+model & 主干 / 预训练 / 输出通道 & MGD-Former / ADE20K / 2 \\
+train & 优化器 / 学习率 / 权重衰减 & AdamW / $1\times10^{-4}$ / $1\times10^{-4}$ \\
+train & 调度 / warmup / 轮数 & cosine / 5\% / 45（主模型；其余见表~\ref{tab:ablation-design}） \\
+train & EMA / AMP / 梯度累积 & 0.99 / CUDA 开 / 1（WRCANet 2） \\
+train & 分块 / batch / channels\_last & $384\times768$ / 4（WRCANet 2） / 是 \\
+train & 深监督权重 & 1.0 / 0.5 / 0.25 \\
+loss & Dice / CE / clDice / 睑缘 & 0.4 / 0.4 / 0.2（10\% warmup）/ 0.25 \\
+eval & 分块 / 重叠 / 阈值 & $384\times768$ / 0.25 / 0.7 \\
+eval & MTE / TTA & 256/384/512 概率平均 / 关闭或 8 倍 \\
+clinical & Meiboscore & 6 轮专家分级多数票；accuracy/MAE/QWK \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\section{构建与复现命令}\label{app:build}
+
+中文版使用 XeLaTeX 与 ctex（\texttt{fontset=windows}），英文版使用 pdfLaTeX。两版的编译顺序均为：首次编译 → BibTeX → 两次编译。图~\ref{fig:tiling}、图~\ref{fig:vram} 与图~\ref{fig:pipeline} 的数值来自 \texttt{data/results.tex} 的宏，正文与图共用同一宏源；真实结果注入后只需修改该文件。
+
+环境依赖：Python $\ge$ 3.10、torch 2.5.1、numpy 1.26.4、opencv-python 4.8+、scikit-image 0.25.2、monai 1.5.2、scipy 1.15.3。数据准备、训练与评估命令见工程 Runbook；本文不重复粘贴，以避免版本漂移。

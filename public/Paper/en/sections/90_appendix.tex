@@ -1,0 +1,65 @@
+\section{Reproducibility Checklist}\label{app:checklist}
+
+This appendix follows the structure of CLAIM and REFORMS. ``Status'' is the current completion level; ``pending'' items must be completed before submission.
+
+\begin{table}[h]
+\centering
+\caption{Reproducibility checklist.}
+\label{tab:checklist}
+\small
+\begin{tabular}{p{0.33\linewidth}p{0.43\linewidth}p{0.14\linewidth}}
+\toprule
+Item & Practice in this paper & Status \\
+\midrule
+Data source and licence & Public MGD-1K (1000 images / 320 subjects / LipiView II); \nTotal{} after content-level deduplication; licence re-checked before submission & implemented; licence pending \\
+Patient-level split & \nTrain/\nVal/\nTest{} images; \nTrainPatients/\nValPatients/\nTestPatients{} patients; mutually exclusive & implemented \\
+Signatures & file-list signature \splitSig{} + assignment signature \assignmentSig{} & implemented \\
+Leakage audit & official 200 images/\officialTestPatients{} patients; \officialLeakImages/800{} image-level; \officialLeakPatients/\officialTestPatients{} patient-level; clean-official \cleanOfficialImages{} images/\cleanOfficialPatients{} patients & implemented \\
+Preprocessing & five fixed steps; pixel-wise train/inference identity & implemented \\
+Model and loss & MGD-Former + four baselines; unified loss & implemented \\
+Training recipe & AdamW/cosine/AMP/EMA 0.99/augmentation/multi-scale; epochs in Table~\ref{tab:ablation-design} & implemented \\
+Inference settings & $384\times768$ tiles, overlap 0.25, threshold 0.7 & implemented \\
+Tiling sensitivity & seven measured points; same weights, tiling only & measured \\
+MTE and uncertainty & 256/384/512 probability average; variance/entropy/TTA AUROC & implemented; values pending \\
+Clinical grading & segmentation$\to$R\_loss$\to$Meiboscore vs six expert rounds; accuracy/MAE/QWK & implemented; values pending \\
+VRAM tiers & 6/8\,GB measured; 12--40\,GB estimated & partly measured \\
+Statistics & 1{,}000 bootstrap; Wilcoxon + Holm & implemented \\
+Accuracy results & 9-hour unified training and patient-level independent test; values in results tables & implemented \\
+Weight status & \texttt{verified=false} draft; promotion needs independent evaluation & pending \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Hyperparameters and Implementation Details}\label{app:hyper}
+
+\begin{table}[h]
+\centering
+\caption{Default training and inference configuration (single source: the engineering parameter schema).}
+\label{tab:hyper}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+Section & Parameter & Default \\
+\midrule
+run & seed / device & 42 / adaptive (CUDA, CPU) \\
+data & input size / split & $640\times1280$ / patient-level \nTrain/\nVal/\nTest \\
+model & backbone / pretraining / output channels & MGD-Former / ADE20K / 2 \\
+train & optimiser / learning rate / weight decay & AdamW / $1\times10^{-4}$ / $1\times10^{-4}$ \\
+train & scheduler / warmup / epochs & cosine / 5\% / 45 (main; others in Table~\ref{tab:ablation-design}) \\
+train & EMA / AMP / gradient accumulation & 0.99 / on CUDA / 1 (WRCANet 2) \\
+train & tile / batch / channels\_last & $384\times768$ / 4 (WRCANet 2) / yes \\
+train & deep-supervision weights & 1.0 / 0.5 / 0.25 \\
+loss & Dice / CE / clDice / eyelid & 0.4 / 0.4 / 0.2 (10\% warmup) / 0.25 \\
+eval & tile / overlap / threshold & $384\times768$ / 0.25 / 0.7 \\
+eval & MTE / TTA & 256/384/512 probability average / off or 8$\times$ \\
+clinical & Meiboscore & majority vote of six expert rounds; accuracy/MAE/QWK \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\section{Build and Reproduction Commands}\label{app:build}
+
+The Chinese version uses XeLaTeX with ctex (\texttt{fontset=windows}); the English version uses pdfLaTeX. Both compile in the order: first pass $\to$ BibTeX $\to$ two passes. The values in Figures~\ref{fig:tiling}, \ref{fig:vram}, and~\ref{fig:pipeline} come from the macros in \texttt{data/results.tex}; text and figures share one macro source, so injecting real results only requires editing that file.
+
+Dependencies: Python $\ge$ 3.10, torch 2.5.1, numpy 1.26.4, opencv-python 4.8+, scikit-image 0.25.2, monai 1.5.2, scipy 1.15.3. Data preparation, training, and evaluation commands are in the engineering Runbook and are not duplicated here, to avoid version drift.

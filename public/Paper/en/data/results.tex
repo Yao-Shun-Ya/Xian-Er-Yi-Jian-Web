@@ -1,0 +1,116 @@
+% =====================================================================
+% results.tex — 单一宏源（中文版）
+% 初稿中所有精度数值均为占位符 \ph；工程实测值（分块敏感性、显存/吞吐）
+% 只在对应表格使用，且已注明来源。第二部分的真实结果文件到位后，
+% 只改本文件即可让正文与图表同步更新。
+% =====================================================================
+
+\providecommand{\ph}{\textemdash}
+\newcommand{\resultsavailable}{1}      % 1 = 真实结果已注入
+\newcommand{\qualitativeavailable}{0}  % 1 = 定性图已就位
+
+% ---------- 工程实测：分块敏感性（同一权重、仅改分块） ----------
+\newcommand{\tilingN}{40}
+\newcommand{\tilingDefault}{384}
+\newcommand{\tileA}{0.370}   % 128
+\newcommand{\tileB}{0.410}   % 192
+\newcommand{\tileC}{0.480}   % 256
+\newcommand{\tileD}{0.644}   % 384
+\newcommand{\tileE}{0.643}   % 448
+\newcommand{\tileF}{0.655}   % 512
+\newcommand{\tileG}{0.593}   % full 640x1280
+
+% ---------- 工程实测：显存档位 ----------
+\newcommand{\vramSix}{0.89}
+\newcommand{\spsSix}{3.54}
+\newcommand{\epochSix}{197.5}
+\newcommand{\vramEight}{1.227}
+\newcommand{\spsEight}{3.10}
+\newcommand{\epochEight}{225.6}
+\newcommand{\gpuName}{RTX 4060 Laptop 8\,GB}
+
+% ---------- split and weights ----------
+% splitSig identifies the file list; assignmentSig identifies the actual assignment.
+\newcommand{\splitSig}{6bdacfb0a71b8196\allowbreak 08dba4cde4382f8d\allowbreak d23fb4a88b72c9b6\allowbreak d151a99ed83bc22a}
+\newcommand{\assignmentSig}{7a6fd5819d048e0c\allowbreak cd811c943d616a0f\allowbreak e8738a5c06bc7875\allowbreak 2c66bb38624795f6}
+\newcommand{\nTrain}{694}
+\newcommand{\nVal}{153}
+\newcommand{\nTest}{152}
+\newcommand{\nTotal}{999}   % total valid pairs after deduplication; \nVal and \nTest are the val/test counts
+\newcommand{\nTrainPatients}{239}
+\newcommand{\nValPatients}{50}
+\newcommand{\nTestPatients}{49}
+\newcommand{\officialTestImages}{200}
+\newcommand{\officialTestPatients}{166}
+\newcommand{\officialLeakImages}{326}
+\newcommand{\officialLeakPatients}{116}
+\newcommand{\cleanOfficialImages}{60}
+\newcommand{\cleanOfficialPatients}{50}
+\newcommand{\leakyTrainImages}{649}
+\newcommand{\leakyValImages}{150}
+
+% ---------- new story: leakage / MTE / uncertainty / clinical grading ----------
+\newcommand{\leakDiceClean}{0.7243}
+\newcommand{\leakDiceLeaky}{0.6870}
+\newcommand{\leakDelta}{-0.0373}
+\newcommand{\mteDiceMF}{0.7736}
+\newcommand{\mteHDMF}{61.85}
+\newcommand{\mteClDiceMF}{0.8140}
+\newcommand{\mteGainMF}{-0.0013}
+\newcommand{\aurocVarMF}{0.639}
+\newcommand{\aurocEntropyMF}{0.483}
+\newcommand{\aurocTTAEightMF}{1.000}
+\newcommand{\qwkMF}{0.131}
+\newcommand{\maeMF}{1.105}
+\newcommand{\accMF}{0.164}
+\newcommand{\diceUpperMF}{0.7584}
+\newcommand{\diceLowerMF}{0.7905}
+\newcommand{\diceGapMF}{-0.0321}
+\newcommand{\mteGainBest}{\ph}
+\newcommand{\leakGainBest}{\ph}
+
+% ---------- 独立测试（holdout）：腺体 ----------
+\newcommand{\gDiceMF}{0.7749}\newcommand{\gDiceUNet}{0.7119}\newcommand{\gDiceAtt}{0.7771}\newcommand{\gDiceWRCANet}{\ph}\newcommand{\gDicePrior}{0.7640}
+\newcommand{\gIoUMF}{0.6372}\newcommand{\gIoUUNet}{0.5644}\newcommand{\gIoUAtt}{0.6452}\newcommand{\gIoUWRCANet}{\ph}\newcommand{\gIoUPrior}{0.6283}
+\newcommand{\gClDiceMF}{0.8156}\newcommand{\gClDiceUNet}{0.8531}\newcommand{\gClDiceAtt}{0.8349}\newcommand{\gClDiceWRCANet}{\ph}\newcommand{\gClDicePrior}{0.8539}
+\newcommand{\gHDMF}{68.0456}\newcommand{\gHDUNet}{148.0257}\newcommand{\gHDAtt}{118.4399}\newcommand{\gHDWRCANet}{\ph}\newcommand{\gHDPrior}{154.0330}
+\newcommand{\gASSDMF}{20.8838}\newcommand{\gASSDUNet}{27.2330}\newcommand{\gASSDAlt}{16.4637}\newcommand{\gASSDWRCANet}{\ph}\newcommand{\gASSDPrior}{21.0490}
+\newcommand{\gPrecMF}{\ph}\newcommand{\gRecMF}{\ph}
+\newcommand{\gDiceMFci}{\ph}
+
+% ---------- 独立测试（holdout）：睑缘（辅助任务） ----------
+\newcommand{\eDiceMF}{\ph}\newcommand{\eDiceUNet}{\ph}\newcommand{\eDiceAtt}{\ph}\newcommand{\eDiceWRCANet}{\ph}\newcommand{\eDicePrior}{\ph}
+\newcommand{\eIoUMF}{\ph}\newcommand{\eIoUUNet}{\ph}\newcommand{\eIoUAtt}{\ph}\newcommand{\eIoUWRCANet}{\ph}\newcommand{\eIoUPrior}{\ph}
+
+% ---------- 训练集自评（仅同分布参考，不代表泛化） ----------
+\newcommand{\gDiceMFself}{\ph}\newcommand{\gDiceUNetself}{\ph}\newcommand{\gDiceAttself}{\ph}\newcommand{\gDiceWRCANetself}{\ph}\newcommand{\gDicePriortself}{\ph}
+\newcommand{\legacyUNetSelfDice}{0.7021}
+\newcommand{\legacyUNetSelfIoU}{0.5512}
+\newcommand{\legacyUNetSelfClDice}{0.7204}
+
+% ---------- 消融 ----------
+\newcommand{\ablFull}{0.7119}
+\newcommand{\ablNoClDice}{\ph}
+\newcommand{\ablNoDS}{\ph}
+\newcommand{\ablNoEyelid}{\ph}
+\newcommand{\ablBoundary}{\ph}
+\newcommand{\ablRandInit}{\ph}
+\newcommand{\ablImageNet}{\ph}
+\newcommand{\ablNoIntensity}{\ph}
+\newcommand{\ablNoMultiScale}{\ph}
+\newcommand{\ablVerticalFlip}{\ph}
+\newcommand{\ablFullClDice}{\ph}
+
+% ---------- TTA 与集成 ----------
+\newcommand{\ttaOff}{0.7749}
+\newcommand{\ttaTwo}{\ph}
+\newcommand{\ttaEight}{0.7808}
+\newcommand{\ensSingle}{\ph}
+\newcommand{\ensFive}{\ph}
+
+% ---------- 统计检验 ----------
+\newcommand{\pMFUNet}{5.44e-20}
+\newcommand{\pMFAtt}{0.0161}
+\newcommand{\pMFWRCANet}{\ph}
+\newcommand{\pMFPrior}{0.714}
+\newcommand{\holmAlpha}{0.05}

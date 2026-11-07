@@ -1,0 +1,62 @@
+\contentsline {section}{\numberline {1}引言}{3}{section.1}%
+\contentsline {section}{\numberline {2}相关工作}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}睑板腺功能障碍的临床诊断与红外成像}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}睑板腺影像的自动分割}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}公开基准、患者级泄漏与推理混杂}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}医学图像分割的架构路线}{5}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}细长/管状结构的损失与评价}{6}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}低对比度增强、域偏移与推理策略}{6}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}可解释性、不确定性与报告规范}{6}{subsection.2.7}%
+\contentsline {section}{\numberline {3}方法}{6}{section.3}%
+\contentsline {subsection}{\numberline {3.1}任务定义与符号}{6}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}预处理}{7}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}MGD-Former：编码器与高分辨率融合解码器}{7}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}损失函数与深监督}{9}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}基线架构族}{9}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}训练配方与推理策略}{10}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}评价指标与统计口径}{11}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}评估口径：训练集自评与独立测试}{11}{subsection.3.8}%
+\contentsline {subsection}{\numberline {3.9}患者级划分与泄漏审计}{12}{subsection.3.9}%
+\contentsline {subsection}{\numberline {3.10}Multi-Tile Ensemble 与不确定性}{12}{subsection.3.10}%
+\contentsline {subsection}{\numberline {3.11}临床分级终点}{12}{subsection.3.11}%
+\contentsline {section}{\numberline {4}工程即方法：一致性、分块与可复现性}{12}{section.4}%
+\contentsline {subsection}{\numberline {4.1}患者级划分与泄漏审计}{13}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}训练—推理一致性契约}{13}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}分块尺寸的隐性影响}{13}{subsection.4.3}%
+\contentsline {paragraph}{实验口径。}{13}{paragraph*.6}%
+\contentsline {subsection}{\numberline {4.4}Multi-Tile Ensemble：把分块从混杂变量变成推理工具}{14}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}显存档位与消费级复现}{14}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}可编排流水线与实验登记}{15}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}评测纪律与 \texttt {split\_signature}}{16}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}分层架构与部署形态}{17}{subsection.4.8}%
+\contentsline {section}{\numberline {5}实验设计}{17}{section.5}%
+\contentsline {subsection}{\numberline {5.1}数据与队列}{17}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}患者级划分与泄漏协议}{18}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}对比模型与训练预算}{18}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}评价指标与统计}{19}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}运行环境与资源测量}{19}{subsection.5.5}%
+\contentsline {section}{\numberline {6}结果与讨论}{19}{section.6}%
+\contentsline {subsection}{\numberline {6.1}患者级主表}{19}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}泄漏的代价}{20}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}分块、MTE 与 TTA}{21}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}不确定性引导复核}{21}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}临床分级与上/下睑分层}{21}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}未完成的 clDice 消融}{22}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}定性结果}{22}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}旧权重的工程回归}{22}{subsection.6.8}%
+\contentsline {subsection}{\numberline {6.9}讨论}{22}{subsection.6.9}%
+\contentsline {section}{\numberline {7}局限性与风险}{23}{section.7}%
+\contentsline {paragraph}{单中心、单设备的公开数据。}{23}{paragraph*.25}%
+\contentsline {paragraph}{9 小时预算与单次 holdout。}{23}{paragraph*.26}%
+\contentsline {paragraph}{泄漏对照的统计功效有限。}{23}{paragraph*.27}%
+\contentsline {paragraph}{临床终点仍不完整。}{23}{paragraph*.28}%
+\contentsline {paragraph}{距离指标缺少物理标定。}{23}{paragraph*.29}%
+\contentsline {paragraph}{预训练可能降级。}{23}{paragraph*.30}%
+\contentsline {paragraph}{协议边界。}{24}{paragraph*.31}%
+\contentsline {paragraph}{旧权重的数据泄漏。}{24}{paragraph*.32}%
+\contentsline {paragraph}{许可与伦理。}{24}{paragraph*.33}%
+\contentsline {section}{\numberline {8}结论}{24}{section.8}%
+\contentsline {section}{声明}{24}{section*.34}%
+\contentsline {section}{\numberline {A}可复现性清单}{32}{appendix.A}%
+\contentsline {section}{\numberline {B}超参数与实现细节}{32}{appendix.B}%
+\contentsline {section}{\numberline {C}构建与复现命令}{32}{appendix.C}%

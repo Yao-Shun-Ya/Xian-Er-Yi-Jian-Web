@@ -1,0 +1,33 @@
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.92\linewidth,
+  height=62mm,
+  xlabel={分块高度（像素）},
+  ylabel={Dice（同权重，仅改分块）},
+  xmin=0.5, xmax=7.5,
+  ymin=0.33, ymax=0.69,
+  xtick={1,2,3,4,5,6,7},
+  xticklabels={128,192,256,384,448,512,整图},
+  ytick={0.35,0.40,0.45,0.50,0.55,0.60,0.65},
+  grid=major,
+  grid style={draw=mist},
+  axis line style={draw=slate},
+  tick style={draw=slate},
+  tick label style={font=\scriptsize},
+  label style={font=\small},
+  every axis plot/.append style={thick},
+]
+\addplot[color=teal, mark=*, mark size=2.2pt] coordinates {
+  (1,\tileA) (2,\tileB) (3,\tileC) (4,\tileD) (5,\tileE) (6,\tileF) (7,\tileG)
+};
+\addplot[dashed, color=alert, domain=0.5:7.5] {\tileD};
+\node[font=\scriptsize, color=alert, anchor=south west] at (axis cs:4.05,\tileD) {默认 384（0.644）};
+\draw[-{Stealth[length=1.6mm]}, draw=slate] (axis cs:5.6,0.38) -- (axis cs:2.4,0.43);
+\node[font=\scriptsize, color=slate, align=center] at (axis cs:5.4,0.375) {128$\to$384：+27 个百分点};
+\end{axis}
+\end{tikzpicture}
+\caption{分块敏感性（同一权重、仅改变分块高度；阈值 0.7、TTA 关闭、不含后处理与 ROI；$n=\tilingN$）。384 为默认值；整图推理因训练—推理尺度不匹配反而下降。}
+\label{fig:tiling}
+\end{figure}
