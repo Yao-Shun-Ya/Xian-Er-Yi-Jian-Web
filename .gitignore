@@ -88,3 +88,14 @@ mgd/infer_presets.json
 public/file/upload/
 public/file/Windows.*WebUI/
 public/file/Linux.*/
+
+# ==========================================
+# 8. AI 助手配置 (不提交)
+# ==========================================
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.cursor/
+.trae/
+.clinerules
+.windsurfrules
