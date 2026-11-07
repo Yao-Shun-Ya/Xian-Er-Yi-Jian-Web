@@ -1180,7 +1180,7 @@ venv\\Scripts\\python -m mgd.verify_pipeline --epochs 1      # 全链路自检`}
                   <Cpu size={32} className="text-blue-400" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Win 版分析软件</h3>
-                <p className="text-sm text-slate-400 mb-4 text-center">解压开箱即用</p>
+                <p className="text-sm text-slate-400 mb-4 text-center">含 6 例演示数据；完整数据/权重按 README 单独下载</p>
                 <button className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors">
                   下载 Windows 版
                 </button>
@@ -1190,7 +1190,7 @@ venv\\Scripts\\python -m mgd.verify_pipeline --epochs 1      # 全链路自检`}
                   <Cpu size={32} className="text-orange-400" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Linux 版 (命令行)</h3>
-                <p className="text-sm text-slate-400 mb-4 text-center">无 WebUI，适用于服务器环境</p>
+                <p className="text-sm text-slate-400 mb-4 text-center">CLI only；含 6 例演示数据，适用于服务器环境</p>
                 <button className="px-6 py-2 rounded-lg bg-orange-600 text-white font-medium hover:bg-orange-500 transition-colors">
                   下载 Linux 版
                 </button>
