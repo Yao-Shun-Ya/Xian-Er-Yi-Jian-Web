@@ -98,7 +98,7 @@
 
 - **技术白皮书**：`app/docs/page.tsx` 增加 2026-11 患者级表、泄漏审计、负面结果；`docs.html` 已确认包含 `0.7771 / 0.7749`。
 - **下载页措辞**：从“解压开箱即用”改为“含 6 例演示数据；完整数据/权重按 README 单独下载”，避免误导。
-- **交付包**：`public/file/Windows.腺而易见WebUI.7z`（约 1.0 MB）与 `Linux.腺而易见.7z`（约 0.89 MB）重建；内含 6 例真实演示数据（3 上睑 + 3 下睑）、英文启动器、与主树一致的 `mgd` 代码。
+- **交付包**：`public/file/Windows.腺而易见WebUI.7z` 与 `Linux.腺而易见.7z` 重建（均约 0.91 MB）；内含 6 例真实演示数据（3 上睑 + 3 下睑）、英文启动器、与主树一致的 `mgd` 代码、包专用详细 README、Apache-2.0 LICENSE 与 `docs/engineering/`。
 - **启动器英文化**：Windows 为 `install_dependencies.bat` / `run_self_check.bat` / `start_webui.bat` / `start_training_cli.bat`；Linux 为 `install.sh` / `run_self_check.sh` / `start_cli.sh`。所有 `.bat` 为 ASCII + CRLF。
 - **代码一致性**：主运行树与两个包的 `mgd` 代码逐文件 SHA-256 一致（95 文件，0 diff）；包与主树只差数据/权重体积。
 - **论文 PDF**：`public/Paper/zh/main.pdf`（34 页）与 `en/main.pdf`（38 页）已用真实 `summary.json` 注入，0 Overfull / 0 undefined refs。
@@ -495,8 +495,8 @@ CI 的环境变量使用示例值，不要复用为生产密钥。
 
 | 产物 | 大小 | 内容 |
 |---|---:|---|
-| `Windows.腺而易见WebUI.7z` | ~1.0 MB | Windows WebUI + 6 例演示数据 + 英文启动器 + 同源 `mgd` |
-| `Linux.腺而易见.7z` | ~0.89 MB | Linux CLI + 6 例演示数据 + 英文启动器 + 同源 `mgd` |
+| `Windows.腺而易见WebUI.7z` | ~0.91 MB | Windows WebUI + 6 例演示数据 + 英文启动器 + 同源 `mgd` + 详细 README/LICENSE/docs |
+| `Linux.腺而易见.7z` | ~0.91 MB | Linux CLI + 6 例演示数据 + 英文启动器 + 同源 `mgd` + 详细 README/LICENSE/docs |
 | `MGD_UNet_v1.0.0.pth` | 99.1 MB | 演示权重，`verified=false`，不用于论文精度 |
 | `MGD_UNet_v1.0.0.pth.manifest.json` | <1 KB | 权重 manifest（verified / split / seed / run_dir） |
 | 完整 999 例数据 | 单独下载 | 影像 + 腺体 + 眼睑掩膜 + `dataset_splits.json` |
