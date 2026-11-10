@@ -32,7 +32,6 @@
   ],
   "exclude": [
     "node_modules",
-    "mgd",
     ".venv",
     "venv",
     "__pycache__",

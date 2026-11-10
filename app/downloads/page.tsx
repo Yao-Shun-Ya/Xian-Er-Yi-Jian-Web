@@ -288,6 +288,9 @@ export default function DownloadsPage() {
               <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400 md:text-base">
                 {t("downloads.lead")}
               </p>
+              <p className="mono mt-3 text-[11px] leading-5 text-slate-500">
+                包内 mgd 引擎 v2.4.0（2026-11-10 诊断中心级增量：11 个新子包、mgd-qc / mgd-atlas / mgd-followup / mgd-report 四个新 CLI、18 道质量门禁）；包结构仍为 v2.3.0 交付结构。
+              </p>
             </div>
             <Link
               href="/docs"

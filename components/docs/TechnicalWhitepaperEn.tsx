@@ -602,6 +602,46 @@ const sections: WhitepaperSection[] = [
       },
     ],
   },
+  {
+    id: "diagnostic-center",
+    number: "16",
+    title: "Diagnostic-center capabilities (engine v2.4.0)",
+    icon: <Eye size={18} />,
+    blocks: [
+      {
+        type: "p",
+        text:
+          "The mgd engine has been upgraded to v2.4.0 (2026-11-10, a diagnostic-center-level increment). This increment extends engineering capability only: no frozen v2.3.0 accuracy number or conclusion is changed. The delivery packages keep their v2.3.0 directory structure; the engine code inside them is what moved to v2.4.0.",
+      },
+      {
+        type: "table",
+        head: ["Subpackage", "One-line capability"],
+        rows: [
+          ["quantification", "Traceable metric layer: every metric carries a definition / unit / source registration."],
+          ["grading", "Dual grading: Arita Meiboscore and Pult Meiboscale in parallel, with mutually exclusive claims."],
+          ["explain", "Explainability: true attribution with faithfulness evidence, replacing pseudo-colour probability maps."],
+          ["qc", "Acquisition quality gate: scores capture quality and returns accept / review / reject."],
+          ["conformal", "Split-conformal uncertainty quantification and risk control."],
+          ["atlas", "Morphological typing (8 rule classes) and similar-case retrieval."],
+          ["longitudinal", "Follow-up: sqlite3 clinical store plus registration and cross-visit gland-instance matching."],
+          ["interop", "DICOM / FHIR export with graceful degradation when optional dependencies are missing."],
+          ["governance", "Governance: audit log, de-identification, RBAC and dual review."],
+          ["feedback", "Clinician correction capture and export (recording only, no training)."],
+          ["provenance", "Per-report provenance: who, which weights, which parameters, when it was computed."],
+        ],
+        caption:
+          "Eleven diagnostic-center subpackages/modules added under mgd.core in engine v2.4.0.",
+      },
+      {
+        type: "list",
+        items: [
+          "New CLIs: mgd-qc (single-image acquisition quality), mgd-atlas (typing describe/classify/search), mgd-followup (longitudinal init/timeline/compare), mgd-report (HTML/CSV measurement report with optional DICOM SR export).",
+          "Quality gates: an independent quality/ system runs 18 gates with 419 checks (syntax, TODO scan, metric-registry integrity, NaN discipline, core-without-UI layering, frozen API surface, import-graph direction, specs alignment, report blocks, grading cross-check, strict JSON and more); each gate runs in its own subprocess and any FAIL exits non-zero.",
+          "Test suite: grown from the 146-test v2.3.0 baseline to 352+ tests in the full v2.4.0 suite.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function TechnicalWhitepaperEn({

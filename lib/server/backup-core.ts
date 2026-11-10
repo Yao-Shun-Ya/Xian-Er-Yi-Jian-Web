@@ -17,6 +17,12 @@ export async function backupDatabase(
   const baseName = path.basename(databasePath, path.extname(databasePath));
   const destination = path.join(backupDir, `${baseName}-${timestamp}.db`);
 
-  await database.backup(destination);
+  try {
+    await database.backup(destination);
+  } catch (error) {
+    // 失败时清掉半截目标文件，避免截断备份与真实备份混在一起
+    fs.rmSync(destination, { force: true });
+    throw error;
+  }
   return destination;
 }

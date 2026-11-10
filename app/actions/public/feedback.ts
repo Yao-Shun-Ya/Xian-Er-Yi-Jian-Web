@@ -10,7 +10,9 @@ import { validateFeedbackInput } from '@/lib/server/validation/feedback';
 const FEEDBACK_LIMIT = 5;
 const FEEDBACK_WINDOW_MS = 10 * 60 * 1000;
 
-export async function submitFeedback(input: unknown): Promise<{ success: true }> {
+export type SubmitFeedbackResult = { success: true } | { success: false; error: string };
+
+export async function submitFeedback(input: unknown): Promise<SubmitFeedbackResult> {
   const requestHeaders = await headers();
   const clientIp = getClientIp(requestHeaders);
   const rateLimit = checkRateLimit(
@@ -19,13 +21,15 @@ export async function submitFeedback(input: unknown): Promise<{ success: true }>
     FEEDBACK_WINDOW_MS,
   );
 
+  // 用返回值而不是 throw：生产环境 Next 会把未捕获异常掩码成 digest，
+  // 用户永远看不到「提交过于频繁」这类可操作的提示
   if (!rateLimit.allowed) {
-    throw new Error('提交过于频繁，请稍后再试');
+    return { success: false, error: '提交过于频繁，请稍后再试' };
   }
 
   const validation = validateFeedbackInput(input);
   if (!validation.success) {
-    throw new Error(validation.error);
+    return { success: false, error: validation.error };
   }
 
   feedbackRepository.create(validation.data);

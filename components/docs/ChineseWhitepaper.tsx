@@ -28,6 +28,7 @@ const sections = [
   { id: "evaluation", title: "10. 专业评估指标与 LaTeX 导出", icon: <TableProperties size={18} /> },
   { id: "security", title: "11. 工程防御与安全架构", icon: <Shield size={18} /> },
   { id: "installation", title: "12. 环境依赖与一键部署", icon: <Terminal size={18} /> },
+  { id: "diagnostic-center", title: "13. 诊断中心级能力（v2.4.0 引擎增量）", icon: <Eye size={18} /> },
   { id: "references", title: "参考文献与学术引用", icon: <GraduationCap size={18} /> },
   { id: "download", title: "演示软件 (Demo WebUI)", icon: <Zap size={18} /> },
   { id: "repos", title: "项目仓库 (Project Repositories)", icon: <FileText size={18} /> },
@@ -1002,6 +1003,59 @@ venv\\Scripts\\python -m mgd.verify_pipeline --epochs 1      # 全链路自检`}
                   演示权重 <code className="text-yellow-300 bg-yellow-400/10 px-1 rounded">MGD_UNet_v1.0.0.pth</code>（99.1 MB）与同名 manifest 请放入 <code className="text-yellow-300 bg-yellow-400/10 px-1 rounded">models_weights/</code>。该权重 manifest 为 <code className="text-yellow-300 bg-yellow-400/10 px-1 rounded">verified=false</code>，仅用于流程演示与工程回归，不作为论文指标。未配置权重时，系统会提示前往「训练」页从零训练。
                 </p>
               </div>
+            </div>
+          </section>
+
+          {/* 13. Diagnostic-center capabilities (engine v2.4.0) */}
+          <section id="diagnostic-center" className="scroll-mt-32">
+            <h2 className="text-2xl font-bold mb-8 flex items-center gap-3 border-b border-white/10 pb-4">
+              <span className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-mono italic">13</span>
+              诊断中心级能力（v2.4.0 引擎增量）
+            </h2>
+            <div className="space-y-6 text-slate-400 text-[15px] leading-8">
+              <p>
+                mgd 引擎已升级至 <code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">v2.4.0</code>（2026-11-10，诊断中心级增量）。本次升级只扩展工程能力，<span className="text-slate-300">不改动 v2.3.0 冻结基线的任何精度数字与结论</span>；交付包仍保持 v2.3.0 目录结构，引擎代码随之更新。
+              </p>
+
+              <h4 className="text-white font-semibold text-lg">13.1 11 个诊断中心级子包/模块</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/10 text-slate-300">
+                      <th className="text-left py-3 px-4">子包</th>
+                      <th className="text-left py-3 px-4">一句话能力</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ["quantification", "可追溯量化指标层：每项指标带 definition / unit / source 三元注册"],
+                      ["grading", "双分级体系：Arita Meiboscore 与 Pult Meiboscale 并行，互斥声明"],
+                      ["explain", "可解释性：真归因 + 忠实度证据，替代「概率伪彩当热力图」"],
+                      ["qc", "采集质控（quality gate）：评估影像采集质量并给出建议动作"],
+                      ["conformal", "split conformal 不确定性量化与风险控制"],
+                      ["atlas", "形态学分型（8 类规则）与相似病例检索"],
+                      ["longitudinal", "纵向随访：sqlite3 临床存储 + 图像配准 + 腺体实例跨访视匹配"],
+                      ["interop", "DICOM / FHIR 互操作导出，可选依赖缺失时优雅降级"],
+                      ["governance", "治理：审计日志 / 脱敏 / RBAC / 双人复核"],
+                      ["feedback", "医生修正捕获与回流（只做记录与导出，不做训练）"],
+                      ["provenance", "单次推理/报告的血缘记录：谁、哪个权重、什么参数、何时算出"],
+                    ].map(([pkg, desc]) => (
+                      <tr key={pkg} className="border-b border-white/5">
+                        <td className="py-2.5 px-4 font-mono text-emerald-400 whitespace-nowrap">{pkg}</td>
+                        <td className="py-2.5 px-4">{desc}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 className="text-white font-semibold text-lg">13.2 六个新 CLI 与质量守卫</h4>
+              <p>
+                新增命令行入口（均支持 <code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">--help</code> / <code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">--json</code>）：<code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">mgd-qc</code>（单图采集质量评估，accept / review / reject）、<code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">mgd-atlas</code>（形态分型 describe / classify / search）、<code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">mgd-followup</code>（随访 init / timeline / compare）、<code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">mgd-report</code>（测量报告 HTML / CSV 与可选 DICOM SR 导出）。另有 <code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">mgd-logs</code>（结构化日志检索：按 case / run 一条命令定位问题）与 <code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">mgd-feedback</code>（医生修正回流 record / list / summary / export）。
+              </p>
+              <p>
+                同时引入独立于业务代码的质量守卫系统 <code className="text-emerald-300 bg-emerald-400/10 px-1 rounded">quality/</code>：<span className="text-slate-300">18 道门禁、419 项检查</span>（语法、TODO 扫描、指标注册表完整性、NaN 纪律、core 无 UI 分层、API 表面冻结、导入图方向、specs 对齐、报告区块、分级交叉验证、严格 JSON 等），逐门禁独立子进程运行，任一 FAIL 即退出码 1。所有新能力均已接线生效：conformal 校准随 mgd-eval 自动产出（Dice 覆盖下界 + R_loss 预测区间）、governance 审计/RBAC/脱敏生效（logs/audit.jsonl 哈希链）、DICOM SEG/SR 真实往返已验证（21 项断言）、日志系统 v2 三路输出 + 关联 ID。全量测试套件由 v2.3.0 基线 146 项扩展到 352+ 项。
+              </p>
             </div>
           </section>
 

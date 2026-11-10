@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { timingSafeEqual } from 'node:crypto';
+import { createHash, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { authorizeAdminToken, SESSION_COOKIE } from './session';
 
@@ -19,11 +19,9 @@ export function verifyAdminPassword(input: string): boolean {
     return false;
   }
 
-  const providedBuffer = Buffer.from(input);
-  const expectedBuffer = Buffer.from(expected);
-  if (providedBuffer.length !== expectedBuffer.length) {
-    return false;
-  }
-
-  return timingSafeEqual(providedBuffer, expectedBuffer);
+  // 两侧先各自哈希到定长再比较：既消除长度差异分支（长度先比会泄漏口令长度），
+  // 又保证 timingSafeEqual 的等长前提。
+  const providedDigest = createHash('sha256').update(input, 'utf8').digest();
+  const expectedDigest = createHash('sha256').update(expected, 'utf8').digest();
+  return timingSafeEqual(providedDigest, expectedDigest);
 }

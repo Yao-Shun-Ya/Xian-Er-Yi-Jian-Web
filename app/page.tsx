@@ -39,7 +39,7 @@ export default function Home() {
       meta: "Quantify",
       title: t("home.tech.quantify.title"),
       body: t("home.tech.quantify.body"),
-      tags: ["R_loss", "density", "length / width", "spacing"],
+      tags: ["R_loss", "density", "length / width", "spacing", "v2.4.0 诊断中心级"],
     },
     {
       meta: "Review",
@@ -60,10 +60,15 @@ export default function Home() {
     
     try {
       // 直接调用后端函数，Next.js 会自动帮你发起安全的网络请求
-      await submitFeedback(formData);
-      
-      setSubmitStatus(t("home.feedback.success"));
-      setFormData({ name: '', contact: '', message: '' }); // 重置表单
+      const result = await submitFeedback(formData);
+
+      if (result.success) {
+        setSubmitStatus(t("home.feedback.success"));
+        setFormData({ name: '', contact: '', message: '' }); // 重置表单
+      } else {
+        // 限流/校验错误从返回值透出（生产环境 throw 会被 Next 掩码成 digest，用户看不到）
+        setSubmitStatus(result.error);
+      }
     } catch (error) {
       console.error("前端提交报错:", error);
       setSubmitStatus(t("home.feedback.error"));
